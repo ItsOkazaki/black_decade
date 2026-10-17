@@ -1,0 +1,13 @@
+BradleySkin,Hero01_US_01,BradleyPortrait,JOHN,BRADLEY,16
+BradleySkin2,DeltaReplacement_19,DeltaPortrait_19,ALEX,BROWN,66
+BradleySkin3,DeltaReplacement_20,DeltaPortrait_20,RYAN,MOORE,67
+BradleySkin4,DeltaReplacement_21,DeltaPortrait_21,BILL,KIRBY,68
+BradleySkin5,DeltaReplacement_22,DeltaPortrait_22,CHRIS,LETHAM,69
+BradleySkin6,DeltaReplacement_23,DeltaPortrait_23,JIM,VINCENT,70
+BradleySkin7,DeltaReplacement_24,DeltaPortrait_24,ANDREW,TRUEMAN,71
+BradleySkin8,DeltaReplacement_25,DeltaPortrait_25,EDDIE,HUTCHING,72
+BradleySkin9,DeltaReplacement_26,DeltaPortrait_26,DANIEL,SEVERN,73
+BradleySkin10,DeltaReplacement_27,DeltaPortrait_27,GORDON,MACKY,74
+BradleySkin11,DeltaReplacement_41,DeltaPortrait_41,JOHN,MCLEAN,75
+BradleySkin12,DeltaReplacement_42,DeltaPortrait_42,DANIEL,AMJAD,107
+BradleySkin_Training,Hero01_US_01T,BradleyPortrait,JOHN,BRADLEY,174

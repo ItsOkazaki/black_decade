@@ -1,0 +1,47 @@
+Bradley,SOLDIER,Hero01_Armstrong,-1,US_Infantryman00,-1,-1,-1,-10,Rookie,Bradley.sbk,RIFLEMAN,BradleySkin,5
+Ramirez,SOLDIER,Hero02_Ramirez,-1,US_Infantryman01,-1,-1,-1,-10,Rookie,Ramirez.sbk,HEAVY WEAPONS,RamirezSkin,4
+Jones,SOLDIER,Hero03_Jones,-1,US_Infantryman02,-1,-1,-1,-10,Rookie,Jones.sbk,COMBAT ENGINEER,JonesSkin,4
+Foley,SOLDIER,Hero04_Foley,-1,US_Infantryman03,-1,-1,-1,-10,Rookie,Foley.sbk,SNIPER,FoleySkin,4
+Iraqi_Conscript,SOLDIER,IraqInfantry01_Sandy,-1,IR_Infantryman00,-1,-1,-1,1,Rookie,Iraqi_soldier.sbk,-1,-1,1
+Iraqi_Republican,SOLDIER,IraqERG01_DesertCamoPete,-1,IR_EliteRepub,-1,-1,-1,2,Rookie,Iraqi_soldier.sbk,-1,-1,1
+Goat_Herder,GOAT HERDER,GoatHerder,-1,IR_GoatHerder,-1,-1,-1,-50,Rookie,Goat_Herder.sbk,-1,-1,0
+US_Technician,CIVILIAN,USTechnician,-1,IR_Civilian,-1,-1,-1,-50,Rookie,US_Civilian.sbk,-1,-1,0
+Allied_POW,POW,AlliedPOW,-1,US_POW,-1,-1,-1,-50,Rookie,US_Civilian.sbk,-1,-1,0
+Iraqi_POW_Guard,SOLDIER,IraqPOWGuard,-1,IR_Infantryman00,-1,-1,-1,2,Rookie,Iraqi_soldier.sbk,-1,-1,1
+Iraqi_Scientist_Head,CIVILIAN,IraqScientist,-1,IR_Civilian,-1,-1,-1,-50,Rookie,kuwait_civ04.sbk,-1,-1,0
+Iraqi_Scientist,CIVILIAN,IraqScientist,-1,IR_Civilian,-1,-1,-1,-50,Rookie,kuwait_civ01.sbk,-1,-1,0
+Iraqi_Toturer,SOLDIER,IraqTorturer,-1,IR_Civilian,-1,-1,-1,2,Rookie,Iraqi_Civilian.sbk,-1,-1,0
+Iraqi_Intel,SOLDIER,IraqIntOfficer,-1,IR_Infantryman00,-1,-1,-1,3,Rookie,Iraqi_Civilian.sbk,-1,-1,1
+US_Missile_Expert,MISSILE EXPERT,USMIssileExpert,-1,US_Missile_Expert,IMAGE_USMISSILEEXPERT,-1,FRANKLIN,-50,Rookie,Franklin.sbk,-1,-1,0
+Sadam_Hussein,SOLDIER,SaddamHussein,-1,IR_Saddam,-1,-1,-1,200,Rookie,Sadam_Hussein.sbk,-1,-1,0
+Kuwaiti_Emir,EMIR,EmirKuwait,-1,Emir,IMAGE_EMIR,KUWAITI,EMIR,-50,Rookie,Emir.sbk,-1,-1,0
+Emirs_Bodyguard1,SOLDIER,EmirBodyguard,-1,Emirs_Bodyguards,-1,-1,-1,0,Rookie,Emirs_Bodyguard.sbk,-1,-1,1
+US_Commander,SOLDIER,USCommander,-1,US_Commander,-1,-1,-1,-50,Rookie,US_Soldier.sbk,-1,-1,0
+Iraqi_Repub_Officer,SOLDIER,IraqERG02_Officer,-1,IR_EliteRepub_Officer,-1,-1,-1,2,Rookie,Iraqi_Soldier.sbk,-1,-1,1
+Iraqi_Sadam_EliteGuard,SOLDIER,SaddamBodyguard,-1,Saddams_Bodyguards,-1,-1,-1,5,Rookie,Iraqi_Bodyguard.sbk,-1,-1,1
+Iraqi_Regular_Officer,SOLDIER,IraqOfficer01_Sandy,-1,IR_Regular_Officer,-1,-1,-1,2,Rookie,Iraqi_Soldier.sbk,-1,-1,1
+US_Delta_Force,SOLDIER,DeltaForceNPC,-1,US_Delta_Force,-1,-1,-1,-50,Rookie,US_Soldier.sbk,-1,-1,1
+US_Tank_Commander,SOLDIER,M1AbramsCommander,-1,US_Commander,-1,-1,-1,-50,Rookie,US_Soldier.sbk,-1,-1,0
+Emirs_Bodyguard2,SOLDIER,EmirBodyguard,-1,Emirs_Bodyguards,-1,-1,-1,0,Rookie,Emirs_Bodyguard.sbk,-1,-1,2
+US_Guard,SOLDIER,USGuard,-1,US_Delta_Force,-1,-1,-1,0,Rookie,US_Soldier.sbk,-1,-1,0
+Blackhawk_Pilot,SOLDIER,Blackhawk_Pilot,-1,US_Infantryman02,-1,-1,-1,-50,Rookie,Blackhawk_Pilot.sbk,-1,-1,0
+Blackhawk_Co_Pilot,SOLDIER,Blackhawk_CoPilot,-1,US_Infantryman02,-1,-1,-1,-50,Rookie,Blackhawk_Copilot.sbk,-1,-1,0
+Blackhawk_Gunner,SOLDIER,Blackhawk_Gunner,-1,US_Infantryman02,-1,-1,-1,-50,Rookie,Blackhawk_Pilot.sbk,-1,-1,0
+Sadam_Bodyguard,SOLDIER,SaddamBodyguard,-1,Saddams_Bodyguards,-1,-1,-1,100,Rookie,Iraqi_Bodyguard.sbk,-1,-1,1
+IR_Base_Commandant,CIVILIAN,IraqBaseCommandant,-1,IR_Civilian,-1,-1,-1,10,Rookie,Iraqi_Soldier.sbk,-1,-1,0
+CS_IRAQI_POW,SOLDIER,IraqInfantry01_Sandy,-1,IR_Infantryman00,-1,-1,-1,1,Rookie,Iraqi_soldier.sbk,-1,-1,0
+Mission2_Civ01,CIVILIAN,EmirBodyguard,-1,NU_Civilian01,-1,-1,-1,-50,Rookie,kuwait_civ01.sbk,-1,-1,0
+Mission2_Civ02,CIVILIAN,GoatHerder,-1,NU_Civilian01,-1,-1,-1,-50,Rookie,kuwait_civ02.sbk,-1,-1,0
+Mission2_Civ03,CIVILIAN,SaddamBodyguard,-1,NU_Civilian01,-1,-1,-1,-50,Rookie,kuwait_civ03.sbk,-1,-1,0
+US_Commander_Training2,SOLDIER,US_MasterSergeant,-1,US_Commander,-1,-1,-1,-50,Rookie,US_Soldier.sbk,-1,-1,0
+MIA_Grunt,SOLDIER,Hero04_Foley,-1,US_Infantryman00,-1,-1,-1,200,Rookie,Foley.sbk,-1,-1,3
+Mission2_Civ04,CIVILIAN,IraqIntOfficer,-1,NU_Civilian01,-1,-1,-1,-50,Rookie,kuwait_civ04.sbk,-1,-1,0
+Mission4_SignalBoosterTech,SOLDIER,IraqScientist,-1,IR_Civilian,-1,-1,-1,2,Rookie,Iraqi_Civilian.sbk,-1,-1,0
+Allied_POW_2,CIVILIAN,AlliedPOW,-1,US_POW,-1,-1,-1,-50,Rookie,US_Civilian.sbk,-1,-1,0
+Outro_Commander,SOLDIER,OUTRO_Commander,-1,US_Infantryman00,-1,-1,-1,5,Guard,US_Soldier.sbk,-1,-1,0
+Outro_SAS_Commander,SOLDIER,OUTRO_SAS_Commander,-1,US_Infantryman00,-1,-1,-1,5,Guard,US_Soldier.sbk,-1,-1,0
+Iraqi_M11bNuke_Scientist,SOLDIER,IraqScientist,-1,IR_Civilian,-1,-1,-1,2,Rookie,Iraqi_Civilian.sbk,-1,-1,1
+Bradley_Training,SOLDIER,Hero01_Armstrong,-1,US_Infantryman00,-1,-1,-1,-10,Rookie,TrainingBradley.sbk,RIFLEMAN,BradleySkin_Training,1
+Ramirez_Training,SOLDIER,Hero02_Ramirez,-1,US_Infantryman01,-1,-1,-1,-10,Rookie,TrainingRamirez.sbk,HEAVY WEAPONS,RamirezSkin_Training,1
+Jones_Training,SOLDIER,Hero03_Jones,-1,US_Infantryman02,-1,-1,-1,-10,Rookie,TrainingJones.sbk,COMBAT ENGINEER,JonesSkin_Training,1
+Foley_Training,SOLDIER,Hero04_Foley,-1,US_Infantryman03,-1,-1,-1,-10,Rookie,TrainingFoley.sbk,SNIPER,FoleySkin_Training,1

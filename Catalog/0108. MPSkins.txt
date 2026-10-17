@@ -1,0 +1,4 @@
+SNIPER,Hero04_Foley,20
+HEAVY WEAPONS,Hero02_Ramirez,20
+COMBAT ENGINEER,Hero03_Jones,24
+RIFLEMAN,Hero01_Armstrong,22

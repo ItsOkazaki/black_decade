@@ -1,0 +1,7 @@
+BradleySkin7,Hero01_IR_07,Hero01_IRPortrait_07,GALEB,ISHAQ,128
+BradleySkin6,Hero01_IR_06,Hero01_IRPortrait_06,AMEEN,AMJAD,126
+BradleySkin5,Hero01_IR_05,Hero01_IRPortrait_05,SADDAM,AMJAD,124
+BradleySkin4,Hero01_IR_04,Hero01_IRPortrait_04,SADDAM,BAHIJ,122
+BradleySkin3,Hero01_IR_03,Hero01_IRPortrait_03,AMEEN,FAYYAD,120
+BradleySkin2,Hero01_IR_02,Hero01_IRPortrait_02,YASIN,HUSSEIN,118
+BradleySkin,Hero01_IR_01,Hero01_IRPortrait_01,YASIN,FAYYAD,111

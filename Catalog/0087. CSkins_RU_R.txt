@@ -1,0 +1,7 @@
+BradleySkin7,Hero01_RU_07,Hero01_RUPortrait_07,MIKHAL,ZAITSEV,129
+BradleySkin6,Hero01_RU_06,Hero01_RUPortrait_06,TORSHKA,DMITRIEV,127
+BradleySkin5,Hero01_RU_05,Hero01_RUPortrait_05,TORSHKA,KARPOV,125
+BradleySkin4,Hero01_RU_04,Hero01_RUPortrait_04,DUNYA,PETROV,123
+BradleySkin3,Hero01_RU_03,Hero01_RUPortrait_03,TORSHKA,ZAITSEV,121
+BradleySkin2,Hero01_RU_02,Hero01_RUPortrait_02,PAVKO,PETROV,119
+BradleySkin,Hero01_RU_01,Hero01_RUPortrait_01,NIKOLAI,ZAITSEV,110

@@ -1,0 +1,13 @@
+FoleySkin,Hero04_US_01,FoleyPortrait,PAUL,FOLEY,19
+FoleySkin2,DeltaReplacement_28,DeltaPortrait_28,JAMES,TRUSS,96
+FoleySkin3,DeltaReplacement_29,DeltaPortrait_29,JON,SWEEN,97
+FoleySkin4,DeltaReplacement_30,DeltaPortrait_30,ERIC,GRINKE,98
+FoleySkin5,DeltaReplacement_31,DeltaPortrait_31,EROL,GRIFFEN,99
+FoleySkin6,DeltaReplacement_32,DeltaPortrait_32,DAVID,DUNNING,100
+FoleySkin7,DeltaReplacement_33,DeltaPortrait_33,BOB,AVERY,101
+FoleySkin8,DeltaReplacement_34,DeltaPortrait_34,LEE,ROLLINS,102
+FoleySkin9,DeltaReplacement_35,DeltaPortrait_35,GUY,CANNELL,103
+FoleySkin10,DeltaReplacement_36,DeltaPortrait_36,DAVE,COOK,104
+FoleySkin11,DeltaReplacement_43,DeltaPortrait_43,GARY,KENTLI,105
+FoleySkin12,DeltaReplacement_44,DeltaPortrait_44,MICK,DAVIS,106
+FoleySkin_Training,Hero04_US_01T,FoleyPortrait,PAUL,FOLEY,175

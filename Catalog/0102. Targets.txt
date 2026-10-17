@@ -1,0 +1,4 @@
+US_TARGET_ENEMY,Target_Enemy,dummy,0,0,0,90,0,0,2,200
+US_TARGET_CIVILIAN,Target_Civilian,dummy,0,0,0,90,0,0,6,200
+US_TARGET_LARGE,Target_Large,dummy,0,0,0,90,0,0,2,200
+US_TARGET_SMALL,Target_Small,dummy,0,0,0,90,0,0,2,200

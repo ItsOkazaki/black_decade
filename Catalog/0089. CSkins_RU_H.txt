@@ -1,0 +1,7 @@
+RamirezSkin7,Hero02_RU_07,Hero02_RUPortrait_07,TORSHKA,PETROV,165
+RamirezSkin6,Hero02_RU_06,Hero02_RUPortrait_06,VASILY,IVANOV,163
+RamirezSkin5,Hero02_RU_05,Hero02_RUPortrait_05,NIKOLAI,DMITRIEV,161
+RamirezSkin4,Hero02_RU_04,Hero02_RUPortrait_04,KARL,DMITRIEV,159
+RamirezSkin3,Hero02_RU_03,Hero02_RUPortrait_03,SLOVIK,DMITRIEV,157
+RamirezSkin2,Hero02_RU_02,Hero02_RUPortrait_02,SLOVIK,KARPOV,155
+RamirezSkin,Hero02_RU_01,Hero02_RUPortrait_01,DUNYA,ZAITSEV,116

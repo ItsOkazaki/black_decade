@@ -1,0 +1,12 @@
+FoleySkin,Hero04_UK_01,FoleySASPortrait,PAUL,FOLEY,4
+FoleySkin2,SASReplacement_28,SASPortrait_28,JAMES,TRUSS,51
+FoleySkin3,SASReplacement_29,SASPortrait_29,JON,SWEEN,53
+FoleySkin4,SASReplacement_30,SASPortrait_30,ERIC,GRINKE,54
+FoleySkin5,SASReplacement_31,SASPortrait_31,EROL,GRIFFEN,55
+FoleySkin6,SASReplacement_32,SASPortrait_32,DAVID,DUNNING,56
+FoleySkin7,SASReplacement_33,SASPortrait_33,BOB,AVERY,57
+FoleySkin8,SASReplacement_34,SASPortrait_34,LEE,ROLLINS,58
+FoleySkin9,SASReplacement_35,SASPortrait_35,GUY,CANNELL,59
+FoleySkin10,SASReplacement_36,SASPortrait_36,DAVE,COOK,60
+FoleySkin11,SASReplacement_43,SASPortrait_43,GARY,KENTLI,61
+FoleySkin12,SASReplacement_44,SASPortrait_44,MICK,DAVIS,62

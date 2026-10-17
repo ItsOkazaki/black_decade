@@ -1,0 +1,12 @@
+RamirezSkin,Hero02_UK_01,RamirezSASPortrait,MICK,CONNORS,2
+RamirezSkin2,SASReplacement_01,SASPortrait_01,SHAUN,ROLLINS,30
+RamirezSkin3,SASReplacement_02,SASPortrait_02,STEVE,LUCKETT,31
+RamirezSkin4,SASReplacement_03,SASPortrait_03,STUART,HEWITT,32
+RamirezSkin5,SASReplacement_04,SASPortrait_04,TONY,NAPIER,33
+RamirezSkin6,SASReplacement_05,SASPortrait_05,PETE,ROBSON,34
+RamirezSkin7,SASReplacement_06,SASPortrait_06,ROBERT,JOHNSON,35
+RamirezSkin8,SASReplacement_07,SASPortrait_07,VINCE,JEFFRIES,36
+RamirezSkin9,SASReplacement_08,SASPortrait_08,PHIL,HARDY,37
+RamirezSkin10,SASReplacement_09,SASPortrait_09,RICHARD,ABBOT,38
+RamirezSkin11,SASReplacement_37,SASPortrait_37,ANDY,BOYD,39
+RamirezSkin12,SASReplacement_38,SASPortrait_38,ALEKSI,AMJAD,64

@@ -1,0 +1,13 @@
+JonesSkin,Hero03_US_01,JonesPortrait,DAVID,JONES,18
+JonesSkin2,DeltaReplacement_10,DeltaPortrait_10,PAUL,AYRE,86
+JonesSkin3,DeltaReplacement_11,DeltaPortrait_11,TIM,GREEN,87
+JonesSkin4,DeltaReplacement_12,DeltaPortrait_12,MARK,HICKS,88
+JonesSkin5,DeltaReplacement_13,DeltaPortrait_13,WILL,CALVIN,89
+JonesSkin6,DeltaReplacement_14,DeltaPortrait_14,LEE,COLLINS,90
+JonesSkin7,DeltaReplacement_15,DeltaPortrait_15,NICK,BOOTH,91
+JonesSkin8,DeltaReplacement_16,DeltaPortrait_16,PAUL,AYRE,92
+JonesSkin9,DeltaReplacement_17,DeltaPortrait_17,MARC,CROCKER,93
+JonesSkin10,DeltaReplacement_18,DeltaPortrait_18,MIKE,FRANKLIN,94
+JonesSkin11,DeltaReplacement_39,DeltaPortrait_39,MATTHEW,CURTIS,95
+JonesSkin12,DeltaReplacement_40,DeltaPortrait_40,KEVIN,GREEN,109
+JonesSkin_Training,Hero03_US_01T,JonesPortrait,PAUL,JONES,177

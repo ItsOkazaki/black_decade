@@ -1,0 +1,12 @@
+BradleySkin,Hero01_UK_01,BradleySASPortrait,JOHN,BRADLEY,1
+BradleySkin2,SASReplacement_19,SASPortrait_19,ALEX,BROWN,20
+BradleySkin3,SASReplacement_20,SASPortrait_20,RYAN,MOORE,21
+BradleySkin4,SASReplacement_21,SASPortrait_21,BILL,KIRBY,22
+BradleySkin5,SASReplacement_22,SASPortrait_22,CHRIS,LETHAM,23
+BradleySkin6,SASReplacement_23,SASPortrait_23,JIM,VINCENT,24
+BradleySkin7,SASReplacement_24,SASPortrait_24,ANDREW,TRUEMAN,25
+BradleySkin8,SASReplacement_25,SASPortrait_25,EDDIE,HUTCHING,26
+BradleySkin9,SASReplacement_26,SASPortrait_26,DANIEL,SEVERN,27
+BradleySkin10,SASReplacement_27,SASPortrait_27,GORDON,MACKY,28
+BradleySkin11,SASReplacement_41,SASPortrait_41,JOHN,MCLEAN,29
+BradleySkin12,SASReplacement_42,SASPortrait_42,DANIEL,AMJAD,63

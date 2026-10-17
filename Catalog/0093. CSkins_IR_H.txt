@@ -1,0 +1,7 @@
+RamirezSkin7,Hero02_IR_07,Hero02_IRPortrait_07,KHALED,AMJAD,164
+RamirezSkin6,Hero02_IR_06,Hero02_IRPortrait_06,YASIN,BAHIJ,162
+RamirezSkin5,Hero02_IR_05,Hero02_IRPortrait_05,ZARIFE,ISHAQ,160
+RamirezSkin4,Hero02_IR_04,Hero02_IRPortrait_04,KHALED,FAYYAD,158
+RamirezSkin3,Hero02_IR_03,Hero02_IRPortrait_03,GALEB,FAYYAD,156
+RamirezSkin2,Hero02_IR_02,Hero02_IRPortrait_02,ZARIFE,BAHIJ,154
+RamirezSkin,Hero02_IR_01,Hero02_IRPortrait_01,GALEB,ISHAQ,117

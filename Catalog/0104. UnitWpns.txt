@@ -1,0 +1,37 @@
+Iraqi_Conscript,IR_WPN_AK47,WEAPON,0
+Iraqi_Republican,IR_WPN_AK74,WEAPON,20
+Emirs_Bodyguard1,US_WPN_M16A2,WEAPON,0
+Emirs_Bodyguard2,IR_WPN_Makarov,WEAPON,0
+Emirs_Bodyguard2,IR_WPN_SVDDragunov,WEAPON,0
+Iraqi_POW_Guard,IR_WPN_AK74,WEAPON,0
+Iraqi_Regular_Officer,IR_WPN_AK74,WEAPON,0
+Iraqi_Repub_Officer,IR_WPN_AKSU,WEAPON,0
+Iraqi_Sadam_EliteGuard,IR_WPN_AKSU,WEAPON,0
+US_Delta_Force,US_WPN_M16A2,WEAPON,0
+Sadam_Bodyguard,IR_WPN_AK74,WEAPON,0
+Bradley,US_WPN_Knife,WEAPON,0
+Bradley,Binoculars,BINOCULARS,0
+Bradley,MediKit,MEDI KIT,1
+Foley,US_WPN_Knife,WEAPON,0
+Foley,MediKit,MEDI KIT,1
+Ramirez,US_WPN_Knife,WEAPON,0
+Ramirez,MediKit,MEDI KIT,1
+Iraqi_Intel,IR_WPN_Makarov,WEAPON,10
+Jones,US_WPN_Knife,WEAPON,0
+Jones,MediKit,MEDI KIT,1
+Iraqi_M11bNuke_Scientist,IR_WPN_Makarov,WEAPON,0
+MIA_Grunt,US_WPN_M16A2,WEAPON,0
+MIA_Grunt,US_WPN_Knife,WEAPON,0
+MIA_Grunt,US_WPN_Beretta92F,WEAPON,0
+Ramirez,US_WPN_GrenadeFrag,WEAPON,0
+Ramirez,US_WPN_GrenadeSmoke,WEAPON,0
+Jones,US_WPN_GrenadeFrag,WEAPON,0
+Jones,US_WPN_GrenadeSmoke,WEAPON,0
+Foley,US_WPN_GrenadeFrag,WEAPON,0
+Foley,US_WPN_GrenadeSmoke,WEAPON,0
+Bradley,US_WPN_GrenadeFrag,WEAPON,0
+Bradley,US_WPN_GrenadeSmoke,WEAPON,0
+Foley_Training,MediKit,MEDI KIT,0
+Ramirez_Training,MediKit,MEDI KIT,0
+Jones_Training,MediKit,MEDI KIT,0
+Bradley_Training,MediKit,MEDI KIT,0

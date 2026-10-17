@@ -1,0 +1,7 @@
+FoleySkin7,Hero04_IR_07,Hero04_IRPortrait_07,ZARIFE,HUSSEIN,140
+FoleySkin6,Hero04_IR_06,Hero04_IRPortrait_06,AMEEN,ISHAQ,138
+FoleySkin5,Hero04_IR_05,Hero04_IRPortrait_05,GALEB,AMJAD,136
+FoleySkin4,Hero04_IR_04,Hero04_IRPortrait_04,YASIN,BAHIJ,134
+FoleySkin3,Hero04_IR_03,Hero04_IRPortrait_03,AMEEN,FAYYAD,132
+FoleySkin2,Hero04_IR_02,Hero04_IRPortrait_02,KHALED,HUSSEIN,130
+FoleySkin,Hero04_IR_01,Hero04_IRPortrait_01,ZARIFE,BAHIJ,113

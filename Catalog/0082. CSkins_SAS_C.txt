@@ -1,0 +1,12 @@
+JonesSkin,Hero03_UK_01,JonesSASPortrait,DAVID,JONES,3
+JonesSkin2,SASReplacement_10,SASPortrait_10,PAUL,AYRE,40
+JonesSkin3,SASReplacement_11,SASPortrait_11,TIM,GREEN,41
+JonesSkin4,SASReplacement_12,SASPortrait_12,MARK,HICKS,42
+JonesSkin5,SASReplacement_13,SASPortrait_13,WILL,CALVIN,43
+JonesSkin6,SASReplacement_14,SASPortrait_14,KEVIN,COLLINS,44
+JonesSkin7,SASReplacement_15,SASPortrait_15,NICK,BOOTH,45
+JonesSkin8,SASReplacement_16,SASPortrait_16,PAUL,AYRE,46
+JonesSkin9,SASReplacement_17,SASPortrait_17,MARC,CROCKER,47
+JonesSkin10,SASReplacement_18,SASPortrait_18,MIKE,FRANKLIN,48
+JonesSkin11,SASReplacement_39,SASPortrait_39,MATTHEW,CURTIS,49
+JonesSkin12,SASReplacement_40,SASPortrait_40,LEE,GREEN,65

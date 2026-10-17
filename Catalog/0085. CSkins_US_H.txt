@@ -1,0 +1,13 @@
+RamirezSkin,Hero02_US_01,RamirezPortrait,MICK,CONNORS,17
+RamirezSkin2,DeltaReplacement_01,DeltaPortrait_01,SHAUN,ROLLINS,76
+RamirezSkin3,DeltaReplacement_02,DeltaPortrait_02,STEVE,LUCKETT,77
+RamirezSkin4,DeltaReplacement_03,DeltaPortrait_03,STUART,HEWITT,78
+RamirezSkin5,DeltaReplacement_04,DeltaPortrait_04,TONY,NAPIER,79
+RamirezSkin6,DeltaReplacement_05,DeltaPortrait_05,PETE,ROBSON,80
+RamirezSkin7,DeltaReplacement_06,DeltaPortrait_06,ROBERT,JOHNSON,81
+RamirezSkin8,DeltaReplacement_07,DeltaPortrait_07,VINCE,JEFFRIES,82
+RamirezSkin9,DeltaReplacement_08,DeltaPortrait_08,PHIL,HARDY,83
+RamirezSkin10,DeltaReplacement_09,DeltaPortrait_09,RICHARD,ABBOT,84
+RamirezSkin11,DeltaReplacement_37,DeltaPortrait_37,ANDY,BOYD,85
+RamirezSkin12,DeltaReplacement_38,DeltaPortrait_38,ALEKSI,AMJAD,108
+RamirezSkin_Training,Hero02_US_01T,RamirezPortrait,MICK,CONNORS,178

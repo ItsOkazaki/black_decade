@@ -1,0 +1,16 @@
+Bradley,SMG/ASSAULT RIFLE,3
+Ramirez,MACHINE GUN,3
+Ramirez,A-T/GRENADE,2
+Jones,COMBAT ENG,3
+Ramirez,MEDIC,1
+Foley,SNIPER,3
+Bradley,PISTOL,2
+Bradley,MEDIC,1
+Foley,PISTOL,2
+Foley,MEDIC,1
+Jones,SMG/ASSAULT RIFLE,2
+Jones,MEDIC,1
+Sadam_Bodyguard,SMG/ASSAULT RIFLE,4
+Sadam_Bodyguard,MACHINE GUN,4
+Sadam_Bodyguard,SHOTGUN,4
+Iraqi_M11bNuke_Scientist,PISTOL,4

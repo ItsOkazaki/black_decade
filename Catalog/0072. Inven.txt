@@ -1,0 +1,39 @@
+Radio,RADIO,CommsHandSet,-1,-1,IMAGE_WEAPON_RADIO,Bip01 GunR Connector,-1,35,10,10.00,1,MLRSRadio,0.00
+MediKit,MEDI KIT,MediKit,-1,-1,IMAGE_WEAPON_MEDIPACK,Bip01 GunR Connector,-1,6,100,0.75,0,Medikit,0.00
+CombatHelmet,HEAD ARMOUR,USHelmet_DesertStormCamo,-1,-1,IMAGE_WEAPON_DESERTEAGLE,Bip01 GunR Connector,-1,35,85,0.00,0,-1,0.00
+FlakJacket,BODY ARMOUR,BackpackMedium,-1,-1,IMAGE_WEAPON_KNIFE,Bip01 GunR Connector,-1,35,40,0.00,0,-1,0.00
+C4Detonator,C4 DETONATOR,Detonator01_C4,-1,-1,IMAGE_WEAPON_C4DETONATOR,Bip01 GunR Connector,-1,35,0,0.00,0,c4Det,0.00
+Ammo,UNIFORM,amobox,-1,-1,IMAGE_WEAPON_AMMOPACK,Bip01 GunR Connector,US_WPN_DesertEagle,10,0,0.00,0,-1,0.00
+Hacking_Kit,COMPUTER HACKING KIT,MediKit,-1,-1,IMAGE_WEAPON_COMPUTERHACKING,Bip01 GunR Connector,-1,35,0,5.00,0,-1,0.00
+Bomb_Defusing_Kit,BOMB DEFUSING KIT,WireCutters,-1,-1,IMAGE_WEAPON_BOMBDEFUSING,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+PRC319_CommSet,RADIO,CommsHandSet,-1,-1,IMAGE_WEAPON_RADIO,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Night_Vision_Goggles,NIGHT VISION GOGGLES,AN_NightVisionGoggles,-1,-1,IMAGE_WEAPON_NIGHTGOGGLES,Bip01 GunR Connector,-1,35,0,1.00,0,NightVision,0.00
+Ammo_AKSU,AMMO,AK74_Clip,-1,-1,IMAGE_AKCLIP,Bip01 GunR Connector,IR_WPN_AKSU,1,0,0.00,0,-1,0.00
+Ammo_AK74,AMMO,AK74_Clip,-1,-1,IMAGE_AKCLIP,Bip01 GunR Connector,IR_WPN_AK74,1,0,0.00,0,-1,0.00
+Binoculars,BINOCULARS,Binoculars,-1,-1,IMAGE_WEAPON_BINOCULARS,Bip01 GunR Connector,-1,35,10,1.00,0,-1,0.00
+Laser_designator,LASER DESIGNATOR,LaserDesignator,-1,-1,IMAGE_WEAPON_LASERDESIGNATOR,Bip01 GunR Connector,-1,40,10,0.00,0,LaserDesignator,0.00
+Wire_Cutters,WIRECUTTERS,WireCutters,-1,-1,IMAGE_WIRECUTTERS,Bip01 GunR Connector,-1,35,0,0.00,0,Wirecutters,0.00
+Tracker_Bug,MEDI KIT,MediKit,-1,-1,IMAGE_WEAPON_MEDIPACK,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Light_Mortar,MEDI KIT,MediKit,-1,-1,IMAGE_WEAPON_MEDIPACK,Bip01 GunR Connector,-1,35,45,0.00,0,-1,0.00
+Ammo_AK47,AMMO,AK74_Clip,-1,-1,IMAGE_AKCLIP,Bip01 GunR Connector,IR_WPN_AK47,1,0,0.00,0,-1,0.00
+Ammo_HKPSG1,AMMO,PSG1_AmmoBox,-1,-1,IMAGE_WEAPON_AMMOPACK,Bip01 GunR Connector,US_WPN_HKPSG1,4,0,0.00,0,-1,0.00
+Plutonium_case,MISCELLANEOUS,plutonium_case,-1,-1,IMAGE_PLUTONIUMCASE,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+VehicleKey,KEY,TruckKey,-1,-1,IMAGE_KEY1,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+DoorKey,KEY,CoolerKeys,-1,-1,IMAGE_KEY2,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Staff,MISCELLANEOUS,Staff,-1,-1,IMAGE_WEAPON_MEDIPACK,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Ammo_PK,AMMO,LMG_PK_Clip,-1,-1,IMAGE_PKCLIP,Bip01 GunR Connector,IR_WPN_PKGPMG,1,0,0.00,0,-1,0.00
+Flag,MISCELLANEOUS,Flag_Small_UK,-1,-1,IMAGE_WEAPON_MEDIPACK,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Cigarette,MISCELLANEOUS,Cigarette.pi2,-1,-1,IMAGE_WEAPON_MEDIPACK,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Floppy_Disk,MISCELLANEOUS,FloppyDisk,-1,-1,IMAGE_FLOPPYDISK,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Geiger_counter,RADIO,GeigerCounter,-1,-1,IMAGE_WEAPON_RADIO,Bip01 GunR Connector,-1,35,10,10.00,1,GeigerCounter,0.00
+Ammo_RPK74,AMMO,AK74_Clip,-1,-1,IMAGE_AKCLIP,Bip01 GunR Connector,IR_WPN_RPK,1,0,0.00,0,-1,0.00
+Ammo_Frag,AMMO,Grenade_Frag_Group,-1,-1,IMAGE_GRENADE_FRAG,Bip01 GunR Connector,US_WPN_GrenadeFrag,3,0,0.00,0,-1,0.00
+Ammo_Dragunov,AMMO,SVDDragunov_Clip,-1,-1,IMAGE_DRAGONOVCLIP,Bip01 GunR Connector,IR_WPN_SVDDragunov,1,0,0.00,0,-1,0.00
+Armoury_keycard,KEY,Security_card_01,-1,-1,IMAGE_KEYCARD1,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+MP1_Recovery,MISCELLANEOUS,MP1_Recovery,-1,-1,IMAGE_VIDEOCAM,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+MP2_Recovery,MISCELLANEOUS,MP2_Recovery,-1,-1,IMAGE_PLUTONIUMCASE,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+MP3_Recovery,MISCELLANEOUS,MP3_Recovery,-1,-1,IMAGE_CAMCASE,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+MP4_Recovery,MISCELLANEOUS,MP4_Recovery,-1,-1,IMAGE_FLIGHTBOX,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+MP5_Recovery,MISCELLANEOUS,MP5_Recovery,-1,-1,IMAGE_VIDEOCAM,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+MP6_Recovery,MISCELLANEOUS,MP6_Recovery,-1,-1,IMAGE_FLIGHTBOX,Bip01 GunR Connector,-1,35,0,0.00,0,-1,0.00
+Loudspeaker,RADIO,Loudspeaker,-1,-1,IMAGE_WEAPON_RADIO,Bip01 GunR Connector,-1,35,10,10.00,1,GeigerCounter,0.00

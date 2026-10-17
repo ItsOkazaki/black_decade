@@ -1,0 +1,230 @@
+//BRADLEY START////////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "M2A1_bradley"
+{
+	BASE_MAP "m2a1_main1"			NORMAL_MAP "m2a1_main1_bump"
+	BASE_MAP "m2a1_main2"			NORMAL_MAP "m2a1_main2_bump"
+	BASE_MAP "m2a1_main3"			NORMAL_MAP "m2a1_main3_bump"
+}
+REFX_DOT3_BUMP "M2A1_bradley_TOW_Launcher" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_bradley_Main_Cannon" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel1_Left" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel2_Left" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel1_right" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel2_right" NORMAL_MAP "m2a1_main3_bump"
+
+//REFX_DOT3_BUMP "M2A1_Bradley_Destroyed" NORMAL_MAP "SCORCHED_METAL_bump"
+//BRADLEY END///////////////////////////////////////////////////////////////
+
+//BRADLEY_GC START//////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "M2A1_bradley_gc"
+{
+	BASE_MAP "m2a1_main1_gc"			NORMAL_MAP "m2a1_main1_bump"
+	BASE_MAP "m2a1_main2_gc"			NORMAL_MAP "m2a1_main2_bump"
+	BASE_MAP "m2a1_main3_gc"			NORMAL_MAP "m2a1_main3_bump"
+}
+REFX_DOT3_BUMP "M2A1_bradley_TOW_Launcher_gc" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_bradley_Main_Cannon_gc" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel1_Left_gc" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel2_Left_gc" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel1_right_gc" NORMAL_MAP "m2a1_main3_bump"
+
+REFX_DOT3_BUMP "M2A1_Bradley_wheel2_right_gc" NORMAL_MAP "m2a1_main3_bump"
+
+//REFX_DOT3_BUMP "M2A1_Bradley_Destroyed" NORMAL_MAP "SCORCHED_METAL_bump"
+//BRADLEY_GC END///////////////////////////////////////////////////////////
+
+//BMP1 START///////////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "BMP1" NORMAL_MAP "BMP1_BUMP"
+
+REFX_DOT3_BUMP "BMP1_command" NORMAL_MAP "BMP1_BUMP"
+
+REFX_DOT3_BUMP "BMP1_Gun_Barrel" NORMAL_MAP "BMP1_BUMP"
+
+REFX_DOT3_BUMP "BMP1WheelLeft" NORMAL_MAP "BMP1_BUMP"
+
+REFX_DOT3_BUMP "BMP1Wheelright" NORMAL_MAP "BMP1_BUMP"
+
+//REFX_DOT3_BUMP "BMP1WRECK" NORMAL_MAP "SCORCHED_METAL_bump"
+//BMP1 END/////////////////////////////////////////////////////////////////
+
+//BMP2 START///////////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "BMP2" NORMAL_MAP "BMP2_BUMP"
+
+REFX_DOT3_BUMP "BMP2_Gun_Barrel" NORMAL_MAP "BMP2_BUMP"
+
+//REFX_DOT3_BUMP "BMP2WRECK" NORMAL_MAP "SCORCHED_METAL_bump"
+//BMP2 END/////////////////////////////////////////////////////////////////
+
+//T72 START////////////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "T72M1"
+{
+	BASE_MAP "T72_BODY1" NORMAL_MAP "T72_BODY1_BUMP"
+	BASE_MAP "T72_BODY2" NORMAL_MAP "T72_BODY2_BUMP"
+}
+REFX_DOT3_BUMP "T72_Left_Wheel1" NORMAL_MAP "T72_BODY2_BUMP"
+
+REFX_DOT3_BUMP "T72_Left_Wheel2" NORMAL_MAP "T72_BODY2_BUMP"
+
+REFX_DOT3_BUMP "T72_Left_Wheel3"
+{
+	BASE_MAP "T72_BODY2" NORMAL_MAP "T72_BODY1_BUMP"
+	BASE_MAP "T72_WHEEL3" NORMAL_MAP "T72_WHEEL3_BUMP"
+}
+REFX_DOT3_BUMP "T72_125mm_Cannon" NORMAL_MAP "T72_BODY2_BUMP"
+
+//REFX_DOT3_BUMP "T72M1_destroyed" NORMAL_MAP "SCORCHED_METAL_bump"
+//T72 END//////////////////////////////////////////////////////////////////
+
+//T62 START////////////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "T62_IraqTank"
+{
+	BASE_MAP "T62_01" NORMAL_MAP "T62_01_BUMP"
+	BASE_MAP "T62_02" NORMAL_MAP "T62_02_BUMP"
+}
+REFX_DOT3_BUMP "T62_BigWheelLeft" NORMAL_MAP "T62_02_BUMP"
+REFX_DOT3_BUMP "T62_BigWheelRight" NORMAL_MAP "T62_02_BUMP"
+REFX_DOT3_BUMP "T62_CogWheelLeft" NORMAL_MAP "T62_03_BUMP"
+REFX_DOT3_BUMP "T62_CogWheelRight" NORMAL_MAP "T62_03_BUMP"
+REFX_DOT3_BUMP "T62_SmallWheelLeft" NORMAL_MAP "T62_02_BUMP"
+REFX_DOT3_BUMP "T62_SmallWheelRight" NORMAL_MAP "T62_02_BUMP"
+REFX_DOT3_BUMP "T62_TankBarrel" NORMAL_MAP "T62_01_BUMP"
+//REFX_DOT3_BUMP "T62_IraqTankDead" NORMAL_MAP "SCORCHED_METAL_bump"
+//REFX_DOT3_BUMP "T62_TankBarrel" NORMAL_MAP "T62_01_BUMP"
+//T62 END//////////////////////////////////////////////////////////////////
+
+//URAL START///////////////////////////////////////////////////////////////
+//REFX_DOT3_BUMP "URAL375_CLOSED"
+//{
+//	BASE_MAP "URAL01" NORMAL_MAP "URAL01_BUMP"
+//	BASE_MAP "URAL02" NORMAL_MAP "URAL02_BUMP"
+//	BASE_MAP "URAL03" NORMAL_MAP "URAL03_BUMP"
+//}
+//URAL END/////////////////////////////////////////////////////////////////
+
+//SCUD_LAUNCHER START//////////////////////////////////////////////////////
+REFX_DOT3_BUMP "SCUDLAUNCHER"
+{
+	BASE_MAP "SCUD01" NORMAL_MAP "SCUD01_BUMP"
+	BASE_MAP "SCUD02" NORMAL_MAP "SCUD02_BUMP"
+	BASE_MAP "SCUD03" NORMAL_MAP "SCUD03_BUMP"
+}
+REFX_DOT3_BUMP "ScudLauncherLeftWheel" NORMAL_MAP "SCUD02_BUMP"
+REFX_DOT3_BUMP "ScudLauncherRightWheel" NORMAL_MAP "SCUD02_BUMP"
+REFX_DOT3_BUMP "SCUDLAUNCHER_FIRING"
+{
+	BASE_MAP "SCUD01" NORMAL_MAP "SCUD01_BUMP"
+	BASE_MAP "SCUD02" NORMAL_MAP "SCUD02_BUMP"
+	BASE_MAP "SCUD03" NORMAL_MAP "SCUD03_BUMP"
+}
+//REFX_DOT3_BUMP "ScudLauncher_Damaged" NORMAL_MAP "SCORCHED_METAL_bump"
+
+//SCUD_LAUNCHER END////////////////////////////////////////////////////////
+
+//HUMVEE START/////////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "HumVeeTowMG"
+{
+	BASE_MAP "HUMVEE01" NORMAL_MAP "HUMVEE01_BUMP"
+	BASE_MAP "HUMVEE02" NORMAL_MAP "HUMVEE02_BUMP"
+	BASE_MAP "HUMVEE03" NORMAL_MAP "HUMVEE03_BUMP"
+	BASE_MAP "HUMVEE04" NORMAL_MAP "HUMVEE04_BUMP"
+}
+//REFX_DOT3_BUMP "HumVeeWreck" NORMAL_MAP "SCORCHED_METAL_bump"
+//HUMVEE END///////////////////////////////////////////////////////////////
+
+//VHABRAMS START///////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "VHAbrams_M1A1"
+{
+	BASE_MAP "VHAbrams01" NORMAL_MAP "VHAbrams01_BUMP"
+	BASE_MAP "VHAbrams02" NORMAL_MAP "VHAbrams02_BUMP"
+	BASE_MAP "VHAbrams03" NORMAL_MAP "WEAPON_BLANK_BUMP"
+}
+REFX_DOT3_BUMP "VHAbramsCamo_M1A1"
+{
+	BASE_MAP "VHAbramsCamo01" NORMAL_MAP "VHAbrams01_BUMP"
+	BASE_MAP "VHAbramsCamo02" NORMAL_MAP "VHAbrams02_BUMP"
+	BASE_MAP "VHAbramsCamo03" NORMAL_MAP "WEAPON_BLANK_BUMP"
+}
+REFX_DOT3_BUMP "VHAbrams_Main_Gun" NORMAL_MAP "VHAbrams01_BUMP"
+
+//REFX_DOT3_BUMP "VHAbrams_M1A1_Damaged" NORMAL_MAP "SCORCHED_METAL_bump"
+//VHABRAMS END/////////////////////////////////////////////////////////////
+
+//ZSU23 START//////////////////////////////////////////////////////////////
+REFX_DOT3_BUMP "ZSU23"
+{
+	BASE_MAP "ZSU2301" NORMAL_MAP "ZSU2301_BUMP"
+	BASE_MAP "ZSU2302" NORMAL_MAP "ZSU2302_BUMP"
+}
+//REFX_DOT3_BUMP "Zsu23_wreck" NORMAL_MAP "SCORCHED_METAL_bump"
+//ZSU23 END////////////////////////////////////////////////////////////////
+
+//SA8_GECKO START//////////////////////////////////////////////////////////
+//REFX_DOT3_BUMP "SA8_GECKO"
+//{
+//	BASE_MAP "SA8_MAIN1" NORMAL_MAP "SA8_MAIN1_BUMP"
+//	BASE_MAP "SA8_MAIN2" NORMAL_MAP "SA8_MAIN2_BUMP"
+//}
+//REFX_DOT3_BUMP "SA8_Gecko_Destroyed" NORMAL_MAP "SCORCHED_METAL_bump"
+//SA8_GECKO END////////////////////////////////////////////////////////////
+
+//BACKHAWK_UH60 START//////////////////////////////////////////////////////
+//REFX_DOT3_BUMP "BLACKHAWK_UH60"
+//{
+//	BASE_MAP "BLACKHAWK_MAIN1" NORMAL_MAP "BLACKHAWK_MAIN1_BUMP"
+//	BASE_MAP "BLACKHAWK_MAIN2" NORMAL_MAP "BLACKHAWK_MAIN2_BUMP"
+//}
+//REFX_DOT3_BUMP "blackhawk_Damaged" NORMAL_MAP "SCORCHED_METAL_bump"
+//BACKHAWK END/////////////////////////////////////////////////////////////
+
+//CS_INTRO_Logo_Pivotal START//////////////////////////////////////////////
+//REFX_DOT3_BUMP "CS_INTRO_Logo_Pivotal"
+//{
+//	BASE_MAP "Pivotal_logo_BG" NORMAL_MAP "Pivotal_logo_BG_BUMP"
+//}
+REFX_REFLECT "CS_INTRO_Logo_Pivotal"	
+{
+	BASE_MAP "Pivotal_logo_Black" BLEND_FACTOR 0.5	CUBE_MAP "Pivotal_LOGO_REF"
+	BASE_MAP "Pivotal_logo_BG" BLEND_FACTOR 0.75	CUBE_MAP "Pivotal_LOGO_REF2"
+}
+//CS_INTRO_Logo_Pivotal END////////////////////////////////////////////////
+
+//CS_INTRO_Logo_DS START///////////////////////////////////////////////////
+REFX_REFLECT "CS_INTRO_Logo_DS"	
+{
+	BASE_MAP "DS_logo_Red" BLEND_FACTOR 0.375	CUBE_MAP "Pivotal_LOGO_REF"
+	BASE_MAP "DS_logo_White" BLEND_FACTOR 1.0	CUBE_MAP "Pivotal_LOGO_REF2"
+	BASE_MAP "Pivotal_logo_BG" BLEND_FACTOR 1.0	CUBE_MAP "Pivotal_LOGO_REF2"
+	BASE_MAP "CS_conflict_dagger.bmp" BLEND_FACTOR 0.5	CUBE_MAP "Pivotal_LOGO_REF"
+ 	BASE_MAP "Pivotal_logo_Black.bmp" BLEND_FACTOR 0.5	CUBE_MAP "Pivotal_LOGO_REF"
+ 	BASE_MAP "CS_conflict_gold.bmp" BLEND_FACTOR 0.5	CUBE_MAP "Pivotal_LOGO_REF"
+  	BASE_MAP "CS_conflict.bmp""" BLEND_FACTOR 0.5	CUBE_MAP "Pivotal_LOGO_REF" 
+  
+
+}
+//CS_INTRO_Logo_DS END/////////////////////////////////////////////////////
+
+//CS_INTRO_Logo_SCI START//////////////////////////////////////////////////
+REFX_REFLECT "CS_INTRO_Logo_SCI"	
+{
+	BASE_MAP "Pivotal_logo_BG" BLEND_FACTOR 0.5	CUBE_MAP "Pivotal_LOGO_REF2"
+}
+//CS_INTRO_Logo_SCI END////////////////////////////////////////////////////
+
+//CS_INTRO_Logo_DS_US START///////////////////////////////////////////////////
+REFX_REFLECT "CS_INTRO_Logo_DS_US"	
+{
+	BASE_MAP "DS_logo_Red" BLEND_FACTOR 0.375	CUBE_MAP "Pivotal_LOGO_REF"
+	BASE_MAP "Pivotal_logo_BG" BLEND_FACTOR 0.5	CUBE_MAP "Pivotal_LOGO_REF2"
+}
+//CS_INTRO_Logo_DS_US END/////////////////////////////////////////////////////
+
+REFX_END

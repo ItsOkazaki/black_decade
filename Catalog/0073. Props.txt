@@ -1,0 +1,11 @@
+Wheels,Wheels,Wheels.sbk,2
+Tracks,Tracks,Tracks.sbk,3
+Amphibious,Amphibious,Amphibious.sbk,4
+Airplane,Airplane,Airplane.sbk,5
+Infantry,Infantry,Infantry.sbk,8
+Halftracks,Halftracks,Halftracks.sbk,9
+Goat,Goat,Goat.sbk,10
+Chinook,Chinook,Chinook.sbk,11
+Apache,Apache,Apache.sbk,12
+None,None,-1,14
+Scud,Scud,ScudMissile.sbk,15
