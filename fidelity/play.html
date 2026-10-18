@@ -14,20 +14,20 @@
   .gtext{display:block;image-rendering:auto}
   /* ---- squad stack: bottom-left green cards, as the original ---- */
   #squadbar{position:fixed;left:10px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:6px}
-  .card{position:relative;width:64px;background:rgba(20,26,14,.72);border:1.5px solid rgba(150,170,120,.55);padding:3px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.45)}
-  .card .wpn{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;max-width:56px;max-height:20px;filter:drop-shadow(1px 1px 1px #000);pointer-events:none}
+  .card{position:relative;width:82px;display:flex;flex-direction:column;background:rgba(20,26,14,.72);border:1.5px solid rgba(150,170,120,.55);padding:3px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+  .card .wpn{order:2;position:relative;display:block;margin:2px auto 0;height:18px;max-width:70px;object-fit:contain;filter:drop-shadow(1px 1px 1px #000);pointer-events:none}
   .card .cname{font-size:9.5px;letter-spacing:.06em;color:#fff;text-shadow:1px 1px 2px #000;margin-top:2px}
   .card .cbar{height:5px;background:rgba(0,0,0,.65);margin-top:2px}
   .card .cbar>div{height:100%;background:linear-gradient(180deg,#b7e39a,#5d8a38)}
   .card .cbar>div.low{background:linear-gradient(180deg,#e8a09a,#a03a30)}
   .card .cstate{display:none}
-  .card .ctop{display:flex;gap:6px;justify-content:space-between;align-items:flex-start}
-  .card img.face{width:54px;height:54px;object-fit:cover;border:1.5px solid rgba(0,0,0,.7);border-radius:3px;background:#101408}
-  .card img.sticon{width:28px;height:28px;object-fit:contain;filter:drop-shadow(1px 1px 2px rgba(0,0,0,.7))}
+  .card .ctop{order:1;display:flex;gap:4px;justify-content:space-between;align-items:flex-start}
+  .card img.face{width:52px;height:52px;object-fit:cover;border:1.5px solid rgba(0,0,0,.7);border-radius:3px;background:#101408}
+  .card img.sticon{width:20px;height:20px;object-fit:contain;filter:drop-shadow(1px 1px 2px rgba(0,0,0,.7))}
   .card.active{border:2px solid #79c84f;background:rgba(38,66,22,.85);box-shadow:0 0 0 1.5px rgba(121,200,79,.35),0 2px 8px rgba(0,0,0,.5)}
   .card.down{filter:grayscale(.85);opacity:.62}
-  .cname{margin-top:4px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat;color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.1em;padding:2px 5px;border-radius:3px;text-shadow:1px 1px 2px #000}
-  .cbar{margin-top:5px;height:9px;background:rgba(10,14,6,.92);border:1px solid rgba(0,0,0,.85);border-radius:2px;overflow:hidden}
+  .cname{order:3;margin-top:3px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat;color:#fff;font-size:10px;font-weight:700;letter-spacing:.03em;padding:2px 3px;border-radius:3px;text-shadow:1px 1px 2px #000;white-space:nowrap;overflow:hidden}
+  .cbar{order:4;margin-top:3px;height:9px;background:rgba(10,14,6,.92);border:1px solid rgba(0,0,0,.85);border-radius:2px;overflow:hidden}
   .cbar>div{height:100%;background:linear-gradient(180deg,#c4e8a2,#79ab4c 55%,#5d8a38);transition:width .25s}
   .cbar>div.low{background:linear-gradient(180deg,#f0b9a0,#c05a3a 55%,#96382a)}
   .cstate{display:none}
@@ -43,7 +43,7 @@
   #magline{color:#f2eeda;font-size:10.5px;letter-spacing:.14em;text-shadow:1px 1px 3px #000}
   #ammoDigits img{height:21px;margin-left:1px;filter:drop-shadow(1px 1px 2px #000)}
   /* ---- held-item quick bar (GWint slots) ---- */
-  #itembar{display:none;position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:6;display:flex;gap:4px}
+  #itembar{display:none;position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:6;gap:4px}
   .slot{width:74px;height:38px;background:url(textures/ui/gwint/IMAGE_WEAPON_BG.png) center/100% 100% no-repeat;position:relative;cursor:pointer;opacity:.88}
   .slot img{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);max-width:62px;max-height:25px;filter:drop-shadow(1px 1px 2px #000)}
   .slot .cnt{position:absolute;right:4px;bottom:2px;font-size:10px;font-weight:700;color:#ffe9a8;text-shadow:1px 1px 2px #000}
@@ -136,7 +136,7 @@
   <div id="invHint">CLICK A SLOT, THEN CLICK A SOLDIER ABOVE TO HAND IT OVER · DOUBLE-CLICK A SLOT TO CARRY IT</div>
   <canvas id="invGearTitle" class="gtext"></canvas>
   <div id="invGear"></div>
-  <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.08em;margin:12px 0 0">SPACE OR TAB CLOSES · H = MEDI KIT (NEAREST WOUNDED MAN — REVIVES THE DOWNED) · E = PLANT C4</p>
+  <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.08em;margin:12px 0 0">TAB / ESC CLOSES · IN GAME, HOLD SHIFT FOR THE QUICK INVENTORY (W/S SELECT, CLICK/L USE) · H = MEDI KIT · E = PLANT C4</p>
 </div></div></div>
 <div id="hud" style="display:none"><div id="ammo"></div><div id="stance"></div><div id="hp"></div><div id="foe"></div><div id="squad"></div></div>
 <div id="err"></div>
@@ -170,8 +170,8 @@
     </div>
   </div>
   <p><b>Mouse</b> look · <b>LMB</b> fire/use · <b>RMB</b> aim · <b>WASD</b> move ·
-     <b>Ctrl</b> walk · <b>Shift</b> sprint · <b>R</b> reload · <b>C</b> crouch · <b>X</b> prone<br>
-     <b>1–4</b> switch soldier · <b>Q</b>/wheel change weapon-item · <b>SPACE</b> inventory (mouse) ·
+     <b>Ctrl</b> walk · <b>Right Shift</b> sprint · <b>R</b> reload · <b>C</b> crouch · <b>X</b> prone<br>
+     <b>1–4</b> switch soldier · <b>HOLD SHIFT</b> inventory — <b>W/S</b> or wheel select, <b>A/D</b> fire mode, <b>click/L</b> use, release closes · <b>TAB</b> squad kit ·
      <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>F1</b> objectives · <b>P</b> pause</p>
   <canvas id="deployBtn" class="gtext" style="display:none"></canvas>
 </div></div>
@@ -185,6 +185,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=60"></script>
+<script type="module" src="play.js?v=61"></script>
 </body>
 </html>

@@ -79,19 +79,29 @@ async function addModel(path, x, z, rotY = 0, colR = 0) {
 // aim pitch: rotate the spine bones so the character (and his rifle) really
 // points up/down at the target, on top of the authored aim animation
 function findAimBones(root) {
-  const out = { spine: null, spine2: null };
+  const out = { spine: null, spine2: null, spine3: null };
   root.traverse(o => {
     const nm = (o.name || '').toUpperCase();
     if (nm === 'BIP01 SPINE1') out.spine = o;
     else if (nm === 'BIP01 SPINE2') out.spine2 = o;
+    else if (nm === 'BIP01 SPINE3') out.spine3 = o;
   });
   return out;
 }
-function applyAimPitch(bones, pitch) {
+const _aimQ = new THREE.Quaternion(), _aimAxis = new THREE.Vector3(0, 1, 0);
+function _pitchBone(bone, ang) {
+  if (!bone || !ang) return;
+  _aimQ.setFromAxisAngle(_aimAxis, ang);
+  bone.quaternion.multiply(_aimQ);
+}
+function applyAimPitch(bones, pitchUp) {
+  // pitchUp > 0 = muzzle rising. Applied AFTER mixer.update(), so it bends
+  // the animated torso/rifle up or down with the aim -- the whole character.
   if (!bones) return;
-  const p = THREE.MathUtils.clamp(pitch, -0.65, 0.85);
-  if (bones.spine) bones.spine.rotation.x += -p * 0.55;
-  if (bones.spine2) bones.spine2.rotation.x += -p * 0.45;
+  const p = THREE.MathUtils.clamp(pitchUp, -0.7, 0.9);
+  _pitchBone(bones.spine, -p * 0.38);
+  _pitchBone(bones.spine2, -p * 0.34);
+  _pitchBone(bones.spine3, -p * 0.22);
 }
 const ANIM = {
   idle: 'IDLE_LOOK_AROUND_WITH_GUN', aim: 'UPRIGHT_AIM_RIFLE',
@@ -221,12 +231,57 @@ function playAK(dist) {
 }
 let sAlt = 0;
 function playShot() { const a = WPN.snd[WPN.alt++ % 2]; a.volume = 0.55 * SET.vol; a.currentTime = 0; a.play().catch(() => {}); }
+// squad voice lines decoded from the game's own Bradley bank (mission1.sch)
+const voiceAudio = {};
+['spotted_infantry_loud','spotted_infantry_quiet','enemy_killed','im_hit','man_down',
+ 'advance_order_loud','advance_order_quiet','fire_at_will_loud'].forEach(n => {
+  const a = new Audio('sounds/voice/' + n + '.wav'); a.preload = 'auto'; voiceAudio[n] = a;
+});
+let _voiceNext = 0;
+function playVoice(name, vol = 0.55) {
+  const a = voiceAudio[name]; if (!a) return;
+  const t = performance.now();
+  if (t < _voiceNext) return; _voiceNext = t + 1600;   // one call-out at a time
+  try { a.volume = vol * (SET.vol || 1); a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
+}
+// footsteps: short movement samples from the game's shared bank, cycled by distance
+const stepAudio = [1, 2, 3].map(i => { const a = new Audio('sounds/steps/step' + i + '.wav'); a.preload = 'auto'; return a; });
+let _stepAlt = 0, _stepAcc = 0;
+function updateFootsteps(dt, speed) {
+  if (!speed || speed <= 0.1) { _stepAcc = 0; return; }
+  _stepAcc += speed * dt;
+  const stride = player.stance === 'prone' ? 0.85 : player.stance === 'crouch' ? 1.15 : speed > 3 ? 2.0 : 1.5;
+  if (_stepAcc < stride) return;
+  _stepAcc = 0;
+  const a = stepAudio[_stepAlt++ % stepAudio.length];
+  try { a.volume = Math.min(0.5, 0.16 + speed * 0.07) * (SET.vol || 1); a.playbackRate = 0.92 + Math.random() * 0.16; a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
+}
+// desert ambience: looped filtered wind, started on deploy (user gesture)
+let _ambOn = false;
+function startAmbience() {
+  if (_ambOn) return; _ambOn = true;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const len = ctx.sampleRate * 3, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2; }
+    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420;
+    const g = ctx.createGain(); g.gain.value = 0.05 * (SET.vol || 1);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.09;
+    const lg = ctx.createGain(); lg.gain.value = 0.02;
+    lfo.connect(lg); lg.connect(g.gain);
+    src.connect(f); f.connect(g); g.connect(ctx.destination);
+    src.start(); lfo.start();
+  } catch (e) { /* audio unavailable */ }
+}
 function playClick() { clickAudio.currentTime = 0; clickAudio.play().catch(() => {}); }
 
 // ---- player ----
 const player = {
   pos: new THREE.Vector3(0, 0, 1.5), yaw: 0.35, stance: 'stand', // stand|crouch|prone
-  ammo: 30, reloading: false, reloadT: 0, nextShot: 0, moving: false
+  ammo: 30, reloading: false, reloadT: 0, nextShot: 0, moving: false,
+  fireMode: 'AUTO', burstN: 0, semiLatch: false
 };
 // role weapons from WEAPS.TXT / Units.txt (Rifleman, Heavy Wpns, Engineer, Sniper)
 function wavs(bank) {
@@ -249,8 +304,10 @@ const AUTH = { walk: 1.19, run: 4.07, crouch: 1.01 };
 
 // ---- enemies: IraqInfantry01 body + AK47. #1 insurgent (civilian mismatch),
 // #2 Mujahid (cream thobe + 3D robe skirt, keffiyeh, beard, ammo bandolier) ----
-const E_ANIM = { walk: 'UPRIGHT_WALK_WITH_RIFLE', aim: 'UPRIGHT_AIM_RIFLE',
-  idle: 'IDLE_LOOK_AROUND_WITH_GUN', deathF: 'DEATH_BY_SHOTGUN_FORWARD', deathB: 'DEATH_BY_SHOTGUN_BACKWARD' };
+const E_ANIM = { walk: 'UPRIGHT_WALK_WITH_RIFLE', run: 'UPRIGHT_RELAXED_RUN_WITH_RIFLE',
+  aim: 'UPRIGHT_AIM_RIFLE', idle: 'IDLE_LOOK_AROUND_WITH_GUN',
+  deathF: 'DEATH_BY_SHOTGUN_FORWARD', deathB: 'DEATH_BY_SHOTGUN_BACKWARD' };
+const E_SIGHT = 95, E_FIRE_RANGE = 72;   // m: guards see, shoot and chase at real ranges
 
 function makeEnemyState(cfg) {
   return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: 70, alive: true,
@@ -462,6 +519,7 @@ function hurtEnemy(E, dmg) {
     setCanvas('killsCv', GF.text('HOSTILES DOWN ' + kills, { size: 'S', color: '#e8a09a', scale: 1.5 }));
     if (E.abu) showMsg(E.abu + ' DOWN', 'HOSTILES DOWN ' + kills);
     enemySetAnim(E, Math.random() < 0.5 ? E_ANIM.deathF : E_ANIM.deathB, true);
+    if (Math.random() < 0.4) playVoice('enemy_killed', 0.45);
   }
   updateHUD();
 }
@@ -547,7 +605,7 @@ function setHeld(i) {
   const M = members[activeIdx];
   if (!M || !M.inv) return;
   M.held = ((i % M.inv.length) + M.inv.length) % M.inv.length;
-  player.reloading = false;
+  player.reloading = false; player.burstN = 0; player.semiLatch = false;
   setHeldModel(M);
   const s = M.inv[M.held];
   if (s.kind === 'gun') { WPN = BD.WEAPONS[s.key]; player.ammo = s.ammo; }
@@ -774,7 +832,19 @@ async function buildStaticWorld() {
   const M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), EU = new THREE.Euler(), ONE = new THREE.Vector3(1, 1, 1), PV = new THREE.Vector3();
   for (const s of PROPS.statics) {
     const sc = cache[s.m]; if (!sc) continue;
-    M4.compose(PV.set(s.p[0], s.y, s.p[1]), Q.setFromEuler(EU.set(0, s.yaw || 0, 0)), ONE);
+    if (/^(MIG29|A10)/.test(s.m)) {
+      // flying aircraft are animated (see the A-10 pass) -- never baked frozen
+      // into the sky; a jet actually parked on the ground stays as a prop.
+      const infA = info[s.m];
+      if (infA && (s.y + infA.ce.y - infA.sz.y / 2) > groundYCached(s.p[0], s.p[1]) + 4) continue;
+    }
+    let sy = s.y;
+    if (/TRUCK|URAL|JEEP|TANK|APC/.test(s.m)) {
+      // vehicles sit on their wheels: lift/lower so the model's lowest point meets the terrain
+      const inf0 = info[s.m];
+      if (inf0) sy += THREE.MathUtils.clamp(groundYCached(s.p[0], s.p[1]) - (s.y + inf0.ce.y - inf0.sz.y / 2), -3, 6);
+    }
+    M4.compose(PV.set(s.p[0], sy, s.p[1]), Q.setFromEuler(EU.set(0, s.yaw || 0, 0)), ONE);
     sc.traverse(o => {
       if (!o.isMesh) return;
       o.material.side = THREE.DoubleSide;   // solid from every angle, no void
@@ -787,7 +857,7 @@ async function buildStaticWorld() {
     const inf = info[s.m];
     if (inf && !NO_COL.test(s.m)) {
       const r = Math.min(Math.max(inf.sz.x, inf.sz.z) / 2 * 0.85, 2.8);
-      if (r >= 0.5) colliders.push({ x: s.p[0] + inf.ce.x, z: s.p[1] + inf.ce.z, r, top: s.y + inf.ce.y + inf.sz.y / 2 });
+      if (r >= 0.5) colliders.push({ x: s.p[0] + inf.ce.x, z: s.p[1] + inf.ce.z, r, top: sy + inf.ce.y + inf.sz.y / 2 });
     }
   }
   for (const grp of groups.values()) {
@@ -915,7 +985,13 @@ function buildItemBar() {
     const cnt = s.kind === 'item' && s.left > 0 ? s.left : (s.key === 'LAW66' ? s.ammo : '');
     return `<div class="slot ${i === M.held ? 'held' : ''} ${empty ? 'empty' : ''}" data-i="${i}"><span class="key">${i === M.held ? 'HELD' : ''}</span><img src="${BD.ICON(def.icon)}"><span class="cnt">${cnt}</span></div>`;
   }).join('');
-  bar.querySelectorAll('.slot').forEach(el => el.addEventListener('click', () => setHeld(+el.dataset.i)));
+  bar.querySelectorAll('.slot').forEach(el => el.addEventListener('click', () => {
+    const i = +el.dataset.i, sl = M.inv[i];
+    if (sl && sl.kind === 'item' && sl.key !== 'BINOCULARS') useItem(sl, nowSec);   // click = USE (the game's rule)
+    else setHeld(i);
+    if (quickInv) setQuickInv(false);
+  }));
+  bar.style.display = quickInv ? 'flex' : 'none';   // never a permanent bottom bar
 }
 let invOpen = false;
 let f1Open = false;
@@ -970,6 +1046,13 @@ function renderInv() {
     }));
   }
   document.getElementById('invGear').textContent = BD.GEAR[activeIdx].map(g => g[2]).join('  ·  ');
+}
+let quickInv = false;
+function setQuickInv(open) {
+  quickInv = !!open;
+  const bar = document.getElementById('itembar');
+  if (bar) bar.style.display = quickInv ? 'flex' : 'none';
+  if (quickInv) buildItemBar();
 }
 function toggleInv(force) {
   invOpen = force !== undefined ? force : !invOpen;
@@ -1397,7 +1480,7 @@ function startCutscene() {
   if (bt) bt.style.display = 'block';
   if (bb) bb.style.display = 'block';
 }
-function endCutscene() { if (!cutscene) { playing = true; return; } cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
+function endCutscene() { startAmbience(); if (!cutscene) { playing = true; return; } cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
 function safeStartCutscene() { try { startCutscene(); if (!cutscene) endCutscene(); } catch (e) { console.warn('cutscene failed:', e); cutscene = null; playing = true; for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } } }
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', (e) => {
@@ -1441,7 +1524,7 @@ renderer.domElement.addEventListener('mousedown', (e) => {
   if (e.button === 2) aiming = true;
 });
 addEventListener('mouseup', (e) => {
-  if (e.button === 0) { firing = false; dragging = false; }
+  if (e.button === 0) { firing = false; dragging = false; player.semiLatch = false; player.burstN = 0; }
   if (e.button === 2) aiming = false;
 });
 addEventListener('contextmenu', e => e.preventDefault());
@@ -1466,7 +1549,21 @@ addEventListener('keydown', (e) => {
     updateHUD();
   }
   if (e.code === 'KeyP') { playing = false; startEl.style.display = 'flex'; document.exitPointerLock?.(); }
-  if ((e.code === 'Space' || e.code === 'Tab') && playing) { e.preventDefault(); toggleInv(); }
+  if (e.code === 'Tab' && playing) { e.preventDefault(); toggleInv(); }
+  if (e.code === 'ShiftLeft' && playing && !invOpen && !e.repeat) setQuickInv(true);
+  if (quickInv && playing && !e.repeat && (e.code === 'KeyW' || e.code === 'KeyS'))
+    setHeld(members[activeIdx].held + (e.code === 'KeyS' ? 1 : -1));
+  if (quickInv && playing && !e.repeat && (e.code === 'KeyA' || e.code === 'KeyD')) {
+    const modes = ['AUTO', 'BURST', 'SEMI'];
+    player.fireMode = modes[(modes.indexOf(player.fireMode) + (e.code === 'KeyD' ? 1 : modes.length - 1)) % modes.length];
+    player.burstN = 0; player.semiLatch = false;
+    showMsg('FIRE MODE', player.fireMode); updateHUD();
+  }
+  if (e.code === 'KeyL' && playing) {
+    const sl = curSlot();
+    if (sl) { if (sl.kind === 'item' && sl.key !== 'BINOCULARS') useItem(sl, nowSec); else setHeld(members[activeIdx].held); }
+    if (quickInv) setQuickInv(false);
+  }
   if (e.code === 'KeyQ' && playing && members[activeIdx]) setHeld(members[activeIdx].held + 1);
   if (e.code === 'KeyH' && playing) tryHeal();
   if (e.code === 'KeyE' && playing) {
@@ -1478,7 +1575,10 @@ addEventListener('keydown', (e) => {
 addEventListener('wheel', (e) => {
   if (playing && !invOpen && members[activeIdx]) setHeld(members[activeIdx].held + (e.deltaY > 0 ? 1 : -1));
 });
-addEventListener('keyup', (e) => keys.delete(e.code));
+addEventListener('keyup', (e) => {
+  keys.delete(e.code);
+  if (e.code === 'ShiftLeft' && quickInv) setQuickInv(false);
+});
 
 function startReload() {
   const s0 = curSlot();
@@ -1522,11 +1622,15 @@ function doFire(now) {
   }
   if (player.reloading || now < player.nextShot) return;
   if (!settledFire) return; // guns need the aim raised + settled stance (original rules)
+  const _fm = (slot.key === 'M16A2' || slot.key === 'SAW') ? player.fireMode : 'AUTO';
+  if (_fm === 'SEMI' && player.semiLatch) return;
   raiseAlert(player.pos, 30);
   player.nextShot = now + W.interval;
   if (player.ammo <= 0) { playClick(); player.nextShot = now + 0.3; return; }
   player.ammo--; slot.ammo = player.ammo;
   playShot();
+  if (_fm === 'SEMI') player.semiLatch = true;
+  if (_fm === 'BURST') { player.burstN++; if (player.burstN >= 3) { player.burstN = 0; player.nextShot = now + 0.34; } }
   if (rifleObj) {
     const m = rifleObj.localToWorld(new THREE.Vector3(0, 0.66, 0));
     flash.position.copy(m);
@@ -1558,7 +1662,7 @@ function raiseAlert(pos, radius) {
   }
 }
 function updateEnemy(E, dt, now) {
-  if (E.homeYaw === undefined) { E.homeYaw = E.yaw; E.homePos = E.pos.clone(); E.pauseT = 0; E.scanPh = Math.random() * 6.28; }
+  if (E.homeYaw === undefined) { E.homeYaw = E.yaw; E.homePos = E.pos.clone(); E.pauseT = 0; E.scanPh = Math.random() * 6.28; E.lastSeen = null; E.alertT = 0; E.phaseT = 1 + Math.random() * 2; E.planted = false; }
   if (E.obj) { const vis = player.pos.distanceToSquared(E.pos) < 22500; if (E.obj.visible !== vis) E.obj.visible = vis; }
   if (!E.obj || !E.mixer || !E.alive) return;
   // target = nearest living squad member (you or a mate)
@@ -1587,30 +1691,51 @@ function updateEnemy(E, dt, now) {
     E.losT = 0.15;
   } else E.losT -= dt;
   const blocked = E._blocked;
-  const canSee = dist < 30 && (Math.cos(dyaw) > 0.25 || dist < 7) && !blocked;
+  const canSee = dist < E_SIGHT && (Math.cos(dyaw) > 0.08 || dist < 9) && !blocked;
   E.aimPitch = Math.atan2((T.pos.y + 1.25) - (E.pos.y + 1.5), Math.max(1, dist));
 
   if (E.state === 'engage') {
-    if (dist > 24) {   // too far: advance on the target (walk anim, speed-matched)
+    // fire-and-movement cycle: bound forward at the run, plant, fire, bound again
+    E.phaseT -= dt;
+    if (E.phaseT <= 0) { E.planted = !E.planted; E.phaseT = E.planted ? 1.7 + Math.random() * 1.6 : 1.8 + Math.random() * 2; }
+    if (canSee) {
+      E.lastSeen = T.pos.clone();
+      if (now > E.alertT) { E.alertT = now + 7; raiseAlert(E.pos, 42); }   // shout the contact to nearby guards
+    }
+    E._moving = false;
+    if (!canSee && E.lastSeen) {
+      // lost visual: RUN to the last seen position and sweep it
+      const to = new THREE.Vector3().subVectors(E.lastSeen, E.pos); to.y = 0;
+      if (to.length() > 1.6) {
+        to.normalize(); E.pos.addScaledVector(to, 4.35 * dt); E._moving = true;
+        enemySetAnim(E, E_ANIM.run); if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
+        E.yaw = Math.atan2(to.x, to.z);
+      } else { enemySetAnim(E, E_ANIM.idle); E.yaw += Math.sin(now * 0.9 + E.scanPh) * dt * 1.4; }
+    } else if (dist > 24 && !E.planted) {
+      // combat advance at the RUN with a stagger -- never a walk into a firefight
       const step = toPlayer.clone(); step.y = 0; step.normalize();
-      E.pos.addScaledVector(step, 2.9 * dt);
-      enemySetAnim(E, E_ANIM.walk);
-      if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 2.9 / AUTH.walk;
+      const stag = Math.sin(now * 1.5 + E.scanPh) * 0.35;
+      const px = -step.z, pz = step.x;
+      step.x += px * stag; step.z += pz * stag; step.normalize();
+      E.pos.addScaledVector(step, 4.35 * dt); E._moving = true;
+      enemySetAnim(E, E_ANIM.run);
+      if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
     } else enemySetAnim(E, E_ANIM.aim);
-    E.yaw += dyaw * Math.min(1, dt * 5);
+    if (canSee) E.yaw += dyaw * Math.min(1, dt * 6);
     if (canSee) E.lostT = 0;
     else {
       E.lostT += dt;
-      if (E.lostT > 2.5) { E.state = 'patrol'; E.spotT = 0; enemySetAnim(E, E_ANIM.walk); }
+      if (E.lostT > 10) { E.state = 'patrol'; E.spotT = 0; enemySetAnim(E, E_ANIM.walk); }
     }
-    if (canSee && now >= E.nextShot) {
+    if (canSee && dist <= E_FIRE_RANGE && now >= E.nextShot) {
       if (E.burstLeft <= 0) E.burstLeft = 3 + Math.floor(Math.random() * 3);
       E.burstLeft--;
       E.nextShot = now + (E.burstLeft > 0 ? 0.115 : 0.85 + Math.random() * 0.75);
       playAK(dist);
       flash.position.set(E.pos.x + Math.sin(E.yaw) * 0.7, 1.35, E.pos.z + Math.cos(E.yaw) * 0.7);
       flash.intensity = 40; flashT = 0.05;
-      let p = dist < 12 ? 0.50 : dist < 22 ? 0.33 : 0.20;
+      let p = dist < 12 ? 0.50 : dist < 25 ? 0.36 : dist < 45 ? 0.26 : 0.17;
+      if (E._moving) p *= 0.55; else if (E.planted) p *= 1.15;   // running snaps shots off; planted fires true
       if (T.stance === 'crouch') p *= 0.75;
       else if (T.stance === 'prone') p *= 0.55;
       if (T.moving) p *= 0.8;
@@ -1620,10 +1745,12 @@ function updateEnemy(E, dt, now) {
           if (T.mate.hp <= 0) {
             T.mate.hp = 0; T.mate.alive = false;
             mateSetAnim(T.mate, 'DEATH_BY_SHOTGUN_BACKWARD', true);
+            playVoice('man_down', 0.6);
           }
         } else {
           playerHP -= 8 + Math.random() * 6;
           dmgT = 0.45;
+          playVoice('im_hit', 0.45);
           if (playerHP <= 0) {
             playerHP = 0;
             playing = false;
@@ -1653,15 +1780,19 @@ function updateEnemy(E, dt, now) {
       if (E.invT <= 0) { E.state = 'patrol'; enemySetAnim(E, E_ANIM.walk); }
     } else {
       to.normalize();
-      E.pos.addScaledVector(to, 2.2 * dt);
+      E.pos.addScaledVector(to, 3.9 * dt);
       E.yaw = Math.atan2(to.x, to.z);
-      enemySetAnim(E, E_ANIM.walk);
-      if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 2.2 / AUTH.walk;
+      enemySetAnim(E, E_ANIM.run);
+      if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 3.9 / AUTH.run;
     }
   } else { // patrol between waypoints
     if (canSee) {
       E.spotT += dt;
-      if (E.spotT > 0.55) { E.state = 'engage'; E.nextShot = now + 0.4; }
+      if (E.spotT > (dist < 25 ? 0.45 : dist < 60 ? 0.8 : 1.25)) {
+        E.state = 'engage'; E.nextShot = now + 0.45; E.lastSeen = T.pos.clone();
+        if (Math.random() < 0.55) playVoice('spotted_infantry_loud', 0.5);
+        raiseAlert(E.pos, 34);
+      }
     } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
     if (E.waypoints.length <= 1) {
       // sentry on his env post: stands and scans around his env heading
@@ -1719,7 +1850,7 @@ function updateHUD() {
     const M = members[activeIdx];
     const s = M && M.inv ? M.inv[M.held] : null;
     const def = s ? (s.kind === 'gun' ? BD.WEAPONS[s.key] : BD.ITEMS[s.key]) : WPN;
-    mt.textContent = (def.label || '') + (player.reloading ? ' · RELOADING' : '');
+    mt.textContent = (def.label || '') + (s && (s.key === 'M16A2' || s.key === 'SAW') ? ' · ' + player.fireMode : '') + (player.reloading ? ' · RELOADING' : '');
     const wi = document.querySelector('#wpnbox .wicon');
     if (wi) { const srcI = BD.ICON(def.icon); if (wi.dataset.s !== srcI) { wi.dataset.s = srcI; wi.src = srcI; } }
   }
@@ -1762,7 +1893,8 @@ function updateHUD() {
     (i === activeIdx ? '▶' : '') + M.name + ' ' + (!M.alive ? 'DOWN' : Math.max(0, Math.ceil(i === activeIdx ? playerHP : M.hp)))).join(' · ') + (squadHold ? ' · HOLDING' : '');
   const foeEl = document.getElementById('foe');
   if (foeEl) foeEl.textContent = 'HOSTILES ' + enemies.filter(E => E.alive).length + '/' + enemies.length;
-  document.getElementById('cross').style.display = 'block';
+  const _cx = document.getElementById('cross');
+  if (_cx) _cx.style.display = (playing && (aiming || firing) && !invOpen && !f1Open) ? 'block' : 'none';
 }
 
 async function load() {
@@ -2214,10 +2346,11 @@ function animate() {
       }
     }
     // movement (camera-relative)
-    const f = (keys.has('KeyW') ? 1 : 0) - (keys.has('KeyS') ? 1 : 0);
-    const s = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0);
+    let f = (keys.has('KeyW') ? 1 : 0) - (keys.has('KeyS') ? 1 : 0);
+    let s = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0);
+    if (quickInv) { f = 0; s = 0; }
     const walkMode = keys.has('ControlLeft') || keys.has('ControlRight'); // CDS: Ctrl = walk
-    const sprint = keys.has('ShiftLeft') || keys.has('ShiftRight');
+    const sprint = keys.has('ShiftRight');   // Left Shift = inventory (original controls)
     const fwd = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw));
     const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
     const move = new THREE.Vector3().addScaledVector(fwd, f).addScaledVector(right, s);
@@ -2317,6 +2450,7 @@ function animate() {
       } else setAnim(ANIM.idle);
     }
     updateEnemyActivation();
+    updateFootsteps(dt, player.moving ? speed : 0);
     enemies.forEach(E => updateEnemy(E, dt, now));
     members.forEach((M, i) => { if (i !== activeIdx) updateMate(M, dt, now); });
     updateHUD();
@@ -2326,7 +2460,7 @@ function animate() {
   // aim pitch: your spine follows the camera pitch; AI spines track their target
   if (heroObj) {
     if (!heroObj.userData.aimBones) heroObj.userData.aimBones = findAimBones(heroObj);
-    if (aiming || firing || current === ANIM.aim) applyAimPitch(heroObj.userData.aimBones, camPitch * 0.8);
+    if (aiming || firing || current === ANIM.aim) applyAimPitch(heroObj.userData.aimBones, -camPitch * 0.9);
   }
   enemies.forEach(E => { if (E.mixer) { E.mixer.update(dt); if (E.alive && (E.state === 'engage' || E.aimPitch)) applyAimPitch(E.aimBones, E.aimPitch || 0); } positionHeadGear(E); });
   members.forEach((M, i) => { if (i !== activeIdx && M.mixer) { M.mixer.update(dt); if (M.aimPitch) applyAimPitch(M.aimBones, M.aimPitch); } });
@@ -2377,13 +2511,14 @@ function animate() {
   if (hawkRotor) hawkRotor.rotation.y += dt * 22;
   cloudLayers.forEach((c, i) => { if (c.material.map) { c.material.map.offset.x += dt * (i ? 0.0016 : 0.0009); c.position.x = camera.position.x; c.position.z = camera.position.z; } });
   const dome = scene.getObjectByName('SKYDOME'); if (dome) dome.position.copy(camera.position);
-  if (a10Obj) { // A10 flyover (env A10_FLYOVER01): periodic low pass over the valley
-    const T = 46, k = (now % T) / T;
-    if (k < 0.32) {
-      const u = k / 0.32;
+  if (a10Obj) { // A-10 flyover (env A10_FLYOVER01): a fast low pass across the valley, then away
+    const T = 26, k = (now % T) / T;
+    if (k < 0.40) {
+      const u = k / 0.40;
+      const ax = -430 + u * 560, az = -730 + u * 560;
       a10Obj.visible = true;
-      a10Obj.position.set(-390 + u * 470, 46 - Math.sin(u * Math.PI) * 10, -660 + u * 480);
-      a10Obj.rotation.set(0, Math.atan2(470, 480) + Math.PI, Math.sin(u * Math.PI * 2) * 0.12);   // nose first
+      a10Obj.position.set(ax, groundYCached(ax, az) + 42 + Math.sin(u * Math.PI) * 7, az);
+      a10Obj.rotation.set(0, Math.atan2(560, 560) + Math.PI, Math.sin(u * Math.PI * 2) * 0.10);   // nose first, slight bank
     } else a10Obj.visible = false;
   }
   if (impactT > 0) { impactT -= dt; impact.scale.setScalar(1 + (0.12 - impactT) * 8); if (impactT <= 0) impact.visible = false; }
