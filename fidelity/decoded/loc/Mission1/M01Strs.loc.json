@@ -1,0 +1,145 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 41,
+ "count": 43,
+ "strings": {
+  "OBJECTIVE1A": {
+   "English": "OBJECTIVE_1 Rescue"
+  },
+  "M01_BRF_DT": {
+   "English": "August 2, 1990"
+  },
+  "M01_BRF_HD": {
+   "English": "RESCUE"
+  },
+  "M01_BRF_TXT": {
+   "English": "OBJECTIVE_2"
+  },
+  "C4": {
+   "English": "OBJECTIVE2A"
+  },
+  "OBJECTIVE3A": {
+   "English": "OBJECTIVE_3 Bridge"
+  },
+  "MOV_TXT1": {
+   "English": "23:00, August 2, 1990"
+  },
+  "MOV_TXT2": {
+   "English": "Kuwait-Iraqi Border"
+  },
+  "MOV_TXT3": {
+   "English": "The Next Day"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "Get that C4 rigged, quick. If they see us we're dead."
+  },
+  "SPEECH2": {
+   "English": "I'm on it, just another few seconds."
+  },
+  "SPEECH3": {
+   "English": "Speech 3 is BLANK?!"
+  },
+  "SPEECH4": {
+   "English": "Fire at will!!"
+  },
+  "SPEECH5": {
+   "English": "SPEECH6 Roger that Voodoo-3. See you later. Over."
+  },
+  "SPEECH7": {
+   "English": "Good to see you. What kept you?"
+  },
+  "WRONG_WAY": {
+   "English": "Wrong way!"
+  },
+  "PLANT_BOMB": {
+   "English": "Plant C4!"
+  },
+  "TAG2": {
+   "English": "Objectives Completed - Return To LZ"
+  },
+  "TAG3": {
+   "English": "Objective Completed"
+  },
+  "TAG4": {
+   "English": "New Objective"
+  },
+  "OBJECTIVE1C": {
+   "English": "OBJECTIVE1D"
+  },
+  "OBJECTIVE_1A": {
+   "English": "Recover the C4 explosives"
+  },
+  "SECTIONHDR": {
+   "English": "THE INVASION OF KUWAIT"
+  },
+  "SECTIONTEXT": {
+   "English": "HELPTXT_1 Rescue Foley. Press objectives (%s) for more information."
+  },
+  "HELPTXT_1A": {
+   "English": "HELPTXT_2"
+  },
+  "HELPTXT_3": {
+   "English": "OBJECTIVE_4 Extraction"
+  },
+  "OBJECTIVE_4A": {
+   "English": "SECTIONDATE August 2, 1990"
+  },
+  "SPEECH5A": {
+   "English": "FOLEY_KILLED Corporal Foley has been killed."
+  },
+  "ALARM_RAISED": {
+   "English": "The alarm has been raised!"
+  },
+  "PICKUP_DEST": {
+   "English": "The pick-up helicopter has been destroyed."
+  },
+  "OBJECTIVE_1": {
+   "English": "Secourir"
+  },
+  "OBJECTIVE_2": {
+   "English": "C4"
+  },
+  "OBJECTIVE2A": {
+   "English": "Quand Foley a captur"
+  },
+  "OBJECTIVE_3": {
+   "English": "Pont"
+  },
+  "OBJECTIVE1D": {
+   "English": "Ce poste de contr le frontalier est tr s bien prot et doit tre vit tout prix."
+  },
+  "HELPTXT_1": {
+   "English": "tails."
+  },
+  "HELPTXT_2": {
+   "English": "tails."
+  },
+  "OBJECTIVE_4": {
+   "English": "Evacuation"
+  },
+  "SECTIONDATE": {
+   "English": "2 ao t 1990"
+  },
+  "FOLEY_KILLED": {
+   "English": "Le caporal Foley a tu ."
+  },
+  "SPEECH6": {
+   "English": "Best tigen Sie, Voodoo-3.Bis bald. Kommen."
+  },
+  "N DE KUWAIT": {
+   "English": "SECTIONTEXT El 24 de Julio de 1990, las fuerzas iraqu Kuwait. Cuando los tanques iraqu n."
+  }
+ }
+}

@@ -1,0 +1,76 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 20,
+ "count": 20,
+ "strings": {
+  "OBJ_M11B_3": {
+   "English": "Locate ICBM"
+  },
+  "OBJ_M11B_3A": {
+   "English": "OBJ_M11B_4 Protect"
+  },
+  "OBJ_M11B_4A": {
+   "English": "OBJ_M11B_5 Plutonium"
+  },
+  "OBJ_M11B_5A": {
+   "English": "MOV_TXT1 19:45, February 28, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "South Baghdad"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "TAG2": {
+   "English": "Objective Completed"
+  },
+  "M11B_BRF_TXT": {
+   "English": "OBJ_M11B_6 Extraction"
+  },
+  "OBJ_M11B_6A": {
+   "English": "M11B_BRF_DT February 28, 1991"
+  },
+  "M11B_BRF_HD": {
+   "English": "EDGE OF DESTRUCTION"
+  },
+  "ALARM_RAISED": {
+   "English": "The alarm has been raised!"
+  },
+  "FRANKLIN_KILLED": {
+   "English": "Dr Franklin has been killed."
+  },
+  "PROTECT_FRANKLIN": {
+   "English": "Protect Franklin!"
+  },
+  "PICKUP_DEST": {
+   "English": "The pick-up helicopter has been destroyed."
+  },
+  "OBJ_M11B_4": {
+   "English": "Prot gez"
+  },
+  "OBJ_M11B_5": {
+   "English": "Plutonium"
+  },
+  "MOV_TXT1": {
+   "English": "19h45, 28 f vrier 1991"
+  },
+  "OBJ_M11B_6": {
+   "English": "Evacuation"
+  },
+  "M11B_BRF_DT": {
+   "English": "28 f vrier 1991"
+  }
+ }
+}

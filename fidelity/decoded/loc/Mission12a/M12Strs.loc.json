@@ -1,0 +1,85 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 21,
+ "count": 23,
+ "strings": {
+  "OBJ_M12_1": {
+   "English": "Fortress"
+  },
+  "OBJ_M12_1A": {
+   "English": "MISSION_BRF Mission Briefing"
+  },
+  "M12_BRF_DT": {
+   "English": "March 2, 1991"
+  },
+  "M12_BRF_HD": {
+   "English": "COUNTER-ATTACK"
+  },
+  "M12_BRF_TX1": {
+   "English": "M12_BRF_TX2"
+  },
+  "MOV_TXT1": {
+   "English": "10:58, March 2, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Iraq - 50 miles north of Baghdad"
+  },
+  "SPEECH1": {
+   "English": "OK fellas, this is your stop.  Get ready to disembark"
+  },
+  "SPEECH2": {
+   "English": "GO! GO!"
+  },
+  "SPEECH3": {
+   "English": "Clear!"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "TAGB": {
+   "English": "Mission 12B - Lights Out"
+  },
+  "M12_BRF_TX3": {
+   "English": "SECTIONHDR"
+  },
+  "COUNTER-ATTACK": {
+   "English": "SECTIONDATE March 2, 1991"
+  },
+  "SECTIONTEXT": {
+   "English": "ALARM_RAISED The alarm has been raised!"
+  },
+  "M12_BRF_TX4": {
+   "English": "M12_GATE_HELP Destroy the gate"
+  },
+  "MISSION_BRF": {
+   "English": "Briefing de mission"
+  },
+  "M12_BRF_TX2": {
+   "English": "Vous allez tre parachut dans la zone. Une fois au sol, trouvez un acc s la forteresse. L'entr e principale sera certainement tr s bien gard e. Nous vous conseillons de trouver une autre voie d'acc s. Quand vous serez l'int rieur, localisez et d truisez les d fenses antia riennes prot geant le site. Ensuite, trouvez le bunker et d signez-le au laser pour une attaque a rienne."
+  },
+  "SECTIONHDR": {
+   "English": "CONTRE-ATTAQUE"
+  },
+  "SECTIONDATE": {
+   "English": "2 mars 1991"
+  },
+  "ALARM_RAISED": {
+   "English": "L'alerte a donn e!"
+  },
+  "M12_GATE_HELP": {
+   "English": "truire le portail"
+  },
+  "CONTRATTACCO": {
+   "English": "SECTIONDATE 2 marzo 1991"
+  }
+ }
+}

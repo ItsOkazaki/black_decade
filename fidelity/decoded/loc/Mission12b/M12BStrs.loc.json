@@ -1,0 +1,85 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 23,
+ "count": 23,
+ "strings": {
+  "OBJ_M12B_2A": {
+   "English": "OBJ_M12B_3 Eliminate"
+  },
+  "OBJ_M12B_3A": {
+   "English": "OBJ_M12B_4 Extraction"
+  },
+  "OBJ_M12B_4A": {
+   "English": "MISSION_BRF Mission Briefing"
+  },
+  "MOV_TXT1": {
+   "English": "14:16, March 2, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "General Aziz's Headquarters"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "TAGB": {
+   "English": "Mission 12B - Lights Out"
+  },
+  "M12_STEALTHPILOT_NEG_BOMB": {
+   "English": "M12_STEALTHPILOT_OK_BOMB"
+  },
+  "M12_BODYGUARD_QUICKLYPROTECT": {
+   "English": "Quickly, protect the General!"
+  },
+  "OBJ_M12B_2": {
+   "English": "SAM Sites"
+  },
+  "M12B_BRF_HD": {
+   "English": "LIGHTS OUT"
+  },
+  "M12B_BRF_DT": {
+   "English": "March 2, 1991"
+  },
+  "M12B_BRF_TX1": {
+   "English": "M12B_BRF_TX2"
+  },
+  "ALARM_RAISED": {
+   "English": "The alarm has been raised!"
+  },
+  "STEALTH_INBOUND": {
+   "English": "Stealth Fighter air strike inbound."
+  },
+  "AZIZ_ESCAPED": {
+   "English": "General Aziz has escaped."
+  },
+  "AZIZ_ESCAPING": {
+   "English": "General Aziz is escaping."
+  },
+  "PICKUP_DEST": {
+   "English": "The pick-up helicopter has been destroyed."
+  },
+  "OBJ_M12B_3": {
+   "English": "Eliminez"
+  },
+  "OBJ_M12B_4": {
+   "English": "Evacuation"
+  },
+  "MISSION_BRF": {
+   "English": "Briefing de mission"
+  },
+  "M12B_BRF_TX2": {
+   "English": "Apr s l' limination d'Aziz, revenir la zone d'atterrissage pour l' vacuation."
+  },
+  "M12_STEALTHPILOT_OK_BOMB": {
+   "English": "Continuaci"
+  }
+ }
+}

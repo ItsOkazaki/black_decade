@@ -1,0 +1,121 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 34,
+ "count": 35,
+ "strings": {
+  "OBJ_M4_1": {
+   "English": "SCUD"
+  },
+  "OBJ_M4_1A": {
+   "English": "OBJ_M4_2 Support"
+  },
+  "OBJ_M4_2A": {
+   "English": "OBJ_M4_3 Anti-aircraft"
+  },
+  "OBJ_M4_3A": {
+   "English": "M04_BRF_DT January 19, 1991"
+  },
+  "M04_BRF_HD": {
+   "English": "DESERT WATCH"
+  },
+  "M04_BRF_TX1": {
+   "English": "M04_BRF_TX2"
+  },
+  "M04_BRF_TX3": {
+   "English": "MOV_TXT2 Northern Saudi Arabia"
+  },
+  "MOV_TXT3": {
+   "English": "14:00, January 19, 1991"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "MOV_TXT1": {
+   "English": "08:00, January 19, 1991"
+  },
+  "SPEECH1": {
+   "English": "SPEECH2"
+  },
+  "SPEECH3": {
+   "English": "OK, saddle up! Let's go!"
+  },
+  "MOV_TXT4": {
+   "English": "Northern Iraq"
+  },
+  "TAG1": {
+   "English": "Objectives Completed - Go To LZ"
+  },
+  "TAG2": {
+   "English": "Objective Completed"
+  },
+  "TAG3": {
+   "English": "Objective Completed"
+  },
+  "OBJ_M4_4": {
+   "English": "Signal Booster"
+  },
+  "OBJ_M4_4A": {
+   "English": "OBJ_M4_5 Extraction"
+  },
+  "OBJ_M4_5A": {
+   "English": "M04_BRF_TX4"
+  },
+  "SPEECH2B": {
+   "English": "We'll start our search there."
+  },
+  "SCUD_LAUNCH_IMM": {
+   "English": "SCUD launch imminent!"
+  },
+  "SCUD_LAUNCH": {
+   "English": "SCUD launch detected."
+  },
+  "DESTROY_CONVOY": {
+   "English": "Destroy the SCUD convoy before it escapes."
+  },
+  "CONVOY_ESCAPED": {
+   "English": "The SCUD convoy has escaped."
+  },
+  "PICKUP_DEST": {
+   "English": "The pick-up helicopter has been destroyed."
+  },
+  "ALARM_RAISED": {
+   "English": "The alarm has been raised!"
+  },
+  "OBJ_M4_2": {
+   "English": "Soutien"
+  },
+  "OBJ_M4_3": {
+   "English": "Antia rien"
+  },
+  "M04_BRF_DT": {
+   "English": "19 janvier 1991"
+  },
+  "M04_BRF_TX2": {
+   "English": "Votre quipe sera emmen e par h licopt re trer dans la zone sans vous faire voir et de localiser la pr sence de SCUD pr s de la Nationale 10. Le terrain de chasse est d sign sous le nom de \"Boulevard des SCUD\". D s contre Isra l."
+  },
+  "MOV_TXT2": {
+   "English": "Nord de l'Arabie Saoudite"
+  },
+  "SPEECH2": {
+   "English": "Nous allons tre discr tement d pos s par h licopt"
+  },
+  "OBJ_M4_5": {
+   "English": "Evacuation"
+  },
+  "M04_BRF_TX4": {
+   "English": "Une fois que tous les objectifs de mission ont atteints, il faut se rendre la zone d'atterrissage pour une vacuation par h licopt re."
+  },
+  "STE": {
+   "English": "M04_BRF_TX1 Die Analyse der Daten aus dem L ftst tzpunkt zeigt, dass viele mobile irakische SCUD-Raketentr ger nordwestlich von Highway 10 in der N"
+  }
+ }
+}

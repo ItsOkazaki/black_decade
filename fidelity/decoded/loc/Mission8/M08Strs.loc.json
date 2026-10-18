@@ -1,0 +1,124 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 33,
+ "count": 36,
+ "strings": {
+  "OBJ_M8_1": {
+   "English": "SAM Sites"
+  },
+  "OBJ_M8_1A": {
+   "English": "OBJ_M8_2 Anti-aircraft"
+  },
+  "OBJ_M8_2A": {
+   "English": "OBJ_M8_3 Armor"
+  },
+  "OBJ_M8_3A": {
+   "English": "OBJ_M8_4 Bridge"
+  },
+  "OBJ_M8_4A": {
+   "English": "OBJ_M8_5 Escape"
+  },
+  "OBJ_M8_5A": {
+   "English": "M08_BRF_DT February 24, 1991"
+  },
+  "M08_BRF_HD": {
+   "English": "NO RETREAT"
+  },
+  "M08_BRF_TXT": {
+   "English": "MOV_TXT1 16:14, February 24, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Basra - Southern Iraq"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "SPEECH2 Stop the vehicle."
+  },
+  "SPEECH3": {
+   "English": "Do you hear that? Armor, heading this way!"
+  },
+  "SPEECH4": {
+   "English": "OK, get that TOW ready! You two, follow me!"
+  },
+  "SPEECH5": {
+   "English": "Lock and load!"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "TAG2": {
+   "English": "All Primary Objectives Completed - Go To EP"
+  },
+  "SECTIONDATE": {
+   "English": "February 24, 1991"
+  },
+  "SECTIONTEXT": {
+   "English": "SECTIONTEXT2"
+  },
+  "SECTIONHDR": {
+   "English": "OPERATION: DESERT SABER"
+  },
+  "M08_BRF_TX2": {
+   "English": "SPEECH1B Those air defenses better be down, boys"
+  },
+  "TORNADO_INBOUND": {
+   "English": "Tornado air strike inbound."
+  },
+  "ALARM_RAISED": {
+   "English": "The alarm has been raised."
+  },
+  "WRONG_WAY": {
+   "English": "Wrong way!"
+  },
+  "M08_BRF_TX3": {
+   "English": "If your vehicle is destroyed continue the mission on foot."
+  },
+  "OBJ_M8_2": {
+   "English": "Antia rien"
+  },
+  "OBJ_M8_3": {
+   "English": "Blind"
+  },
+  "OBJ_M8_4": {
+   "English": "Pont"
+  },
+  "OBJ_M8_5": {
+   "English": "Partir"
+  },
+  "M08_BRF_DT": {
+   "English": "24 f vrier 1991"
+  },
+  "MOV_TXT1": {
+   "English": "16h14, 24 f vrier 1991"
+  },
+  "SPEECH2": {
+   "English": "Arr tez le v hicule."
+  },
+  "SECTIONTEXT2": {
+   "English": "Votre quipe des Forces Sp ciales a re u l'ordre de d gager le terrain pour l'attaque."
+  },
+  "SPEECH1B": {
+   "English": "Il vaudrait mieux que les d fenses antia riennes soient hors d' tat, les gars..."
+  },
+  "CKZUG": {
+   "English": "M08_BRF_TXT e Schluchtensystem s dlich von Basra ziehen. Diese Schlucht f cke berqueren, die von drei station"
+  },
+  "OPERACI": {
+   "English": "N: SABLE DEL DESIERTO"
+  },
+  "NA SI": {
+   "English": "WYCOFA"
+  }
+ }
+}

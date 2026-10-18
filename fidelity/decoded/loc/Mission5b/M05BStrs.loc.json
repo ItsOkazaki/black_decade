@@ -1,0 +1,58 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 12,
+ "count": 14,
+ "strings": {
+  "OBJ_M5B_2": {
+   "English": "Extraction"
+  },
+  "M05B_BRF_HD": {
+   "English": "SCUD ALLEY"
+  },
+  "MOV_TXT1": {
+   "English": "15:19, January 22, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "SCUD Alley, Northern Iraq"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "OBJ_M5B_1A": {
+   "English": "Destroy all SCUDs in Area 2 before they attack Israel."
+  },
+  "M05B_BRF_TXT": {
+   "English": "OBJ_M5B_2A"
+  },
+  "OBJ_M5B_1": {
+   "English": "SCUD"
+  },
+  "M05B_BRF_DT": {
+   "English": "January 22, 1991"
+  },
+  "TAG2": {
+   "English": "Objectives Completed - Go To LZ"
+  },
+  "PICKUP_DEST": {
+   "English": "The pick-up helicopter has been destroyed."
+  },
+  "OBJ_M5B_2A": {
+   "English": "Quand tous les lance-missiles SCUD auront d truits, rendez-vous la zone d' vacuation et attendez l'h licopt re de ramassage."
+  },
+  "N DE LOS SCUD": {
+   "English": "MOV_TXT1 15:19, 22 de Enero de 1991"
+  },
+  "SCUD": {
+   "English": "M05B_BRF_DT 22 gennaio 1991"
+  }
+ }
+}

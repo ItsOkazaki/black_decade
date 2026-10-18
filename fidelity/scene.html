@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real Scene Test — Armstrong, Rifle, Mission Environment</title>
+<style>
+  html,body{margin:0;padding:0;overflow:hidden;background:#191510;font-family:Segoe UI,Arial,sans-serif;color:#e8e4d8}
+  #view{position:fixed;inset:0}
+  canvas{display:block}
+  #panel{position:fixed;top:16px;left:16px;z-index:5;max-width:370px;background:rgba(14,14,10,.88);border:1px solid #c8a86a;border-radius:8px;padding:16px 18px}
+  #panel h1{margin:0 0 2px;font-size:19px;letter-spacing:.1em;color:#f0d9a0}
+  #panel h2{margin:0 0 10px;font-size:11px;letter-spacing:.22em;color:#9db38a;font-weight:400}
+  #panel p{font-size:13px;line-height:1.55;margin:6px 0;color:#d8d2c2}
+  #panel code{color:#ffd98a;font-size:12px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .row span{width:100%;font-size:11px;letter-spacing:.18em;color:#9db38a}
+  button{background:#2a2f26;color:#e8e4d8;border:1px solid #6b725f;border-radius:4px;padding:7px 12px;cursor:pointer;font-size:13px}
+  button:hover{background:#3a4133;border-color:#c8a86a}
+  button.on{background:#c8a86a;color:#191408;font-weight:700}
+  button.fire{background:#6e2f1d;border-color:#c86a4a;font-weight:700}
+  button.fire:hover{background:#8a3a22}
+  #stats{margin-top:12px;font-size:12px;line-height:1.7;color:#b9bfae;border-top:1px solid #3a4034;padding-top:10px}
+  #hint{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;font-size:12px;color:#cfd4c4;background:rgba(10,12,8,.6);padding:6px 14px;border-radius:4px}
+  #err{color:#ff9d5c;font-size:12px;margin-top:8px;min-height:14px}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"./vendor/three.module.js?v=1",
+  "three/addons/":"./vendor/addons/"
+}}
+</script>
+</head>
+<body>
+<div id="view"></div>
+<div id="panel">
+  <h1>REAL SCENE TEST</h1>
+  <h2>EVERYTHING ON SCREEN IS FROM YOUR ARCHIVES</h2>
+  <p>Armstrong (<code>Hero01_Armstrong.evo</code>) holding the actual M16A2 visual
+     (<code>Rifle02_M16wM203.evo</code>, per WEAPS.TXT's <code>Bip01 GunR Connector</code>),
+     standing in original Mission 1 environment pieces, with the original
+     <code>M16A2</code> gun sounds from <code>mission1.sch</code>.</p>
+  <div class="row" id="animrow">
+    <span>ORIGINAL ANIMATIONS (.PRB)</span>
+    <button data-anim="UPRIGHT_AIM_RIFLE" class="on">Aim rifle</button>
+    <button data-anim="IDLE_LOOK_AROUND_WITH_GUN">Idle</button>
+    <button data-anim="CROUCHED_RELAXED_WALK_WITH_RIFLE">Crouch walk</button>
+    <button data-anim="PRONE_AIM_RIFLE">Prone aim</button>
+  </div>
+  <div class="row">
+    <button id="btnFire" class="fire">🔥 FIRE — original M16A2 sound</button>
+    <button id="btnSpin">⟳ Turntable</button>
+  </div>
+  <div id="stats">Loading scene…</div>
+  <div id="err"></div>
+</div>
+<div id="hint">Drag to orbit · scroll to zoom · right-drag to pan</div>
+<script>
+window.addEventListener('error', function(e){
+  if (window.__sceneLoaded || !e.message) return;
+  var el=document.getElementById('err');
+  if(el) el.textContent='⚠ '+e.message+' — tell the assistant this message.';
+}, true);
+</script>
+<script type="module" src="scene.js?v=7"></script>
+</body>
+</html>

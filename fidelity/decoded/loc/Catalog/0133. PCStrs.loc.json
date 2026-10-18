@@ -1,0 +1,442 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 116,
+ "count": 142,
+ "strings": {
+  "MOVE_FORWARD": {
+   "English": "Move Forward"
+  },
+  "MOVE_BACKWARD": {
+   "English": "Move Backward"
+  },
+  "STRAFE_LEFT": {
+   "English": "Strafe Left"
+  },
+  "STRAFE_RIGHT": {
+   "English": "Strafe Right"
+  },
+  "LOOK_UP": {
+   "English": "Look Up"
+  },
+  "LOOK_DOWN": {
+   "English": "Look Down"
+  },
+  "ROT_LEFT": {
+   "English": "Rotate Left"
+  },
+  "ROT_RIGHT": {
+   "English": "Rotate Right"
+  },
+  "STANDKNEELPRONE": {
+   "English": "Stand/Kneel/Prone"
+  },
+  "AIMFIREUSE": {
+   "English": "Fire Weapon"
+  },
+  "HEADCAM": {
+   "English": "Headcam Toggle"
+  },
+  "CYCLETARGET": {
+   "English": "Cycle Target Lock-on"
+  },
+  "RELOADWEAPON": {
+   "English": "Reload Weapon"
+  },
+  "ACTION": {
+   "English": "ACTION"
+  },
+  "DROPWEAPON": {
+   "English": "Drop Weapon/Item"
+  },
+  "OPEN_INVENTORY": {
+   "English": "Open Inventory"
+  },
+  "NEXT_INVENTORY": {
+   "English": "Next Inventory Item"
+  },
+  "PREVIOUS_INVENTORY": {
+   "English": "Previous Inventory Item"
+  },
+  "TRANSFERAMMO_ITEM": {
+   "English": "Transfer Ammo/Transfer Item"
+  },
+  "TRANSFERWEAPON_AMMO": {
+   "English": "Transfer Weapon/Ammo"
+  },
+  "GO_ORDER": {
+   "English": "Go Order"
+  },
+  "ORDERMENU": {
+   "English": "Order Menu"
+  },
+  "NEXTSOLDIER": {
+   "English": "Next Soldier"
+  },
+  "PREVIOUSSOLDIER": {
+   "English": "Previous Soldier"
+  },
+  "FOLLOW_HALT": {
+   "English": "Group Follow/Halt"
+  },
+  "PRONE_GETUP": {
+   "English": "Group Prone/Get Up"
+  },
+  "SOLDIER1_FOLLOWHALT": {
+   "English": "Soldier 1 Follow/Halt"
+  },
+  "SOLDIER2_FOLLOWHALT": {
+   "English": "Soldier 2 Follow/Halt"
+  },
+  "SOLDIER3_FOLLOWHALT": {
+   "English": "Soldier 3 Follow/Halt"
+  },
+  "SOLDIER4_FOLLOWHALT": {
+   "English": "Soldier 4 Follow/Halt"
+  },
+  "MOVESCOPEUP": {
+   "English": "Move Scope Up"
+  },
+  "MOVESCOPEDOWN": {
+   "English": "Move Scope Down"
+  },
+  "MOVESCOPELEFT": {
+   "English": "Move Scope Left"
+  },
+  "MOVESCOPERIGHT": {
+   "English": "Move Scope Right"
+  },
+  "FIREPRIMARYWEAPON": {
+   "English": "Fire Primary Weapon"
+  },
+  "HEADCAMTOGGLE": {
+   "English": "Headcam Toggle"
+  },
+  "ZOOMSCOPEIN": {
+   "English": "Zoom Scope In"
+  },
+  "ZOOMSCOPEOUT": {
+   "English": "Zoom Scope Out"
+  },
+  "SELECTSOLDIER1": {
+   "English": "Select Soldier 1"
+  },
+  "SELECTSOLDIER2": {
+   "English": "Select Soldier 2"
+  },
+  "SELECTSOLDIER3": {
+   "English": "Select Soldier 3"
+  },
+  "SELECTSOLDIER4": {
+   "English": "Select Soldier 4"
+  },
+  "CON_KEY": {
+   "English": "KEY ASSIGNMENT"
+  },
+  "CON_MOUSE": {
+   "English": "MOUSE OPTIONS"
+  },
+  "CON_OPTIONS": {
+   "English": "CONTROLLER OPTIONS"
+  },
+  "MOUSE_SENS": {
+   "English": "MOUSE SENSITIVITY"
+  },
+  "MOUSE_INVERT": {
+   "English": "INVERT AXIS"
+  },
+  "KEY_MOVE": {
+   "English": "MOVEMENT"
+  },
+  "KEY_COMBAT": {
+   "English": "COMBAT"
+  },
+  "KEY_ORDERS": {
+   "English": "GROUP ORDERS"
+  },
+  "FIREMODE": {
+   "English": "Change Fire Mode"
+  },
+  "LMOUSEBUTTON": {
+   "English": "L MOUSE"
+  },
+  "MMOUSEBUTTON": {
+   "English": "M MOUSE"
+  },
+  "RMOUSEBUTTON": {
+   "English": "R MOUSE"
+  },
+  "KEY_BUT_TITLE": {
+   "English": "CONTROL"
+  },
+  "NOT_SET": {
+   "English": "???"
+  },
+  "RES_DEFAULTS": {
+   "English": "RESTORE DEFAULTS"
+  },
+  "CHASECAM_TOGGLE": {
+   "English": "Observer Chase-Cam Toggle"
+  },
+  "ACTION_RELOAD": {
+   "English": "Action/Reload"
+  },
+  "CHASE_CAM": {
+   "English": "Chase-Cam Cycle"
+  },
+  "FAIL_LOADING_SAVE": {
+   "English": "FAILED TO LOAD SAVE GAME - PRESS ESC TO CONTINUE"
+  },
+  "FIREMODE_LEFT": {
+   "English": "Cycle Fire Mode Left"
+  },
+  "FIREMODE_RIGHT": {
+   "English": "Cycle Fire Mode Right"
+  },
+  "JOYSTICK_AXIS": {
+   "English": "Joy Axis %d"
+  },
+  "INV_USE": {
+   "English": "Use Inventory Item"
+  },
+  "JOYSTICK_BUTTON": {
+   "English": "Joy %d"
+  },
+  "MOUSE_BUTTON": {
+   "English": "Mouse %d"
+  },
+  "PC_ACCEPT_PROMPT": {
+   "English": "Return: Accept"
+  },
+  "PC_BACK_PROMPT": {
+   "English": "Esc: Back"
+  },
+  "PC_CANCEL_PROMPT": {
+   "English": "Esc: Cancel"
+  },
+  "PC_SELECT_PROMPT": {
+   "English": "Return: Select"
+  },
+  "PRESS_ANY_KEY": {
+   "English": "PLEASE PRESS ANY KEY TO BEGIN"
+  },
+  "SCORES_SCREEN": {
+   "English": "Scores Screen"
+  },
+  "ACTION_BUT": {
+   "English": "Action"
+  },
+  "WALK": {
+   "English": "Walk"
+  },
+  "PC_F1_RETURN_PROMPT": {
+   "English": "F1: Return to mission"
+  },
+  "PC_ESC_RETURN_PROMPT": {
+   "English": "Esc: Return to mission"
+  },
+  "PC_DEBRIEF_PROMPT": {
+   "English": "Arrow Keys: Change soldier/screen"
+  },
+  "PC_ESC_CONTINUE_PROMPT": {
+   "English": "Esc: Continue"
+  },
+  "ACCELERATION": {
+   "English": "ACCELERATION"
+  },
+  "PC_MORE_INFO_PROMPT": {
+   "English": "Return: More information"
+  },
+  "PC_LR_SELECT_PROMPT": {
+   "English": "Left/Right: Select"
+  },
+  "PC_SETTINGS": {
+   "English": "Settings"
+  },
+  "PC_3DDEVICE": {
+   "English": "3d Device:"
+  },
+  "PC_CANCEL_LOWER": {
+   "English": "Cancel"
+  },
+  "PC_OK": {
+   "English": "OK"
+  },
+  "PC_RESOLUTION": {
+   "English": "Resolution:"
+  },
+  "PC_COLDEPTH": {
+   "English": "Color Depth:"
+  },
+  "PC_DETAILSETTINGS": {
+   "English": "Detail Settings"
+  },
+  "PC_DEAULTS": {
+   "English": "Set to Defaults"
+  },
+  "PC_16BITCOL": {
+   "English": "High Color (16 bit)"
+  },
+  "PC_24BITCOL": {
+   "English": "True Color (24 bit)"
+  },
+  "PC_32BITCOL": {
+   "English": "True Color (32 bit)"
+  },
+  "PC_TR_FULL": {
+   "English": "Full"
+  },
+  "PC_TR_HIGH": {
+   "English": "High"
+  },
+  "PC_TR_LOW": {
+   "English": "Low"
+  },
+  "PC_TR_LOWEST": {
+   "English": "Lowest"
+  },
+  "PC_VOLUMETRICSHADOWS": {
+   "English": "Volumetric shadows"
+  },
+  "PC_PERPIXELLIGHTING": {
+   "English": "Per pixel lighting"
+  },
+  "PC_VERTEXSHADERS": {
+   "English": "Moving vegetation"
+  },
+  "PC_LESSSHRUBS": {
+   "English": "Less shrubs"
+  },
+  "PC_DETAILTEXTURES": {
+   "English": "Detail textures"
+  },
+  "PC_DECALS": {
+   "English": "Decals"
+  },
+  "PC_EXTENDDRAWDIST": {
+   "English": "Extended draw distance"
+  },
+  "PC_TEXTURERES": {
+   "English": "Texture Resolution:"
+  },
+  "PC_ENVMAPS": {
+   "English": "Textured reflections"
+  },
+  "HORIZONTAL_SENSITIVITY": {
+   "English": "HORIZONTAL SENSITIVITY"
+  },
+  "VERTICAL_SENSITIVITY": {
+   "English": "VERTICAL SENSITIVITY"
+  },
+  "PC_TAB_KEY_PROMPT": {
+   "English": "TAB: Return To Game"
+  },
+  "PC_ESC_FE_PROMPT": {
+   "English": "Esc: Main Menu"
+  },
+  "QUIT_TO_DEMO_MENU": {
+   "English": "QUIT"
+  },
+  "VIEW_CONTROLS": {
+   "English": "VIEW GAME CONTROLS"
+  },
+  "PLAY_DEMO": {
+   "English": "PLAY DEMO"
+  },
+  "DEMO_RESTART": {
+   "English": "Do you want to restart?"
+  },
+  "DIRECTX_REQ": {
+   "English": "Conflict:Desert Storm requires DirectX8.1 to be installed."
+  },
+  "RESTART_DEMO": {
+   "English": "RESTART DEMO"
+  },
+  "R WEITER": {
+   "English": "FIREMODE_LEFT Feuermodus umschalten links"
+  },
+  "LADEN": {
+   "English": "VIEW_CONTROLS"
+  },
+  "SPIELSTEUERUNG ANZEIGEN": {
+   "English": "PLAY_DEMO"
+  },
+  "DEMO ABSPIELEN": {
+   "English": "DEMO_RESTART Wollen Sie neustarten?"
+  },
+  "DEMO NEU STARTEN": {
+   "English": "MOVE_FORWARD Hacia adelante"
+  },
+  "N CLAVE": {
+   "English": "CON_MOUSE"
+  },
+  "OPCIONES DEL RAT": {
+   "English": "CON_OPTIONS"
+  },
+  "OPCIONES DEL CONTROLADOR": {
+   "English": "MOUSE_SENS"
+  },
+  "SENSIBILIDAD DEL RAT": {
+   "English": "MOUSE_INVERT"
+  },
+  "INVERTIR EJE": {
+   "English": "KEY_MOVE"
+  },
+  "MOVIMIENTO": {
+   "English": "KEY_COMBAT"
+  },
+  "COMBATE": {
+   "English": "KEY_ORDERS"
+  },
+  "RDENES DEL GRUPO": {
+   "English": "FIREMODE Cambiar modo de fuego"
+  },
+  "N DER.": {
+   "English": "KEY_BUT_TITLE"
+  },
+  "CONTROL": {
+   "English": "NOT_SET ???"
+  },
+  "DE DEMOS": {
+   "English": "VIEW_CONTROLS"
+  },
+  "VER CONTROLES DEL JUEGO": {
+   "English": "PLAY_DEMO"
+  },
+  "JUGAR DEMO": {
+   "English": "DEMO_RESTART Quieres reiniciar?"
+  },
+  "DEL MOUSE": {
+   "English": "MOUSE_INVERT"
+  },
+  "INVERTI ASSE": {
+   "English": "KEY_MOVE"
+  },
+  "MOVIMENTO": {
+   "English": "KEY_COMBAT"
+  },
+  "COMBATTIMENTO": {
+   "English": "KEY_ORDERS"
+  },
+  "ORDINI DEL GRUPPO": {
+   "English": "FIREMODE Cambia Modalit di fuoco"
+  },
+  "ORIZZONTALE": {
+   "English": "VERTICAL_SENSITIVITY"
+  },
+  "SENSIBILIT": {
+   "English": "VERTICALE"
+  },
+  "RICOMINCIARE DEMO": {
+   "English": "MOVE_FORWARD Move Forward"
+  }
+ }
+}

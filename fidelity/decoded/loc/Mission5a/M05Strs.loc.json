@@ -1,0 +1,76 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 17,
+ "count": 20,
+ "strings": {
+  "OBJ_M5_1": {
+   "English": "SCUD"
+  },
+  "OBJ_M5_1A": {
+   "English": "OBJ_M5_2 Assemble"
+  },
+  "OBJ_M5_2A": {
+   "English": "M05_BRF_HD"
+  },
+  "SCUD BOULEVARD": {
+   "English": "M05_BRF_DT January 21, 1991"
+  },
+  "M05_BRF_TXT": {
+   "English": "MOV_TXT1 10:24, January 21, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Main Supply Route, Northern Iraq"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "TAG1 Objective Completed"
+  },
+  "TAGB": {
+   "English": "Mission 5B - SCUD Boulevard Part 2"
+  },
+  "M05_BRF_TX2": {
+   "English": "M05_BRF_TX3"
+  },
+  "SPEECH1A": {
+   "English": "M05_BRF_TX4"
+  },
+  "OBJ_M5_2": {
+   "English": "Regrouper"
+  },
+  "M05_BRF_HD": {
+   "English": "BOULEVARD DES SCUD"
+  },
+  "M05_BRF_DT": {
+   "English": "21 janvier 1991"
+  },
+  "MOV_TXT1": {
+   "English": "10h24, 21 janvier 1991"
+  },
+  "TAG1": {
+   "English": "Objectif atteint"
+  },
+  "M05_BRF_TX3": {
+   "English": "Votre groupe doit se rendre dans le Secteur 1, appel \"Boulevard des SCUD\". D \"Route des SCUD\". Vous tes autoris d truire tous les objectifs inopin s."
+  },
+  "M05_BRF_TX4": {
+   "English": "Quand vous aurez termin cette mission, vous ne serez pas ravitaill avant la suivante. Alors, ne gaspillez pas vos munitions."
+  },
+  "SCUD": {
+   "English": "OBJ_M5_1A"
+  },
+  "2": {
+   "English": "M05_BRF_TX2 Ostatniej nocy satelita wywiadowczy wykry kilka sygnatur cieplnych wskazuj cych na obecno wyrzutni pocisk w SCUD w dw ch rejonach na p noc od waszej pozycji. Oba obszary znajduj si w pobli u granicy iracko-syryjskiej, sk d mog razi terytorium Izraela."
+  }
+ }
+}

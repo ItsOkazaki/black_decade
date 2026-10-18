@@ -1,0 +1,133 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 36,
+ "count": 39,
+ "strings": {
+  "OBJ_M3_1": {
+   "English": "Camp"
+  },
+  "OBJ_M3_1A": {
+   "English": "OBJ_M3_2 Main Gate"
+  },
+  "OBJ_M3_2A": {
+   "English": "OBJ_M3_3 SAM Sites"
+  },
+  "OBJ_M3_3A": {
+   "English": "OBJ_M3_4 SCUD Data"
+  },
+  "OBJ_M3_4A": {
+   "English": "OBJ_M3_5 Disrupt"
+  },
+  "OBJ_M3_5A": {
+   "English": "M03_BRF_DT January 17, 1991"
+  },
+  "M03_BRF_HD": {
+   "English": "SPECIAL DELIVERY"
+  },
+  "M03_BRF_TX1": {
+   "English": "M03_BRF_TX2"
+  },
+  "MOV_TXT1": {
+   "English": "16:00, January 17, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Southern Iraq"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "LZ coming up in 20 seconds."
+  },
+  "SPEECH2": {
+   "English": "Roger that."
+  },
+  "SPEECH3": {
+   "English": "SPEECH4 Roger that Redbird-One. Alpha-Two out."
+  },
+  "USE_KIT": {
+   "English": "Use hacking kit!"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "TAG2": {
+   "English": "Objective Completed"
+  },
+  "TAG3": {
+   "English": "Objectives Completed - Return To LZ"
+  },
+  "OBJ_M3_6": {
+   "English": "Extraction"
+  },
+  "OBJ_M3_6A": {
+   "English": "Exit the base for helicopter extraction."
+  },
+  "SECTIONHDR": {
+   "English": "OPERATION: DESERT STORM"
+  },
+  "SECTIONDATE": {
+   "English": "January 17, 1991"
+  },
+  "SECTIONTEXT": {
+   "English": "SECTIONTEXT2"
+  },
+  "M03_BRF_TXT3": {
+   "English": "M03_BRF_TXT4"
+  },
+  "M03_BRF_TXT5": {
+   "English": "ALARM_RAISED The alarm has been raised!"
+  },
+  "PICKUP_DEST": {
+   "English": "The pick-up helicopter has been destroyed."
+  },
+  "OBJ_M3_2": {
+   "English": "Entr e principale"
+  },
+  "OBJ_M3_3": {
+   "English": "Emplacements de SAM"
+  },
+  "OBJ_M3_4": {
+   "English": "Donn es SCUD"
+  },
+  "OBJ_M3_5": {
+   "English": "Perturber"
+  },
+  "M03_BRF_DT": {
+   "English": "17 janvier 1991"
+  },
+  "M03_BRF_TX2": {
+   "English": "l'int rieur de la base a rienne locale irakienne pr s d'An-Nagaf. Votre quipe va tre parachut e c du site ennemi. Entrez sans vous faire rep rer et d truisez ou mettez hors d' tat les lance-missiles sol-air qui prot gent la base des attaques a liminera l'installation radar."
+  },
+  "SECTIONTEXT2": {
+   "English": "Votre quipe des Forces Sp ciales a re u l'ordre de d truire les radars irakiens d'alerte lointaine."
+  },
+  "M03_BRF_TXT4": {
+   "English": "Le quatri me membre de votre quipe se joint vous pour cette mission. Le caporal Jones est un expert en d molition et un sp cialiste des combats rapproch s."
+  },
+  "ALARM_RAISED": {
+   "English": "L'alerte a donn e!"
+  },
+  "SPEECH4": {
+   "English": "Best tigen Sie, Redbird-Eins. Alpha-Zwo, Ende."
+  },
+  "O ESPECIAL": {
+   "English": "M03_BRF_TX1 Antes de que pueda comenzar la campa a a . A continuaci n un cazabombardero F-15 llevar a cabo un ataque contra el centro de comando de la defensa a rea local en An-Nagaf. Este ataque combinado da ar rea de la Coalici n sobre Irak."
+  },
+  "P": {
+   "English": "jaro Rojo Uno. Buena suerte, muchachos!  Retorno para la extracci n al finalizar la misi n. Cambio."
+  },
+  "KA": {
+   "English": "M03_BRF_TX1 Przed rozpocz liwce bombarduj ce F-15 uderz cie An-Nagaf. Tego rodzaju po czona operacja uniemo liwi Irakowi wysy anie my liwc w w celu przechwycenia samolot w Sprzymierzonych, a tym samym zapewni Koalicji przewag powietrzn nad terytorium Iraku."
+  }
+ }
+}

@@ -1,0 +1,70 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 18,
+ "count": 18,
+ "strings": {
+  "MISS1_TITLE": {
+   "English": "Rescue"
+  },
+  "MISS2_TITLE": {
+   "English": "Safe Passage"
+  },
+  "MISS3_TITLE": {
+   "English": "Special Delivery"
+  },
+  "MISS4_TITLE": {
+   "English": "Desert Watch"
+  },
+  "MISS5_TITLE": {
+   "English": "SCUD Boulevard"
+  },
+  "MISS6_TITLE": {
+   "English": "Crash & Burn"
+  },
+  "MISS7_TITLE": {
+   "English": "Patriotic Defense"
+  },
+  "MISS8_TITLE": {
+   "English": "No Retreat"
+  },
+  "MISS9_TITLE": {
+   "English": "Cavalry Charge"
+  },
+  "MISS10_TITLE": {
+   "English": "Human Shield"
+  },
+  "MISS11B_TITLE": {
+   "English": "Edge of Destruction"
+  },
+  "MISS11_TITLE": {
+   "English": "On The Brink"
+  },
+  "MISS12B_TITLE": {
+   "English": "Lights Out"
+  },
+  "MISS12_TITLE": {
+   "English": "Counter Attack"
+  },
+  "MISS5B_TITLE": {
+   "English": "SCUD Alley"
+  },
+  "TRAIN1_TITLE": {
+   "English": "BASIC TRAINING"
+  },
+  "TRAIN2_TITLE": {
+   "English": "ADVANCED WEAPONS TRAINING"
+  },
+  "TRAIN3_TITLE": {
+   "English": "SQUAD TRAINING"
+  }
+ }
+}

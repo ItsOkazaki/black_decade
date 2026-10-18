@@ -1,0 +1,1453 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 343,
+ "count": 479,
+ "strings": {
+  "NO_MAP": {
+   "English": "No map available!"
+  },
+  "OBJECTIVE": {
+   "English": "OBJECTIVES"
+  },
+  "CONTINUE": {
+   "English": "CONTINUE"
+  },
+  "RESTART": {
+   "English": "RESTART LEVEL"
+  },
+  "SUCCESS": {
+   "English": "MISSION SUCCESSFUL"
+  },
+  "FAILURE": {
+   "English": "MISSION FAILED"
+  },
+  "ON": {
+   "English": "ON"
+  },
+  "OFF": {
+   "English": "OFF"
+  },
+  "MIS_SCORE": {
+   "English": "Mission Score"
+  },
+  "NEW_GAME": {
+   "English": "START"
+  },
+  "OPTIONS": {
+   "English": "OPTIONS"
+  },
+  "QUIT": {
+   "English": "QUIT"
+  },
+  "RESUME": {
+   "English": "RESUME GAME"
+  },
+  "LOAD": {
+   "English": "LOAD GAME"
+  },
+  "EXP_INC": {
+   "English": "%s has increased from experience level %s to level %s."
+  },
+  "EL_ROOKIE": {
+   "English": "Rookie"
+  },
+  "EL_GREEN": {
+   "English": "Green"
+  },
+  "EL_TRAINED": {
+   "English": "Trained"
+  },
+  "EL_REGULAR": {
+   "English": "Regular"
+  },
+  "EL_VETERAN": {
+   "English": "Veteran"
+  },
+  "EL_EXPERT": {
+   "English": "Expert"
+  },
+  "EL_PROF": {
+   "English": "Professional"
+  },
+  "EL_GUARD": {
+   "English": "Guard"
+  },
+  "EL_CRACK": {
+   "English": "Elite"
+  },
+  "EL_ELITE": {
+   "English": "Hero"
+  },
+  "S_PLAYER": {
+   "English": "SINGLE PLAYER"
+  },
+  "M_PLAYER": {
+   "English": "MULTIPLAYER"
+  },
+  "TRAINING": {
+   "English": "TRAINING"
+  },
+  "FASTPLAY": {
+   "English": "Fast Play"
+  },
+  "MISSLIST": {
+   "English": "MISSION LIST"
+  },
+  "XTRMISS": {
+   "English": "Extra Missions"
+  },
+  "DSC": {
+   "English": "DESERT STORM CAMPAIGN"
+  },
+  "S_OVERLAY": {
+   "English": "Squad Screen Overlay"
+  },
+  "RENAME": {
+   "English": "RENAME SOLDIERS"
+  },
+  "S_NAMES": {
+   "English": "SOLDIER NAMES"
+  },
+  "FX_VOL": {
+   "English": "FX VOLUME"
+  },
+  "SOUND": {
+   "English": "SOUND"
+  },
+  "SUBTITLES": {
+   "English": "SUBTITLES"
+  },
+  "CENTRE_SCR": {
+   "English": "CENTER SCREEN"
+  },
+  "YES": {
+   "English": "YES"
+  },
+  "NO": {
+   "English": "NO"
+  },
+  "SCR_ADJUST": {
+   "English": "ADJUST"
+  },
+  "CHEATS": {
+   "English": "CHEATS"
+  },
+  "MONO": {
+   "English": "MONO"
+  },
+  "STEREO": {
+   "English": "STEREO"
+  },
+  "SOUND_VOL": {
+   "English": "MUSIC VOLUME"
+  },
+  "HOST": {
+   "English": "HOST SESSION"
+  },
+  "RENAME_CHAR": {
+   "English": "RENAME CHARACTER"
+  },
+  "NETWORK": {
+   "English": "Game Network"
+  },
+  "INTERNET": {
+   "English": "INTERNET"
+  },
+  "LAN": {
+   "English": "LAN"
+  },
+  "GAME_TYPE": {
+   "English": "Type of Game"
+  },
+  "SELECT_GAME": {
+   "English": "SELECT GAME TO JOIN"
+  },
+  "HOST_NAME": {
+   "English": "HOST"
+  },
+  "SESSION_NAM": {
+   "English": "SESSION NAME"
+  },
+  "PING": {
+   "English": "PING"
+  },
+  "NUM_PLAYERS": {
+   "English": "Number of Players"
+  },
+  "ENTER_IP": {
+   "English": "ENTER IP ADDRESS"
+  },
+  "DIFFICULTY": {
+   "English": "DIFFICULTY"
+  },
+  "EASY": {
+   "English": "EASY"
+  },
+  "MEDIUM": {
+   "English": "MEDIUM"
+  },
+  "HARD": {
+   "English": "HARD"
+  },
+  "INVUL": {
+   "English": "Invulnerable"
+  },
+  "INF_HEALTH": {
+   "English": "INFINITE HEALTH"
+  },
+  "INF_AMMO": {
+   "English": "INFINITE AMMO"
+  },
+  "ENEMY_AI": {
+   "English": "ENEMY AI"
+  },
+  "TROOP_EXP": {
+   "English": "TROOPER LEVEL"
+  },
+  "ENEMY_EXP": {
+   "English": "ENEMY LEVEL = 0"
+  },
+  "WPN_DAM": {
+   "English": "MAX DAMAGE FOR PLAYER WEAPONS"
+  },
+  "MESSAGES": {
+   "English": "MESSAGES:"
+  },
+  "START_GAME": {
+   "English": "Start Game"
+  },
+  "INTERR_NETW": {
+   "English": "Interrogating Network..."
+  },
+  "MAP1": {
+   "English": "BORDER SKIRMISH"
+  },
+  "MAP2": {
+   "English": "SCUD HUNTER"
+  },
+  "MAP3": {
+   "English": "BUNKER BUSTER"
+  },
+  "MAP4": {
+   "English": "LAST STAND"
+  },
+  "MAP5": {
+   "English": "CROSSFIRE"
+  },
+  "MAP6": {
+   "English": "BLIND ALLEY"
+  },
+  "TIME_LIMIT": {
+   "English": "TIME LIMIT"
+  },
+  "TROOP_EL": {
+   "English": "Trooper Experience Level"
+  },
+  "WPN_CACHE": {
+   "English": "WEAPON CACHES"
+  },
+  "OFF_TABLE": {
+   "English": "ARTILLERY SUPPORT"
+  },
+  "RESPAWN": {
+   "English": "RE-SPAWN"
+  },
+  "MAP_AMMO": {
+   "English": "Rounds per Map"
+  },
+  "ALTERNATE": {
+   "English": "Alternate Attacker/Defender"
+  },
+  "NEXT_SNIPER": {
+   "English": "Next Sniper is?"
+  },
+  "KILLER": {
+   "English": "Killer"
+  },
+  "TIME": {
+   "English": "TIME"
+  },
+  "NAME": {
+   "English": "NAME"
+  },
+  "SLOWEST": {
+   "English": "Slowest"
+  },
+  "TYPE": {
+   "English": "Type"
+  },
+  "CHAR_INFIL": {
+   "English": "Infiltration"
+  },
+  "CHAR_SNIPER": {
+   "English": "Sniper"
+  },
+  "CHAR_DEMO": {
+   "English": "Heavy Weapons Expert"
+  },
+  "CHAR_TL": {
+   "English": "Rifleman"
+  },
+  "TEAM1": {
+   "English": "ATTACKERS"
+  },
+  "TEAM2": {
+   "English": "DEFENDERS"
+  },
+  "ATTACKER": {
+   "English": "ATTACKER"
+  },
+  "DEFENDER": {
+   "English": "DEFENDER"
+  },
+  "CHAR_CHOICE": {
+   "English": "CHARACTER SKILL"
+  },
+  "TEAM_CHOICE": {
+   "English": "TEAM CHOICE"
+  },
+  "CHAR_SEL": {
+   "English": "CHARACTER SELECTION"
+  },
+  "PLAYER_NAME": {
+   "English": "ENTER PLAYER NAME"
+  },
+  "CONN_FAIL": {
+   "English": "FAILED TO CONNECT"
+  },
+  "WAITING": {
+   "English": "WAITING FOR OTHER PLAYERS..."
+  },
+  "PAUSE": {
+   "English": "GAME PAUSED"
+  },
+  "UNIFORM": {
+   "English": "SELECT UNIFORM"
+  },
+  "UNIFORM1": {
+   "English": "SAS"
+  },
+  "UNIFORM2": {
+   "English": "US DELTA FORCE"
+  },
+  "UNIFORM3": {
+   "English": "IRAQI REPUBLICAN GUARD"
+  },
+  "UNIFORM4": {
+   "English": "RUSSIAN"
+  },
+  "JMP_OFF_LAD": {
+   "English": "JUMP OFF"
+  },
+  "CAN_PLNT_EX": {
+   "English": "CANCEL PLANTING EXPLOSIVES"
+  },
+  "DISEMB_VEH": {
+   "English": "DISEMBARK VEHICLE"
+  },
+  "PRS_SWITCH": {
+   "English": "PRESS SWITCH"
+  },
+  "MNT_LADR": {
+   "English": "CLIMB"
+  },
+  "EMB_VEH": {
+   "English": "EMBARK VEHICLE"
+  },
+  "TK_INVENTRY": {
+   "English": "TAKE INVENTORY"
+  },
+  "GV_INVENTRY": {
+   "English": "GIVE INVENTORY"
+  },
+  "PICK_LOCK": {
+   "English": "PICK LOCK"
+  },
+  "RELOAD": {
+   "English": "RELOAD"
+  },
+  "MOUNT_GUN": {
+   "English": "MOUNT GUN"
+  },
+  "UNMNT_GUN": {
+   "English": "UNMOUNT GUN"
+  },
+  "OP_DOOR": {
+   "English": "OPERATE DOOR"
+  },
+  "CUT_CHAIN": {
+   "English": "CUT CHAIN"
+  },
+  "UNLOCK": {
+   "English": "UNLOCK"
+  },
+  "LOCKED": {
+   "English": "LOCKED!"
+  },
+  "TALK": {
+   "English": "TALK"
+  },
+  "PICK_UP_OBJ": {
+   "English": "PICK UP OBJECT"
+  },
+  "USE": {
+   "English": "USE"
+  },
+  "DNLOAD_DTA": {
+   "English": "DOWNLOAD DATA"
+  },
+  "MEDALS": {
+   "English": "MEDALS"
+  },
+  "SPECIALISM": {
+   "English": "Specialist"
+  },
+  "EXPERIENCE": {
+   "English": "Experience"
+  },
+  "REMOTE": {
+   "English": "Remote"
+  },
+  "PLAY_TITLE": {
+   "English": "PLAYER NAME"
+  },
+  "TIMES_KILL": {
+   "English": "NUMBER OF TIMES KILLED"
+  },
+  "NUM_KILLS": {
+   "English": "NUMBER OF KILLS"
+  },
+  "MINUTES": {
+   "English": "MINUTES"
+  },
+  "LOST_CONN": {
+   "English": "LOST CONNECTION"
+  },
+  "RCV_WPN": {
+   "English": "has received Weapon and Ammo -"
+  },
+  "RCV_ITEM": {
+   "English": "has received Item -"
+  },
+  "UNABLE_XFER": {
+   "English": "Unable to transfer Ammo for"
+  },
+  "RCV_AMMO": {
+   "English": "has received Ammo for"
+  },
+  "AMMO": {
+   "English": "Ammo"
+  },
+  "MEDAL_1_UK": {
+   "English": "Military Medal"
+  },
+  "MEDAL_2_UK": {
+   "English": "Conspicuous Gallantry Medal"
+  },
+  "MEDAL_3_UK": {
+   "English": "Distinguished Conduct Medal"
+  },
+  "MEDAL_4_UK": {
+   "English": "Military Cross"
+  },
+  "MEDAL_5_UK": {
+   "English": "Distinguished Service Cross"
+  },
+  "MEDAL_6_UK": {
+   "English": "Distinguished Service Order"
+  },
+  "MEDAL_7_UK": {
+   "English": "Victoria Cross"
+  },
+  "MEDAL_1_US": {
+   "English": "Armed Forces Service Medal"
+  },
+  "MEDAL_2_US": {
+   "English": "Army Distinguished Service Cross"
+  },
+  "MEDAL_3_US": {
+   "English": "Army Commendation Medal"
+  },
+  "MEDAL_4_US": {
+   "English": "Bronze Star"
+  },
+  "MEDAL_5_US": {
+   "English": "Silver Star"
+  },
+  "MEDAL_6_US": {
+   "English": "Legion of Merit"
+  },
+  "MEDAL_7_US": {
+   "English": "Medal of Honor"
+  },
+  "MEDAL_PURP": {
+   "English": "Purple Heart"
+  },
+  "MEDAL_3MISS": {
+   "English": "SW Asia Service Medal"
+  },
+  "MEDAL_KUW": {
+   "English": "Liberation of Kuwait Commemorative Medal"
+  },
+  "MEDAL_HUM": {
+   "English": "Humanitarian Service Medal"
+  },
+  "SNIPER": {
+   "English": "SNIPER"
+  },
+  "HVY_WPNS": {
+   "English": "HEAVY WEAPONS"
+  },
+  "COMB_ENG": {
+   "English": "COMBAT ENGINEER"
+  },
+  "RIFLEMAN": {
+   "English": "RIFLEMAN"
+  },
+  "MISS_OBJ": {
+   "English": "Mission Objective: %s"
+  },
+  "SEC_REMAIN": {
+   "English": "%d Seconds Remaining"
+  },
+  "ENEM_IN_BAS": {
+   "English": "Enemy has entered base"
+  },
+  "SAS": {
+   "English": "British SAS"
+  },
+  "US": {
+   "English": "US Delta Force"
+  },
+  "IRAQI": {
+   "English": "Iraqi Republican Guard"
+  },
+  "RUSSIAN": {
+   "English": "RUSSIAN SPEZNATZ"
+  },
+  "RECOVERY": {
+   "English": "RECOVERY"
+  },
+  "DES_DEF": {
+   "English": "ASSAULT/DEFEND"
+  },
+  "ASS_VIP": {
+   "English": "VIP ASSASSINATION"
+  },
+  "DES_SCUD": {
+   "English": "Destroy SCUD Launchers"
+  },
+  "DES_TRANS": {
+   "English": "Destroy Enemy Transport"
+  },
+  "DES_BUNK": {
+   "English": "Destroy Bunker"
+  },
+  "DEF_SCUD": {
+   "English": "Defend SCUD Launcher"
+  },
+  "DEF_TRANS": {
+   "English": "Defend Transport"
+  },
+  "OBJ_DES": {
+   "English": "Objective Destroyed"
+  },
+  "OBJ_NOT_DES": {
+   "English": "Objective Not Destroyed"
+  },
+  "X_WINS": {
+   "English": "% Win(s)"
+  },
+  "HUNTERS": {
+   "English": "Hunters"
+  },
+  "VIP_HAS_ESC": {
+   "English": "The VIP has escaped"
+  },
+  "VIP_KILLED": {
+   "English": "The VIP has been killed"
+  },
+  "TRANSMITTER": {
+   "English": "Transmitter"
+  },
+  "PLUTONIUM": {
+   "English": "Plutonium"
+  },
+  "DOCUMENTS": {
+   "English": "Documents"
+  },
+  "WE_HAVE": {
+   "English": "We have the %s"
+  },
+  "WEVE_LOST": {
+   "English": "The %s has been lost"
+  },
+  "ENEMY_HAS": {
+   "English": "The enemy has the %s"
+  },
+  "ADVANCE": {
+   "English": "Advance"
+  },
+  "FOLLOW": {
+   "English": "Follow"
+  },
+  "BURST_FIRE": {
+   "English": "Burst Fire"
+  },
+  "SINGLE_SHOT": {
+   "English": "Single Shot"
+  },
+  "FULLY_AUTO": {
+   "English": "Fully Automatic"
+  },
+  "LASER_AIM": {
+   "English": "Laser Aiming"
+  },
+  "IMPACT": {
+   "English": "Impact"
+  },
+  "PROXIMITY": {
+   "English": "Proximity"
+  },
+  "GRENADE": {
+   "English": "Grenade"
+  },
+  "REM_EXP": {
+   "English": "Remote"
+  },
+  "MISS_TYPE": {
+   "English": "Mission Type"
+  },
+  "GAME_SETUP": {
+   "English": "Game Set Up"
+  },
+  "PORT": {
+   "English": "ENTER PORT NUMBER"
+  },
+  "PLAY_AGAIN": {
+   "English": "Play Again"
+  },
+  "HOST_SCR": {
+   "English": "Hosting Screen"
+  },
+  "PLAYER_NUM": {
+   "English": "Player #%d"
+  },
+  "PLAYERS": {
+   "English": "PLAYERS"
+  },
+  "SCORE": {
+   "English": "SCORE"
+  },
+  "MISSION": {
+   "English": "MISSION"
+  },
+  "SAVE_GAME": {
+   "English": "SAVE GAME"
+  },
+  "CANCEL": {
+   "English": "CANCEL"
+  },
+  "DATE": {
+   "English": "DATE"
+  },
+  "GAME_SAVED": {
+   "English": "Game saved"
+  },
+  "OK_OVERWRIT": {
+   "English": "OK to overwrite this file?"
+  },
+  "QUIT_TO_FE": {
+   "English": "MAIN MENU"
+  },
+  "WANT_2_QUIT": {
+   "English": "DO YOU WANT TO QUIT?"
+  },
+  "SVR_FAILED": {
+   "English": "FAILED TO START SERVER"
+  },
+  "BRIEFING": {
+   "English": "Briefing"
+  },
+  "MORE_INFO": {
+   "English": "Press 'X' for more"
+  },
+  "LOCKING_ON": {
+   "English": "Locking On"
+  },
+  "TARGET_LOCK": {
+   "English": "Target Locked"
+  },
+  "DEFUSE_C4": {
+   "English": "DEFUSE C4"
+  },
+  "CANCEL_DEFU": {
+   "English": "CANCEL DEFUSE"
+  },
+  "ORDER_HOLD": {
+   "English": "="
+  },
+  "ORDER_ADV": {
+   "English": "="
+  },
+  "ORDER_FOLL": {
+   "English": "="
+  },
+  "ACTION_HEAL": {
+   "English": "HEAL"
+  },
+  "AUTOSAV": {
+   "English": "Autosave Completed"
+  },
+  "LANGUAGE": {
+   "English": "English"
+  },
+  "DETAILS": {
+   "English": "Details"
+  },
+  "MISSIONS_COMPLETED": {
+   "English": "Missions Completed"
+  },
+  "RANK": {
+   "English": "Rank"
+  },
+  "CLASS": {
+   "English": "Class"
+  },
+  "SKILLS": {
+   "English": "Skills"
+  },
+  "EXPERIENCE_LEVEL": {
+   "English": "Experience Level"
+  },
+  "NEXT_LEVEL": {
+   "English": "Next Level"
+  },
+  "MORE_INFORMATION": {
+   "English": "More Information"
+  },
+  "OK": {
+   "English": "OK"
+  },
+  "BACK": {
+   "English": "Back"
+  },
+  "SHOTS_FIRED": {
+   "English": "Shots Fired"
+  },
+  "TOTAL_HITS": {
+   "English": "Total Hits"
+  },
+  "HEADSHOTS": {
+   "English": "Headshots"
+  },
+  "TORSO_HITS": {
+   "English": "Torso Hits"
+  },
+  "ACCURACY": {
+   "English": "Accuracy"
+  },
+  "KILLS": {
+   "English": "KILLS"
+  },
+  "VEHICLES_DEST": {
+   "English": "Vehicles Destroyed"
+  },
+  "TIMES_SPOTTED": {
+   "English": "Times spotted by enemy"
+  },
+  "TIMES_HIT": {
+   "English": "Times Hit"
+  },
+  "TIMES_MIA": {
+   "English": "Times MIA"
+  },
+  "MOST_USED_WEAPON": {
+   "English": "Most used weapon"
+  },
+  "MOST_EFFECTIVE": {
+   "English": "Most effective weapon"
+  },
+  "THIS_MISSION": {
+   "English": "This mission"
+  },
+  "TOTAL": {
+   "English": "TOTAL"
+  },
+  "PRIVATE": {
+   "English": "Private"
+  },
+  "PRIVATE_1ST_CLASS": {
+   "English": "Private 1st Class"
+  },
+  "LANCE_CORPORAL": {
+   "English": "Lance Corporal"
+  },
+  "CORPORAL": {
+   "English": "Corporal"
+  },
+  "SERGEANT": {
+   "English": "Sergeant"
+  },
+  "MASTER_SERGEANT": {
+   "English": "Master Sergeant"
+  },
+  "STAFF_SERGEANT": {
+   "English": "Staff Sergeant"
+  },
+  "SERGEANT_MAJOR": {
+   "English": "Sergeant Major"
+  },
+  "2ND_LIEUTENANT": {
+   "English": "2nd Lieutenant"
+  },
+  "1ST_LIEUTENANT": {
+   "English": "1st Lieutenant"
+  },
+  "LIEUTENANT": {
+   "English": "Lieutenant"
+  },
+  "CAPTAIN": {
+   "English": "Captain"
+  },
+  "MAJOR": {
+   "English": "Major"
+  },
+  "COLONEL": {
+   "English": "Colonel"
+  },
+  "KIA": {
+   "English": "Killed In Action"
+  },
+  "MIA": {
+   "English": "Missing In Action"
+  },
+  "PLAYER": {
+   "English": "Player"
+  },
+  "STATS": {
+   "English": "Stats"
+  },
+  "CHARACTER_STATS": {
+   "English": "CHARACTER STATS"
+  },
+  "HEAD": {
+   "English": "Head"
+  },
+  "TORSO": {
+   "English": "Torso"
+  },
+  "OTHER": {
+   "English": "Limbs"
+  },
+  "VEHICLES": {
+   "English": "Vehicles"
+  },
+  "TIMES_OBSERVED": {
+   "English": "Times observed"
+  },
+  "FAVOURITE_WPN": {
+   "English": "Favorite weapon"
+  },
+  "BEST_WPN": {
+   "English": "Best weapon"
+  },
+  "PISTOL": {
+   "English": "Pistol"
+  },
+  "RIFLE": {
+   "English": "Rifle"
+  },
+  "MACHINE": {
+   "English": "Machine Gun"
+  },
+  "ANTI_TANK": {
+   "English": "Anti-Tank"
+  },
+  "SHOTGUN": {
+   "English": "Shotgun"
+  },
+  "MEDIC": {
+   "English": "Medic"
+  },
+  "STEALTH": {
+   "English": "Stealth"
+  },
+  "COMBAT": {
+   "English": "Combat"
+  },
+  "HUMANS": {
+   "English": "Infantry"
+  },
+  "CHAR_PROMOTION": {
+   "English": "Promoted to %s"
+  },
+  "PLAYER_EXP": {
+   "English": "%s is now %s"
+  },
+  "MEDALS_AWARDED": {
+   "English": "%s Awarded!"
+  },
+  "MISSION_TIME": {
+   "English": "Mission Time"
+  },
+  "CONTROLLER": {
+   "English": "CONTROLLER"
+  },
+  "CIVILIAN_KILLED": {
+   "English": "Civilian Killed!"
+  },
+  "SKILL_SNIPER": {
+   "English": "Sniper"
+  },
+  "SKILL_HWEAPONS": {
+   "English": "Heavy Weapons"
+  },
+  "SKILL_COMBAT_ENG": {
+   "English": "Combat Engineer"
+  },
+  "SKILL_RIFLEMAN": {
+   "English": "Rifleman"
+  },
+  "UK_PRIVATE": {
+   "English": "Pvt."
+  },
+  "UK_LANCE_CORP": {
+   "English": "L/Cpl."
+  },
+  "UK_CORPORAL": {
+   "English": "Cpl."
+  },
+  "UK_SERGEANT": {
+   "English": "Sgt."
+  },
+  "UK_STAFF_SERGEANT": {
+   "English": "S/Sgt."
+  },
+  "UK_SERGEANT_MAJ": {
+   "English": "Sgt.Maj."
+  },
+  "UK_2NDLIEUT": {
+   "English": "2/L."
+  },
+  "UK_LIEUT": {
+   "English": "1/L."
+  },
+  "UK_CAPTAIN": {
+   "English": "Capt."
+  },
+  "UK_MAJOR": {
+   "English": "Maj."
+  },
+  "UK_COLONEL": {
+   "English": "Col."
+  },
+  "US_PRIVATE": {
+   "English": "Pvt-2."
+  },
+  "US_PRIVATE_1ST": {
+   "English": "Pvt-1st."
+  },
+  "US_CORPORAL": {
+   "English": "Cpl."
+  },
+  "US_SERGEANT": {
+   "English": "Sgt."
+  },
+  "US_MASTER_SERG": {
+   "English": "M/Sgt."
+  },
+  "US_SERGEANT_MAJ": {
+   "English": "Sgt.Maj."
+  },
+  "US_2NDLIEUT": {
+   "English": "2/L."
+  },
+  "US_1STLIEUT": {
+   "English": "1/L."
+  },
+  "US_CAPTAIN": {
+   "English": "Capt."
+  },
+  "US_MAJOR": {
+   "English": "Maj."
+  },
+  "US_COLONEL": {
+   "English": "Col."
+  },
+  "SKILL_INCREASE": {
+   "English": "Skill Level Increased!"
+  },
+  "SAVEGAME_LIMIT": {
+   "English": "%d Save(s) Remaining"
+  },
+  "SAVE_NAME": {
+   "English": "Start"
+  },
+  "ORDER_FIRE": {
+   "English": "="
+  },
+  "SESSION_STATE": {
+   "English": "STATE"
+  },
+  "STEALTH_KILL_BONUS": {
+   "English": "Stealth Kill Bonus"
+  },
+  "KILLS_LC": {
+   "English": "Kills"
+  },
+  "CHAR_SETUP": {
+   "English": "TEAM / SKILL SELECTION"
+  },
+  "DESERT_STORM": {
+   "English": "Desert Storm"
+  },
+  "GV_INVENTORY_SMALL": {
+   "English": "GIVE"
+  },
+  "TK_INVENTORY_SMALL": {
+   "English": "TAKE"
+  },
+  "PRS_SWITCH_SMALL": {
+   "English": "PRESS )j"
+  },
+  "PICK_UP_OBJ_SMALL": {
+   "English": "PICK UP"
+  },
+  "UNMNT_GUN_SMALL": {
+   "English": "UNMOUNT"
+  },
+  "MOUNT_GUN_SMALL": {
+   "English": "MOUNT"
+  },
+  "EMB_VEH_SMALL": {
+   "English": "EMBARK"
+  },
+  "DISEMB_VEH_SMALL": {
+   "English": "DISEMBARK"
+  },
+  "XFER_FAILED": {
+   "English": "Unable to transfer"
+  },
+  "RANK_GENERAL": {
+   "English": "General"
+  },
+  "UVRER LA PORTE": {
+   "English": "CUT_CHAIN"
+  },
+  "COUPER LA CHAINE": {
+   "English": "UNLOCK"
+  },
+  "DEVERROUILLEZ": {
+   "English": "LOCKED VERROUILLE!"
+  },
+  "MARRAGE DU SERVEUR": {
+   "English": "BRIEFING Briefing"
+  },
+  "AGE": {
+   "English": "ORDER_HOLD ="
+  },
+  "RKE": {
+   "English": "SOUND"
+  },
+  "UNTERTITEL": {
+   "English": "CENTRE_SCR"
+  },
+  "BILDSCHIRM ZENTRIEREN": {
+   "English": "YES"
+  },
+  "JA": {
+   "English": "NO"
+  },
+  "NEIN": {
+   "English": "SCR_ADJUST"
+  },
+  "EINSTELLEN": {
+   "English": "CHEATS"
+  },
+  "MUSIKLAUTST": {
+   "English": "RKE"
+  },
+  "HLEN": {
+   "English": "HOST_NAME"
+  },
+  "NAME DER SESSION": {
+   "English": "PING"
+  },
+  "R SPIELERWAFFEN": {
+   "English": "MESSAGES MELDUNGEN:"
+  },
+  "NKEL": {
+   "English": "MAP2"
+  },
+  "SCUD-J": {
+   "English": "GER"
+  },
+  "US DELTA FORCE": {
+   "English": "UNIFORM3"
+  },
+  "IRAKISCHE REPUBLIKANISCHE GARDE": {
+   "English": "UNIFORM4 Russische"
+  },
+  "CKEN SIE WECHSELN": {
+   "English": "MNT_LADR"
+  },
+  "KLETTERN": {
+   "English": "EMB_VEH"
+  },
+  "IN FAHRZEUG EINSTEIGEN": {
+   "English": "TK_INVENTRY"
+  },
+  "INVENTAR NEHMEN": {
+   "English": "GV_INVENTRY"
+  },
+  "GEGENSTAND": {
+   "English": "BERGEBEN"
+  },
+  "TIGEN": {
+   "English": "CUT_CHAIN"
+  },
+  "KETTE ZERSCHNEIDEN": {
+   "English": "UNLOCK"
+  },
+  "FREIGESCHALTET": {
+   "English": "LOCKED ZIEL ERFASST!"
+  },
+  "TZE": {
+   "English": "HVY_WPNS"
+  },
+  "SCHWERE WAFFEN": {
+   "English": "COMB_ENG"
+  },
+  "KAMPFTECHNIK-EXPERTE": {
+   "English": "RIFLEMAN"
+  },
+  "GEWEHRSCH": {
+   "English": "TZE"
+  },
+  "RFEN": {
+   "English": "CANCEL_DEFU"
+  },
+  "ENTSCH": {
+   "English": "RFEN ABBRECHEN"
+  },
+  "HIGKEITEN-AUSWAHL": {
+   "English": "DESERT_STORM Desert Storm"
+  },
+  "CKEN": {
+   "English": "PICK_UP_OBJ_SMALL"
+  },
+  "AUFNEHMEN": {
+   "English": "UNMNT_GUN_SMALL"
+  },
+  "FREIGEBEN": {
+   "English": "MOUNT_GUN_SMALL"
+  },
+  "KANONE BESETZEN": {
+   "English": "EMB_VEH_SMALL"
+  },
+  "EINSTEIGEN": {
+   "English": "DISEMB_VEH_SMALL"
+  },
+  "AUSSTEIGEN": {
+   "English": "XFER_FAILED bergabe nicht m glich"
+  },
+  "N CUMPLIDA": {
+   "English": "FAILURE"
+  },
+  "MISI": {
+   "English": "N FALLADA"
+  },
+  "A TORMENTA DEL DESIERTO": {
+   "English": "S_OVERLAY Superposici n de la Pantalla del Pelot"
+  },
+  "TULOS": {
+   "English": "CENTRE_SCR"
+  },
+  "PANTALLA CENTRAL": {
+   "English": "YES"
+  },
+  "REO": {
+   "English": "SOUND_VOL"
+  },
+  "VOLUMEN DE LA M": {
+   "English": "SICA"
+  },
+  "N HOST": {
+   "English": "RENAME_CHAR Cambiar el Nombre al Personaje"
+  },
+  "N IP": {
+   "English": "DIFFICULTY"
+  },
+  "DIFICULTAD": {
+   "English": "EASY"
+  },
+  "CIL": {
+   "English": "MEDIUM"
+  },
+  "MEDIO": {
+   "English": "HARD"
+  },
+  "DURO": {
+   "English": "INVUL Invulnerable"
+  },
+  "N INFINITA": {
+   "English": "ENEMY_AI"
+  },
+  "IA ENEMIGA": {
+   "English": "TROOP_EXP"
+  },
+  "NIVEL DEL SOLDADO": {
+   "English": "ENEMY_EXP NIVEL DEL ENEMIGO = 0"
+  },
+  "O M": {
+   "English": "XIMO PARA LAS ARMAS DEL JUGADOR"
+  },
+  "NKER": {
+   "English": "MAP4"
+  },
+  "LTIMA RESISTENCIA": {
+   "English": "MAP5"
+  },
+  "FUEGO CRUZADO": {
+   "English": "MAP6"
+  },
+  "CALLEJ": {
+   "English": "N SIN SALIDA"
+  },
+  "N DE PERSONAJE": {
+   "English": "PLAYER_NAME"
+  },
+  "ENTRE EL NOMBRE DEL JUGADOR": {
+   "English": "CONN_FAIL"
+  },
+  "FALLO DE CONEXI": {
+   "English": "WAITING"
+  },
+  "ESPERANDO A LOS OTROS JUGADORES...": {
+   "English": "PAUSE"
+  },
+  "PAUSA EN EL JUEGO": {
+   "English": "UNIFORM"
+  },
+  "SELECCIONE UNIFORME": {
+   "English": "UNIFORM1"
+  },
+  "FUERZA DELTA EE.UU.": {
+   "English": "UNIFORM3"
+  },
+  "GUARDIA REPUBLICANA IRAK": {
+   "English": "UNIFORM4 Ruso"
+  },
+  "CULO": {
+   "English": "PRS_SWITCH"
+  },
+  "PULSE CONMUTADOR": {
+   "English": "MNT_LADR"
+  },
+  "ESCALAR": {
+   "English": "EMB_VEH"
+  },
+  "VEH": {
+   "English": "CULO DE EMBARCACI"
+  },
+  "N PERDIDA": {
+   "English": "RCV_WPN ha recibido arma y munici n -"
+  },
+  "MERO DEL PUERTO": {
+   "English": "PLAY_AGAIN Jugar otra vez"
+  },
+  "PRINCIPAL": {
+   "English": "WANT_2_QUIT QUIERE SALIR?"
+  },
+  "STICAS DEL PERSONAJE": {
+   "English": "HEAD Cabeza"
+  },
+  "N DE DESTREZAS": {
+   "English": "DESERT_STORM Tormenta del Desierto"
+  },
+  "CZONE": {
+   "English": "MIS_SCORE Wynik misji"
+  },
+  "CZ": {
+   "English": "RESUME"
+  },
+  "WZNOWIENIE GRY": {
+   "English": "LOAD"
+  },
+  "ZA": {
+   "English": "ADUJ GR"
+  },
+  "NIERZY": {
+   "English": "S_NAMES"
+  },
+  "NAZWISKA": {
+   "English": "NIERZY"
+  },
+  "EFEKT": {
+   "English": "SOUND"
+  },
+  "WI": {
+   "English": "SUBTITLES"
+  },
+  "NAPISY": {
+   "English": "CENTRE_SCR"
+  },
+  "WY": {
+   "English": "RODKUJ EKRAN"
+  },
+  "MUZYKI": {
+   "English": "HOST"
+  },
+  "SESJA HOSTA": {
+   "English": "RENAME_CHAR"
+  },
+  "ZMIANA NAZWISKA POSTACI": {
+   "English": "NETWORK Gra w sieci"
+  },
+  "LOKALNA": {
+   "English": "GAME_TYPE Typ gry"
+  },
+  "R GRY WIELOOSOBOWEJ": {
+   "English": "HOST_NAME"
+  },
+  "NAZWA HOSTA": {
+   "English": "SESSION_NAM"
+  },
+  "NAZWA SESJI": {
+   "English": "PING"
+  },
+  "CI": {
+   "English": "EASY"
+  },
+  "ATWY": {
+   "English": "MEDIUM"
+  },
+  "REDNI": {
+   "English": "HARD"
+  },
+  "WYSOKI": {
+   "English": "INVUL Nietykalny"
+  },
+  "NIERZA": {
+   "English": "ENEMY_EXP POZIOM NIEPRZYJACIELA = 0"
+  },
+  "A BRONI GRACZA": {
+   "English": "MESSAGES KOMUNIKATY:"
+  },
+  "KRZY": {
+   "English": "OWY"
+  },
+  "EK": {
+   "English": "TIME_LIMIT"
+  },
+  "LIMIT CZASU": {
+   "English": "TROOP_EL Poziom do w. nierza"
+  },
+  "ADY BRONI": {
+   "English": "OFF_TABLE"
+  },
+  "WSPARCIE SPOZA MAPY": {
+   "English": "RESPAWN"
+  },
+  "POWR": {
+   "English": "T DO"
+  },
+  "YCIA": {
+   "English": "MAP_AMMO Rundy na map"
+  },
+  "CA": {
+   "English": "CHAR_CHOICE"
+  },
+  "UMIEJ": {
+   "English": "TNO"
+  },
+  "CI POSTACI": {
+   "English": "TEAM_CHOICE"
+  },
+  "WYB": {
+   "English": "R DRU"
+  },
+  "YN": {
+   "English": "CHAR_SEL"
+  },
+  "GRACZA": {
+   "English": "CONN_FAIL Po czenie nieudane"
+  },
+  "R MUNDURU": {
+   "English": "UNIFORM1"
+  },
+  "IRACKA GWARDIA REPUBLIKA": {
+   "English": "SKA"
+  },
+  "ADANIE": {
+   "English": "DISEMB_VEH"
+  },
+  "WYSIADANIE Z POJAZDU": {
+   "English": "PRS_SWITCH"
+  },
+  "NACI": {
+   "English": "NI"
+  },
+  "CIE PRZYCISKU": {
+   "English": "MNT_LADR"
+  },
+  "WEJ": {
+   "English": "CIE PO DRABINIE"
+  },
+  "CIE PRZEDMIOTU": {
+   "English": "GV_INVENTRY"
+  },
+  "PRZEKAZANIE PRZEDMIOTU": {
+   "English": "PICK_LOCK"
+  },
+  "ADOWANIE": {
+   "English": "MOUNT_GUN"
+  },
+  "OBSADZENIE DZIA": {
+   "English": "UNMNT_GUN"
+  },
+  "OPUSZCZENIE STANOWISKA": {
+   "English": "OP_DOOR ZAMKNIJ/OTW"
+  },
+  "RZ DRZWI": {
+   "English": "CUT_CHAIN"
+  },
+  "PRZETNIJ": {
+   "English": "CUCH"
+  },
+  "S": {
+   "English": "MEDAL_6_UK Order za Ofiarn"
+  },
+  "SNAJPER": {
+   "English": "HVY_WPNS"
+  },
+  "BRO": {
+   "English": "CI"
+  },
+  "KA": {
+   "English": "COMB_ENG"
+  },
+  "SAPER": {
+   "English": "RIFLEMAN"
+  },
+  "STRZELEC": {
+   "English": "MISS_OBJ Cel misji: %s"
+  },
+  "JSTWO OFICJELA": {
+   "English": "DES_SCUD Zniszczy wyrzutnie SCUD"
+  },
+  "CZY": {
+   "English": "GR"
+  }
+ }
+}

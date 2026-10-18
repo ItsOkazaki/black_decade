@@ -1,0 +1,277 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "German",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 81,
+ "count": 87,
+ "strings": {
+  "RADIO": {
+   "English": "PRC319 Communications set"
+  },
+  "MEDIKIT": {
+   "English": "MediKit"
+  },
+  "C4DETONATOR": {
+   "English": "C4 Detonator"
+  },
+  "HACKING_KIT": {
+   "English": "Computer Hacking Kit"
+  },
+  "BOMB_DEFUSING_KIT": {
+   "English": "Bomb Defusion Kit"
+  },
+  "NIGHT_VISION_GOGGLES": {
+   "English": "Passive Night Vision Goggles"
+  },
+  "BINOCULARS": {
+   "English": "Binoculars"
+  },
+  "LASER_DESIGNATOR": {
+   "English": "Laser Designator"
+  },
+  "WIRE_CUTTERS": {
+   "English": "Wire Cutters"
+  },
+  "AMMO_AK47": {
+   "English": "AK-47 Ammunition"
+  },
+  "AMMO_HKPSG1": {
+   "English": "PSG1 Sniper Rifle Ammunition"
+  },
+  "AMMO_PK": {
+   "English": "PK Light-Machine Gun ammunition"
+  },
+  "PLUTONIUM_CASE": {
+   "English": "Shielded Plutonium Case"
+  },
+  "VEHICLEKEY": {
+   "English": "Key"
+  },
+  "DOORKEY": {
+   "English": "Cell key"
+  },
+  "US_WPN_GRENADEFLASH": {
+   "English": "MK3A2 Concussion Offensive Hand Grenade"
+  },
+  "US_WPN_HKPSG1": {
+   "English": "Heckler & Koch PSG1 Sniper Rifle"
+  },
+  "IR_WPN_SVDDRAGUNOV": {
+   "English": "SVD Dragunov Sniper Rifle"
+  },
+  "US_WPN_BARRETTSNIPER": {
+   "English": "M82A1 Barrett 'Light Fifty' Sniper Rifle"
+  },
+  "US_WPN_FIM92": {
+   "English": "FIM-92 Stinger Anti-Aircraft Missile"
+  },
+  "FIST": {
+   "English": "Fist"
+  },
+  "US_WPN_MINEANTITANK": {
+   "English": "Anti-Tank Mine"
+  },
+  "US_WPN_MINEANTIPERSONEL": {
+   "English": "Anti-Personnel Mine"
+  },
+  "US_WPN_M16": {
+   "English": "M16 Colt Silenced Sub-machine Gun"
+  },
+  "US_WPN_CLAYMORE": {
+   "English": "Claymore Mine"
+  },
+  "US_WPN_KNIFE": {
+   "English": "Combat Knife"
+  },
+  "US_WPN_AIRSTRIKE": {
+   "English": "US_WPN_AIRSTRIKE"
+  },
+  "IR_WPN_SA7": {
+   "English": "SA-7 Grail Anti-Aircraft Missile"
+  },
+  "US_WPN_LAW80": {
+   "English": "LAW 80 Anti-tank Rocket Launcher"
+  },
+  "IR_WPN_RPG7V": {
+   "English": "RPG-7 Anti-tank Rocket Launcher"
+  },
+  "US_WPN_LAW66": {
+   "English": "LAW 66 Anti-tank Rocket Launcher"
+  },
+  "US_WPN_M16A2": {
+   "English": "Colt M16A2 Assault Rifle"
+  },
+  "IR_WPN_AK47": {
+   "English": "AK-47 Assault Rifle"
+  },
+  "IR_WPN_AK74": {
+   "English": "AK-74 Assault Rifle"
+  },
+  "US_WPN_C4": {
+   "English": "C4 Plastic Explosive"
+  },
+  "US_WPN_BERETTA92F": {
+   "English": "Beretta Model 92 Pistol"
+  },
+  "IR_WPN_MODEL61SKORPION": {
+   "English": "Skorpion Sub-Machine Gun"
+  },
+  "IR_WPN_AKSU": {
+   "English": "AKSU-74 Sub-Machine gun"
+  },
+  "US_WPN_DESERTEAGLE": {
+   "English": "Desert Eagle Pistol"
+  },
+  "US_WPN_SIGP228": {
+   "English": "SIG P-228 Silenced Pistol"
+  },
+  "US_WPN_MP5SILENCEDSUBMG": {
+   "English": "MP5-SD Silenced Sub-Machine Gun"
+  },
+  "IR_WPN_MAKAROV": {
+   "English": "Makarov Pistol"
+  },
+  "US_WPN_M60E3": {
+   "English": "M60E3 Light-Machine Gun"
+  },
+  "US_WPN_GRENADELAUNCHER": {
+   "English": "M203 40mm Grenade Launcher"
+  },
+  "IR_WPN_PKGPMG": {
+   "English": "PK Light-Machine Gun"
+  },
+  "US_WPN_GRENADESMOKE": {
+   "English": "M18 Smoke Grenade"
+  },
+  "US_WPN_GRENADEFRAG": {
+   "English": "M67 Fragmentation Grenade"
+  },
+  "US_WPN_M2HB": {
+   "English": "M2HB Heavy-Machine Gun"
+  },
+  "IR_WPN_RPK": {
+   "English": "RPK-74 Light-Machine Gun"
+  },
+  "HMG01_M2HB": {
+   "English": "M2HB Heavy-Machine Gun 2"
+  },
+  "US_WPN_FRANCHISPAS": {
+   "English": "Franchi SPAS-12 Combat Shotgun"
+  },
+  "US_WPN_REMMINGTON870": {
+   "English": "Remmington 870 Combat Shotgun"
+  },
+  "US_WPN_SAW_LIGHTMG": {
+   "English": "M249 SAW Light-Machine Gun"
+  },
+  "AMMO_AK74": {
+   "English": "AK-74 Ammunition"
+  },
+  "FLOPPY_DISK": {
+   "English": "SCUD data disk"
+  },
+  "US_WPN_ACCURACYINTER": {
+   "English": "Accuracy International L96A1 Moderated Sniper Rifle"
+  },
+  "AMMO_AKSU": {
+   "English": "AKSU-74 Ammunition"
+  },
+  "AMMO_DRAGUNOV": {
+   "English": "Dragunov Sniper Rifle Ammunition"
+  },
+  "AMMO_FRAG": {
+   "English": "Fragmentation Grenade Pack"
+  },
+  "AMMO_RPK74": {
+   "English": "RPK-74 Ammunition"
+  },
+  "IR_VWPN_BMP2_CHAINGUN": {
+   "English": "30mm 2A42 Automatic Cannon"
+  },
+  "US_VWPN_BRADLEY_TOW": {
+   "English": "M-220 TOW Anti-Tank Guided Missile"
+  },
+  "UK_VWPN_SAS_MG_50CAL": {
+   "English": "Browning M2HB .50 Heavy Machine Gun"
+  },
+  "US_VWPN_BRADLEY_CHAINGUN": {
+   "English": "25mm M242 Bushmaster Chain Gun"
+  },
+  "BRADLEY_PASSENGER": {
+   "English": "M2 Bradley Passenger"
+  },
+  "BRADLEY_DRIVER": {
+   "English": "M2 Bradley Driver"
+  },
+  "HUMVEE_PASSENGER": {
+   "English": "M998 Truck Passenger"
+  },
+  "HUMVEE_DRIVER": {
+   "English": "M998 Truck Driver"
+  },
+  "BMP2_PASSENGER": {
+   "English": "BMP-2 Passenger"
+  },
+  "BMP2_DRIVER": {
+   "English": "BMP-2 Driver"
+  },
+  "HMG01_M2HB5": {
+   "English": "Browning M2HB .50 Heavy Machine Gun"
+  },
+  "HMG02_NSV": {
+   "English": "NSV Heavy Machine Gun"
+  },
+  "ARMOURY_KEYCARD": {
+   "English": "Armory Security Key Card"
+  },
+  "US_WPN_MINEANTITANK_SMALL": {
+   "English": "Anti-Tank Mine"
+  },
+  "US_VWPN_HUMVEE_TOWMG": {
+   "English": "M-220 TOW Anti-Tank Guided Missile"
+  },
+  "MP1_RECOVERY": {
+   "English": "CAMERA"
+  },
+  "MP2_RECOVERY": {
+   "English": "SHIELDED PLUTONIUM CASE"
+  },
+  "MP3_RECOVERY": {
+   "English": "CAMERA CASE"
+  },
+  "MP4_RECOVERY": {
+   "English": "FLIGHT BOX"
+  },
+  "MP5_RECOVERY": {
+   "English": "CAMERA"
+  },
+  "MP6_RECOVERY": {
+   "English": "FLIGHT BOX"
+  },
+  "MARA": {
+   "English": "MP4_RECOVERY"
+  },
+  "CAJA NEGRA": {
+   "English": "MP5_RECOVERY"
+  },
+  "LTER": {
+   "English": "MP3_RECOVERY"
+  },
+  "KAMERAKOFFER": {
+   "English": "MP4_RECOVERY"
+  },
+  "BLACK BOX": {
+   "English": "MP5_RECOVERY"
+  },
+  "KAMERA": {
+   "English": "MP6_RECOVERY"
+  }
+ }
+}

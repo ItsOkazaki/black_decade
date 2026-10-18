@@ -1,0 +1,115 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 31,
+ "count": 33,
+ "strings": {
+  "OBJ_M2_1A": {
+   "English": "OBJ_M2_2 Armor"
+  },
+  "OBJ_M2_2A": {
+   "English": "OBJ_M2_1 Rescue"
+  },
+  "M02_BRF_DT": {
+   "English": "August 3, 1990"
+  },
+  "M02_BRF_HD": {
+   "English": "SAFE PASSAGE"
+  },
+  "M02_BRF_TXT": {
+   "English": "MOV_TXT1 20:00, August 3, 1990"
+  },
+  "MOV_TXT2": {
+   "English": "Kuwait City"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "Alpha-Two Leader, this is Alpha-Two-One, Over."
+  },
+  "SPEECH2": {
+   "English": "Roger that Alpha-Two-One. What's your status, over...?"
+  },
+  "SPEECH3": {
+   "English": "SPEECH4"
+  },
+  "SPEECH5": {
+   "English": "SPEECH6 Go, I'll hold them off!"
+  },
+  "SPEECH9": {
+   "English": "Alpha-Two, priority message!"
+  },
+  "SPEECH10": {
+   "English": "Huff!"
+  },
+  "SPEECH11": {
+   "English": "Up ahead, quick!"
+  },
+  "OBJ_M2_3": {
+   "English": "Rendezvous"
+  },
+  "OBJ_M2_3A": {
+   "English": "OBJ_M2_4 Extraction"
+  },
+  "OBJ_M2_4A": {
+   "English": "TAG_1 Objective Completed"
+  },
+  "SPEECH3B": {
+   "English": "Don't know how much longer I can hold this position, over"
+  },
+  "SPEECH4B": {
+   "English": "SPEECH9B"
+  },
+  "SPEECH9C": {
+   "English": "RESCUE_EMIR"
+  },
+  "EMIR_ASSASSINATED": {
+   "English": "The Emir has been assassinated."
+  },
+  "PICKUP_DEST": {
+   "English": "The pick-up helicopter has been destroyed."
+  },
+  "OBJ_M2_2": {
+   "English": "Blind"
+  },
+  "OBJ_M2_1": {
+   "English": "Secourir"
+  },
+  "MOV_TXT1": {
+   "English": "20h00, 3 ao t 1990"
+  },
+  "SPEECH4": {
+   "English": "Compris, Alpha deux un. Nous devrions retrouver l' mir d'un instant l'autre."
+  },
+  "SPEECH6": {
+   "English": "Allez-y, je vais les retenir!"
+  },
+  "OBJ_M2_4": {
+   "English": "Evacuation"
+  },
+  "TAG_1": {
+   "English": "Objectif atteint"
+  },
+  "SPEECH9B": {
+   "English": "La balise d'urgence de l' mir vient d' tre activ e sur une place de march deux cents m tres l'ouest."
+  },
+  "BERFAHRT": {
+   "English": "M02_BRF_TXT"
+  },
+  "RESCUE_EMIR": {
+   "English": "Retten Sie den Emir, bevor er hinterh ltig ermordet wird!  Dr cken Sie Ziele (%s) f r weitere Informationen."
+  },
+  "CIE": {
+   "English": "M02_BRF_TXT Armia iracka dokona a inwazji Kuwejtu. Wasza dru yna musi odnale Emira Kuwejtu i wydosta go bezpiecznie poza miasto. Connors, specjalista od broni ci kiej, zosta wys any przodem, aby oczy ci drog przez miasto. Spotkajcie si z nim, a nast pnie udajcie si razem do miejsca ewakuacji."
+  }
+ }
+}

@@ -1,0 +1,1152 @@
+{
+ "IMAGE_0": {
+  "page": 4,
+  "x": 67,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_0.png"
+ },
+ "IMAGE_1": {
+  "page": 4,
+  "x": 85,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_1.png"
+ },
+ "IMAGE_2": {
+  "page": 4,
+  "x": 103,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_2.png"
+ },
+ "IMAGE_3": {
+  "page": 4,
+  "x": 121,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_3.png"
+ },
+ "IMAGE_4": {
+  "page": 4,
+  "x": 139,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_4.png"
+ },
+ "IMAGE_5": {
+  "page": 4,
+  "x": 157,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_5.png"
+ },
+ "IMAGE_6": {
+  "page": 4,
+  "x": 175,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_6.png"
+ },
+ "IMAGE_7": {
+  "page": 4,
+  "x": 193,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_7.png"
+ },
+ "IMAGE_8": {
+  "page": 4,
+  "x": 211,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_8.png"
+ },
+ "IMAGE_9": {
+  "page": 4,
+  "x": 229,
+  "y": 98,
+  "w": 11,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_9.png"
+ },
+ "IMAGE_AA01_FIM_92STINGER": {
+  "page": 0,
+  "x": 129,
+  "y": 187,
+  "w": 115,
+  "h": 35,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_AA01_FIM_92STINGER.png"
+ },
+ "IMAGE_AA02_SA7GRAIL": {
+  "page": 1,
+  "x": 127,
+  "y": 3,
+  "w": 110,
+  "h": 33,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_AA02_SA7GRAIL.png"
+ },
+ "IMAGE_ADVANCE": {
+  "page": 2,
+  "x": 133,
+  "y": 125,
+  "w": 18,
+  "h": 10,
+  "ax": 1,
+  "ay": -10,
+  "file": "IMAGE_ADVANCE.png"
+ },
+ "IMAGE_AKCLIP": {
+  "page": 4,
+  "x": 75,
+  "y": 67,
+  "w": 43,
+  "h": 25,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_AKCLIP.png"
+ },
+ "IMAGE_ARROWD": {
+  "page": 2,
+  "x": 225,
+  "y": 228,
+  "w": 28,
+  "h": 23,
+  "ax": -14,
+  "ay": 0,
+  "file": "IMAGE_ARROWD.png"
+ },
+ "IMAGE_ARROWL": {
+  "page": 2,
+  "x": 225,
+  "y": 124,
+  "w": 26,
+  "h": 30,
+  "ax": 5,
+  "ay": -14,
+  "file": "IMAGE_ARROWL.png"
+ },
+ "IMAGE_ARROWR": {
+  "page": 4,
+  "x": 229,
+  "y": 21,
+  "w": 24,
+  "h": 28,
+  "ax": -5,
+  "ay": -14,
+  "file": "IMAGE_ARROWR.png"
+ },
+ "IMAGE_BLUEFLAG": {
+  "page": 4,
+  "x": 95,
+  "y": 21,
+  "w": 37,
+  "h": 40,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_BLUEFLAG.png"
+ },
+ "IMAGE_BROWNING50": {
+  "page": 3,
+  "x": 3,
+  "y": 78,
+  "w": 108,
+  "h": 17,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_BROWNING50.png"
+ },
+ "IMAGE_BULLETS": {
+  "page": 0,
+  "x": 133,
+  "y": 94,
+  "w": 4,
+  "h": 27,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_BULLETS.png"
+ },
+ "IMAGE_CAMCASE": {
+  "page": 1,
+  "x": 119,
+  "y": 162,
+  "w": 55,
+  "h": 56,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_CAMCASE.png"
+ },
+ "IMAGE_CHAINGUN": {
+  "page": 1,
+  "x": 115,
+  "y": 84,
+  "w": 112,
+  "h": 31,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_CHAINGUN.png"
+ },
+ "IMAGE_CLOCK": {
+  "page": 2,
+  "x": 111,
+  "y": 3,
+  "w": 96,
+  "h": 32,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_CLOCK.png"
+ },
+ "IMAGE_COLON": {
+  "page": 0,
+  "x": 119,
+  "y": 229,
+  "w": 2,
+  "h": 11,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_COLON.png"
+ },
+ "IMAGE_DOGTAGS": {
+  "page": 4,
+  "x": 3,
+  "y": 215,
+  "w": 31,
+  "h": 38,
+  "ax": -15,
+  "ay": -18,
+  "file": "IMAGE_DOGTAGS.png"
+ },
+ "IMAGE_DOGTAGSINGLE": {
+  "page": 1,
+  "x": 91,
+  "y": 200,
+  "w": 20,
+  "h": 38,
+  "ax": -10,
+  "ay": -18,
+  "file": "IMAGE_DOGTAGSINGLE.png"
+ },
+ "IMAGE_DRAGONOVCLIP": {
+  "page": 3,
+  "x": 203,
+  "y": 222,
+  "w": 32,
+  "h": 25,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_DRAGONOVCLIP.png"
+ },
+ "IMAGE_DRIVER": {
+  "page": 4,
+  "x": 51,
+  "y": 173,
+  "w": 37,
+  "h": 36,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_DRIVER.png"
+ },
+ "IMAGE_EMIR": {
+  "page": 3,
+  "x": 129,
+  "y": 187,
+  "w": 40,
+  "h": 40,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_EMIR.png"
+ },
+ "IMAGE_FLIGHTBOX": {
+  "page": 2,
+  "x": 3,
+  "y": 180,
+  "w": 71,
+  "h": 43,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_FLIGHTBOX.png"
+ },
+ "IMAGE_FLOPPYDISK": {
+  "page": 4,
+  "x": 159,
+  "y": 133,
+  "w": 45,
+  "h": 31,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_FLOPPYDISK.png"
+ },
+ "IMAGE_FOLLOW": {
+  "page": 2,
+  "x": 3,
+  "y": 229,
+  "w": 18,
+  "h": 22,
+  "ax": 1,
+  "ay": -22,
+  "file": "IMAGE_FOLLOW.png"
+ },
+ "IMAGE_GRENADE_FLASHBANG": {
+  "page": 3,
+  "x": 65,
+  "y": 193,
+  "w": 58,
+  "h": 35,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_GRENADE_FLASHBANG.png"
+ },
+ "IMAGE_GRENADE_FRAG": {
+  "page": 3,
+  "x": 203,
+  "y": 130,
+  "w": 32,
+  "h": 42,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_GRENADE_FRAG.png"
+ },
+ "IMAGE_GRENADE_SMOKE": {
+  "page": 4,
+  "x": 3,
+  "y": 98,
+  "w": 57,
+  "h": 29,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_GRENADE_SMOKE.png"
+ },
+ "IMAGE_GRENADERUSKIE": {
+  "page": 2,
+  "x": 173,
+  "y": 174,
+  "w": 33,
+  "h": 43,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_GRENADERUSKIE.png"
+ },
+ "IMAGE_HEALTH_BAR": {
+  "page": 4,
+  "x": 3,
+  "y": 3,
+  "w": 96,
+  "h": 12,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_HEALTH_BAR.png"
+ },
+ "IMAGE_HOLD": {
+  "page": 2,
+  "x": 201,
+  "y": 41,
+  "w": 18,
+  "h": 30,
+  "ax": 1,
+  "ay": -30,
+  "file": "IMAGE_HOLD.png"
+ },
+ "IMAGE_HOLDFIRE": {
+  "page": 2,
+  "x": 173,
+  "y": 223,
+  "w": 30,
+  "h": 30,
+  "ax": 0,
+  "ay": -29,
+  "file": "IMAGE_HOLDFIRE.png"
+ },
+ "IMAGE_KEY1": {
+  "page": 2,
+  "x": 81,
+  "y": 180,
+  "w": 86,
+  "h": 35,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_KEY1.png"
+ },
+ "IMAGE_KEY2": {
+  "page": 3,
+  "x": 3,
+  "y": 3,
+  "w": 70,
+  "h": 39,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_KEY2.png"
+ },
+ "IMAGE_KEYCARD1": {
+  "page": 1,
+  "x": 3,
+  "y": 200,
+  "w": 82,
+  "h": 42,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_KEYCARD1.png"
+ },
+ "IMAGE_LASTSHOT": {
+  "page": 4,
+  "x": 125,
+  "y": 67,
+  "w": 18,
+  "h": 14,
+  "ax": -8,
+  "ay": -11,
+  "file": "IMAGE_LASTSHOT.png"
+ },
+ "IMAGE_LAW80_ANTITANKLAUNCHER": {
+  "page": 2,
+  "x": 3,
+  "y": 3,
+  "w": 102,
+  "h": 32,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_LAW80_ANTITANKLAUNCHER.png"
+ },
+ "IMAGE_LMGO2_PKGPMG": {
+  "page": 1,
+  "x": 3,
+  "y": 126,
+  "w": 107,
+  "h": 32,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_LMGO2_PKGPMG.png"
+ },
+ "IMAGE_LMGO3_RPK": {
+  "page": 0,
+  "x": 3,
+  "y": 187,
+  "w": 119,
+  "h": 36,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_LMGO3_RPK.png"
+ },
+ "IMAGE_LMGO4_M6OE3": {
+  "page": 1,
+  "x": 125,
+  "y": 43,
+  "w": 116,
+  "h": 30,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_LMGO4_M6OE3.png"
+ },
+ "IMAGE_LONEWOLF": {
+  "page": 4,
+  "x": 183,
+  "y": 21,
+  "w": 40,
+  "h": 38,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_LONEWOLF.png"
+ },
+ "IMAGE_MAP_ALLY": {
+  "page": 3,
+  "x": 175,
+  "y": 237,
+  "w": 16,
+  "h": 16,
+  "ax": -7,
+  "ay": -7,
+  "file": "IMAGE_MAP_ALLY.png"
+ },
+ "IMAGE_MAP_CIVILIAN": {
+  "page": 3,
+  "x": 3,
+  "y": 237,
+  "w": 16,
+  "h": 16,
+  "ax": -7,
+  "ay": -7,
+  "file": "IMAGE_MAP_CIVILIAN.png"
+ },
+ "IMAGE_MAP_ENEMY": {
+  "page": 3,
+  "x": 25,
+  "y": 237,
+  "w": 16,
+  "h": 16,
+  "ax": -7,
+  "ay": -7,
+  "file": "IMAGE_MAP_ENEMY.png"
+ },
+ "IMAGE_MAP_SELECTED": {
+  "page": 0,
+  "x": 225,
+  "y": 47,
+  "w": 27,
+  "h": 36,
+  "ax": -13,
+  "ay": -21,
+  "file": "IMAGE_MAP_SELECTED.png"
+ },
+ "IMAGE_MINE03_ANTITANK": {
+  "page": 3,
+  "x": 3,
+  "y": 193,
+  "w": 56,
+  "h": 38,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_MINE03_ANTITANK.png"
+ },
+ "IMAGE_NAME_BACK": {
+  "page": 3,
+  "x": 117,
+  "y": 78,
+  "w": 96,
+  "h": 16,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_NAME_BACK.png"
+ },
+ "IMAGE_NIGHTVISIONGOGGLES": {
+  "page": 3,
+  "x": 3,
+  "y": 101,
+  "w": 62,
+  "h": 40,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_NIGHTVISIONGOGGLES.png"
+ },
+ "IMAGE_NSV": {
+  "page": 3,
+  "x": 109,
+  "y": 48,
+  "w": 106,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_NSV.png"
+ },
+ "IMAGE_OBJECTIVE": {
+  "page": 2,
+  "x": 225,
+  "y": 160,
+  "w": 28,
+  "h": 28,
+  "ax": -13,
+  "ay": -13,
+  "file": "IMAGE_OBJECTIVE.png"
+ },
+ "IMAGE_OBJECTIVEARROW": {
+  "page": 4,
+  "x": 149,
+  "y": 67,
+  "w": 16,
+  "h": 12,
+  "ax": -7,
+  "ay": -10,
+  "file": "IMAGE_OBJECTIVEARROW.png"
+ },
+ "IMAGE_ORDER_RADIO": {
+  "page": 0,
+  "x": 225,
+  "y": 3,
+  "w": 26,
+  "h": 38,
+  "ax": -13,
+  "ay": -19,
+  "file": "IMAGE_ORDER_RADIO.png"
+ },
+ "IMAGE_PASSENGER": {
+  "page": 3,
+  "x": 203,
+  "y": 178,
+  "w": 32,
+  "h": 38,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_PASSENGER.png"
+ },
+ "IMAGE_PKCLIP": {
+  "page": 4,
+  "x": 211,
+  "y": 133,
+  "w": 37,
+  "h": 28,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_PKCLIP.png"
+ },
+ "IMAGE_PLAYER": {
+  "page": 1,
+  "x": 181,
+  "y": 162,
+  "w": 48,
+  "h": 48,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_PLAYER.png"
+ },
+ "IMAGE_PLUTONIUMCASE": {
+  "page": 2,
+  "x": 3,
+  "y": 82,
+  "w": 52,
+  "h": 54,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_PLUTONIUMCASE.png"
+ },
+ "IMAGE_REDFLAG": {
+  "page": 4,
+  "x": 139,
+  "y": 21,
+  "w": 37,
+  "h": 40,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_REDFLAG.png"
+ },
+ "IMAGE_RIFLE_AKSU": {
+  "page": 3,
+  "x": 79,
+  "y": 3,
+  "w": 72,
+  "h": 38,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_RIFLE_AKSU.png"
+ },
+ "IMAGE_RPG7_ANTITANKLAUNCHER": {
+  "page": 2,
+  "x": 105,
+  "y": 142,
+  "w": 105,
+  "h": 26,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_RPG7_ANTITANKLAUNCHER.png"
+ },
+ "IMAGE_SCANNER": {
+  "page": 0,
+  "x": 3,
+  "y": 3,
+  "w": 123,
+  "h": 123,
+  "ax": -60,
+  "ay": -59,
+  "file": "IMAGE_SCANNER.png"
+ },
+ "IMAGE_SCANNERSMALL": {
+  "page": 0,
+  "x": 133,
+  "y": 3,
+  "w": 85,
+  "h": 85,
+  "ax": -42,
+  "ay": -41,
+  "file": "IMAGE_SCANNERSMALL.png"
+ },
+ "IMAGE_SHOTGUN_FRANCHI_SPAS12": {
+  "page": 1,
+  "x": 3,
+  "y": 84,
+  "w": 106,
+  "h": 36,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_SHOTGUN_FRANCHI_SPAS12.png"
+ },
+ "IMAGE_SMG02_61SKORPION": {
+  "page": 1,
+  "x": 3,
+  "y": 3,
+  "w": 117,
+  "h": 34,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_SMG02_61SKORPION.png"
+ },
+ "IMAGE_SNIPER04_SVDDRAGUNOV": {
+  "page": 0,
+  "x": 3,
+  "y": 229,
+  "w": 110,
+  "h": 24,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_SNIPER04_SVDDRAGUNOV.png"
+ },
+ "IMAGE_STAR": {
+  "page": 2,
+  "x": 27,
+  "y": 229,
+  "w": 18,
+  "h": 18,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_STAR.png"
+ },
+ "IMAGE_TICK": {
+  "page": 2,
+  "x": 225,
+  "y": 194,
+  "w": 28,
+  "h": 28,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TICK.png"
+ },
+ "IMAGE_TIMER_GREEN0": {
+  "page": 2,
+  "x": 51,
+  "y": 229,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN0.png"
+ },
+ "IMAGE_TIMER_GREEN1": {
+  "page": 3,
+  "x": 129,
+  "y": 233,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN1.png"
+ },
+ "IMAGE_TIMER_GREEN2": {
+  "page": 3,
+  "x": 147,
+  "y": 233,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN2.png"
+ },
+ "IMAGE_TIMER_GREEN3": {
+  "page": 3,
+  "x": 221,
+  "y": 42,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN3.png"
+ },
+ "IMAGE_TIMER_GREEN4": {
+  "page": 3,
+  "x": 221,
+  "y": 67,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN4.png"
+ },
+ "IMAGE_TIMER_GREEN5": {
+  "page": 3,
+  "x": 65,
+  "y": 234,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN5.png"
+ },
+ "IMAGE_TIMER_GREEN6": {
+  "page": 3,
+  "x": 83,
+  "y": 234,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN6.png"
+ },
+ "IMAGE_TIMER_GREEN7": {
+  "page": 3,
+  "x": 101,
+  "y": 234,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN7.png"
+ },
+ "IMAGE_TIMER_GREEN8": {
+  "page": 3,
+  "x": 175,
+  "y": 187,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN8.png"
+ },
+ "IMAGE_TIMER_GREEN9": {
+  "page": 3,
+  "x": 175,
+  "y": 212,
+  "w": 11,
+  "h": 19,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TIMER_GREEN9.png"
+ },
+ "IMAGE_TOWROCKET": {
+  "page": 0,
+  "x": 145,
+  "y": 94,
+  "w": 99,
+  "h": 43,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_TOWROCKET.png"
+ },
+ "IMAGE_USMISSILEEXPERT": {
+  "page": 4,
+  "x": 3,
+  "y": 21,
+  "w": 40,
+  "h": 40,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_USMISSILEEXPERT.png"
+ },
+ "IMAGE_VIDEOCAM": {
+  "page": 2,
+  "x": 61,
+  "y": 82,
+  "w": 66,
+  "h": 47,
+  "ax": -33,
+  "ay": -23,
+  "file": "IMAGE_VIDEOCAM.png"
+ },
+ "IMAGE_VIP": {
+  "page": 4,
+  "x": 49,
+  "y": 21,
+  "w": 40,
+  "h": 40,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_VIP.png"
+ },
+ "IMAGE_WEAPON_ACCINTSNIPER": {
+  "page": 0,
+  "x": 129,
+  "y": 228,
+  "w": 113,
+  "h": 25,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_ACCINTSNIPER.png"
+ },
+ "IMAGE_WEAPON_AK47": {
+  "page": 3,
+  "x": 157,
+  "y": 3,
+  "w": 81,
+  "h": 33,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_AK47.png"
+ },
+ "IMAGE_WEAPON_AK74": {
+  "page": 2,
+  "x": 3,
+  "y": 41,
+  "w": 92,
+  "h": 35,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_AK74.png"
+ },
+ "IMAGE_WEAPON_AMMOPACK": {
+  "page": 4,
+  "x": 3,
+  "y": 173,
+  "w": 42,
+  "h": 36,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_AMMOPACK.png"
+ },
+ "IMAGE_WEAPON_AP_MINE": {
+  "page": 2,
+  "x": 225,
+  "y": 84,
+  "w": 20,
+  "h": 34,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_AP_MINE.png"
+ },
+ "IMAGE_WEAPON_BARRETSNIPER": {
+  "page": 1,
+  "x": 117,
+  "y": 126,
+  "w": 111,
+  "h": 30,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_BARRETSNIPER.png"
+ },
+ "IMAGE_WEAPON_BG": {
+  "page": 0,
+  "x": 3,
+  "y": 132,
+  "w": 136,
+  "h": 49,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_BG.png"
+ },
+ "IMAGE_WEAPON_BINOCULARS": {
+  "page": 1,
+  "x": 181,
+  "y": 216,
+  "w": 47,
+  "h": 36,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_BINOCULARS.png"
+ },
+ "IMAGE_WEAPON_C4": {
+  "page": 1,
+  "x": 119,
+  "y": 224,
+  "w": 47,
+  "h": 28,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_C4.png"
+ },
+ "IMAGE_WEAPON_C4DETONATOR": {
+  "page": 2,
+  "x": 225,
+  "y": 41,
+  "w": 19,
+  "h": 37,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_C4DETONATOR.png"
+ },
+ "IMAGE_WEAPON_COMMANDO": {
+  "page": 0,
+  "x": 145,
+  "y": 143,
+  "w": 94,
+  "h": 36,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_COMMANDO.png"
+ },
+ "IMAGE_WEAPON_COMPUTERHACKING": {
+  "page": 3,
+  "x": 3,
+  "y": 147,
+  "w": 59,
+  "h": 40,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_COMPUTERHACKING.png"
+ },
+ "IMAGE_WEAPON_DESERTEAGLE": {
+  "page": 4,
+  "x": 57,
+  "y": 133,
+  "w": 45,
+  "h": 33,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_DESERTEAGLE.png"
+ },
+ "IMAGE_WEAPON_KNIFE": {
+  "page": 3,
+  "x": 147,
+  "y": 101,
+  "w": 91,
+  "h": 23,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_KNIFE.png"
+ },
+ "IMAGE_WEAPON_LASERDESIGNATOR": {
+  "page": 3,
+  "x": 141,
+  "y": 147,
+  "w": 56,
+  "h": 34,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_LASERDESIGNATOR.png"
+ },
+ "IMAGE_WEAPON_LAW66": {
+  "page": 3,
+  "x": 3,
+  "y": 48,
+  "w": 100,
+  "h": 24,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_LAW66.png"
+ },
+ "IMAGE_WEAPON_M16": {
+  "page": 2,
+  "x": 81,
+  "y": 221,
+  "w": 85,
+  "h": 32,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_M16.png"
+ },
+ "IMAGE_WEAPON_M16M203": {
+  "page": 2,
+  "x": 101,
+  "y": 41,
+  "w": 93,
+  "h": 33,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_M16M203.png"
+ },
+ "IMAGE_WEAPON_MAKAROV": {
+  "page": 2,
+  "x": 213,
+  "y": 3,
+  "w": 40,
+  "h": 32,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_MAKAROV.png"
+ },
+ "IMAGE_WEAPON_MEDIPACK": {
+  "page": 4,
+  "x": 109,
+  "y": 133,
+  "w": 44,
+  "h": 32,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_MEDIPACK.png"
+ },
+ "IMAGE_WEAPON_MP5_SUBMG": {
+  "page": 3,
+  "x": 71,
+  "y": 101,
+  "w": 70,
+  "h": 35,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_MP5_SUBMG.png"
+ },
+ "IMAGE_WEAPON_PSG1SNIPER": {
+  "page": 1,
+  "x": 3,
+  "y": 164,
+  "w": 110,
+  "h": 30,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_PSG1SNIPER.png"
+ },
+ "IMAGE_WEAPON_RADIO": {
+  "page": 2,
+  "x": 133,
+  "y": 82,
+  "w": 86,
+  "h": 37,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_RADIO.png"
+ },
+ "IMAGE_WEAPON_REMINGTON870": {
+  "page": 2,
+  "x": 3,
+  "y": 142,
+  "w": 95,
+  "h": 32,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_REMINGTON870.png"
+ },
+ "IMAGE_WEAPON_SAW": {
+  "page": 1,
+  "x": 3,
+  "y": 43,
+  "w": 115,
+  "h": 35,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_SAW.png"
+ },
+ "IMAGE_WEAPON_SIG_P228": {
+  "page": 4,
+  "x": 3,
+  "y": 67,
+  "w": 66,
+  "h": 25,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_SIG_P228.png"
+ },
+ "IMAGE_WEAPON_SOCOM": {
+  "page": 4,
+  "x": 3,
+  "y": 133,
+  "w": 47,
+  "h": 34,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WEAPON_SOCOM.png"
+ },
+ "IMAGE_WIRECUTTERS": {
+  "page": 3,
+  "x": 69,
+  "y": 147,
+  "w": 65,
+  "h": 34,
+  "ax": 0,
+  "ay": 0,
+  "file": "IMAGE_WIRECUTTERS.png"
+ }
+}

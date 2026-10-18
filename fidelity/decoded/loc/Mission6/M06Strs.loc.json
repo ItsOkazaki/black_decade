@@ -1,0 +1,118 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 34,
+ "count": 34,
+ "strings": {
+  "OBJ_M6_1": {
+   "English": "Defend"
+  },
+  "OBJ_M6_1A": {
+   "English": "OBJ_M6_2 Protect"
+  },
+  "OBJ_M6_2A": {
+   "English": "OBJ_M6_3 Search & Rescue"
+  },
+  "OBJ_M6_3A": {
+   "English": "M06_BRF_DT January 24, 1991"
+  },
+  "M06_BRF_HD": {
+   "English": "CRASH & BURN"
+  },
+  "M06_BRF_TX1": {
+   "English": "M06_BRF_TX2"
+  },
+  "MOV_TXT1": {
+   "English": "06:00, January 24, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Southern Iraq"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "SPEECH3 Lock on! Break left!"
+  },
+  "SPEECH4": {
+   "English": "Vampire! Vampire! In-bound miss..."
+  },
+  "SPEECH5": {
+   "English": "How's he doing?"
+  },
+  "SPEECH6": {
+   "English": "He's gonna be OK. Just a few broken ribs."
+  },
+  "SPEECH7": {
+   "English": "Groan ....."
+  },
+  "SPEECH8": {
+   "English": "SPEECH9 Roger that Voodoo control, Alpha-Two out."
+  },
+  "SPEECH10": {
+   "English": "SPEECH11"
+  },
+  "SPEECH12": {
+   "English": "SPEECH13"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "M06_BRF_TX3": {
+   "English": "SPEECH12B"
+  },
+  "SPEECH13B": {
+   "English": "And don't hang around when the chopper gets here!"
+  },
+  "LEAVING": {
+   "English": "You are leaving the Rescue Zone!"
+  },
+  "DEFEND": {
+   "English": "Defend the pick-up point!"
+  },
+  "COPILOT_KILLED": {
+   "English": "The Co-pilot has been killed."
+  },
+  "GUNNER_KILLED": {
+   "English": "The Gunner has been killed."
+  },
+  "SR_HELI_DESTR": {
+   "English": "The Search & Rescue helicopter has been destroyed."
+  },
+  "OBJ_M6_2": {
+   "English": "fendez"
+  },
+  "OBJ_M6_3": {
+   "English": "Recherche et Sauvetage"
+  },
+  "M06_BRF_DT": {
+   "English": "24 janvier 1991"
+  },
+  "M06_BRF_TX2": {
+   "English": "e par des BMP, ainsi que des h licopt res arm s. Les fendez le plateau jusqu' leur arriv e."
+  },
+  "SPEECH3": {
+   "English": "Verrouillage! Virez gauche!"
+  },
+  "SPEECH9": {
+   "English": "Bien re u, contr le Vautour, Alpha deux termin"
+  },
+  "SPEECH11": {
+   "English": "Nous ne sommes pas encore sortis d'affaire! La fum e de l'accident est visible 30 kilom tres la ronde."
+  },
+  "SPEECH13": {
+   "English": "OK, les gars! Faites la peau"
+  },
+  "SPEECH12B": {
+   "English": "et attendez le ramassage, d'accord?"
+  }
+ }
+}

@@ -1,0 +1,340 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 88,
+ "count": 108,
+ "strings": {
+  "SERVER": {
+   "English": "SERVER"
+  },
+  "CLIENT": {
+   "English": "Client"
+  },
+  "PLAY_JOIN": {
+   "English": "Player %s has joined the game"
+  },
+  "PLAY_LEFT": {
+   "English": "Player %s has left the game"
+  },
+  "RENAME_PL": {
+   "English": "PLAYER %d HAS CHANGED THEIR NAME TO > %s"
+  },
+  "CONN_LOST": {
+   "English": "Connection Lost"
+  },
+  "CONN_PROB": {
+   "English": "Connection Problems"
+  },
+  "CONN_REJ": {
+   "English": "Connection Rejected"
+  },
+  "INT_NETWK": {
+   "English": "Interrogating network"
+  },
+  "NO_MP": {
+   "English": "No multiplayer games found"
+  },
+  "MP_STATE": {
+   "English": "GAME STATE"
+  },
+  "MP_SETUP": {
+   "English": "Set-up"
+  },
+  "MP_RUN": {
+   "English": "Running"
+  },
+  "MP_LOST": {
+   "English": "Lost"
+  },
+  "MP_GAME": {
+   "English": "%s multiplayer game"
+  },
+  "MP_JOIN": {
+   "English": "JOIN SESSION"
+  },
+  "MP_START": {
+   "English": "START"
+  },
+  "SIMON_SAYS": {
+   "English": "%s says > %s"
+  },
+  "CONN_FAILED": {
+   "English": "Connection Failed"
+  },
+  "MISSION_OBJ": {
+   "English": "Mission objective : %s"
+  },
+  "MISSION_OK": {
+   "English": "Mission successful"
+  },
+  "MISS_FAILED": {
+   "English": "Mission failed"
+  },
+  "ATTACKERS": {
+   "English": "Team 1"
+  },
+  "DEFENDERS": {
+   "English": "Team 2"
+  },
+  "ATTACKING": {
+   "English": "ATTACKING"
+  },
+  "DEFENDING": {
+   "English": "DEFENDING"
+  },
+  "LONE_WOLF": {
+   "English": "LONE WOLF"
+  },
+  "VIP": {
+   "English": "VIP"
+  },
+  "MP_WINNERS": {
+   "English": "%s WIN"
+  },
+  "GAME_OVER": {
+   "English": "Game over"
+  },
+  "TRUCK": {
+   "English": "TRUCK"
+  },
+  "SCUDLAUNCHR": {
+   "English": "SCUD LAUNCHER"
+  },
+  "ESC_CLOSED": {
+   "English": "THE %s ESCAPE ROUTE HAS BEEN CLOSED"
+  },
+  "KILLED_BY": {
+   "English": "%s was killed by %s"
+  },
+  "HAS_DIED": {
+   "English": "%s has died"
+  },
+  "SUICIDED": {
+   "English": "%s has suicided"
+  },
+  "NEW_X_SEL": {
+   "English": "NEW %s HAS BEEN SELECTED"
+  },
+  "HUNTERSKILL": {
+   "English": "HUNTERS HAVE KILLED THE WOLF"
+  },
+  "VIP_DEAD": {
+   "English": "VIP HAS BEEN DISPOSED"
+  },
+  "VIP_ESC": {
+   "English": "THE VIP HAS ESCAPED, DEFENDERS WIN"
+  },
+  "GOT_OBJ": {
+   "English": "%s HAVE THE OBJECTIVE"
+  },
+  "OBJ_GON_HOM": {
+   "English": "OBJECTIVE RETURNED"
+  },
+  "OBJ_DROPPED": {
+   "English": "OBJECTIVE DROPPED"
+  },
+  "X_DESTROYED": {
+   "English": "%s DESTROYED"
+  },
+  "ASS_DEFEND": {
+   "English": "ASSAULT/DEFEND"
+  },
+  "DEATHMATCH": {
+   "English": "TEAM DEATHMATCH"
+  },
+  "RECOVER_OBJ": {
+   "English": "RECOVER OBJECTIVE"
+  },
+  "VIP_ASSASS": {
+   "English": "VIP ASSASSINATION"
+  },
+  "CLIENTREADY": {
+   "English": "Waiting for game to start"
+  },
+  "SCANNING": {
+   "English": "SCANNING..."
+  },
+  "SETUP_CHAT": {
+   "English": "CONTINUE"
+  },
+  "PLAY_SETUP": {
+   "English": "PLAYER SET-UP"
+  },
+  "CONN_PLYR": {
+   "English": "CONNECTED PLAYERS"
+  },
+  "PLAYER_INFO": {
+   "English": "PLAYER INFORMATION"
+  },
+  "TEAM": {
+   "English": "TEAM"
+  },
+  "CHARACTER": {
+   "English": "CHARACTER"
+  },
+  "READY": {
+   "English": "READY"
+  },
+  "WAIT_4_PLAY": {
+   "English": "Waiting for players"
+  },
+  "DEATHS": {
+   "English": "DEATHS"
+  },
+  "WAIT_4_SERV": {
+   "English": "Waiting for server"
+  },
+  "SESSION": {
+   "English": "SESSION"
+  },
+  "TEAMS_DRAW": {
+   "English": "TEAMS DRAW"
+  },
+  "MPTEAM_IRAQ": {
+   "English": "IRAQI"
+  },
+  "MPTEAM_US": {
+   "English": "U.S."
+  },
+  "MPTEAM_UK": {
+   "English": "U.K."
+  },
+  "MPTEAM_RUS": {
+   "English": "RUSSIAN"
+  },
+  "VIP_DOWN": {
+   "English": "VIP IS DOWN"
+  },
+  "LW_DOWN": {
+   "English": "LONE WOLF IS DOWN"
+  },
+  "OBJ_DESTR": {
+   "English": "FIRST OBJECTIVE DESTROYED"
+  },
+  "ENEMY_DOWN": {
+   "English": "ENEMY DOWN"
+  },
+  "SQUAD_DOWN": {
+   "English": "SQUAD MEMBER DOWN"
+  },
+  "RETRIEVED": {
+   "English": "%s RETRIEVED"
+  },
+  "CHASE_CAMER": {
+   "English": "CHASE CAMERA"
+  },
+  "DETAILCHANGE_A": {
+   "English": "Changes take effect at respawn"
+  },
+  "DETAILCHANGE_B": {
+   "English": "or when the level restarts"
+  },
+  "SERVER_FULL": {
+   "English": "SERVER FULL"
+  },
+  "SPAWN_INV": {
+   "English": "YOU ARE INVULNERABLE"
+  },
+  "SEND_GLOBAL": {
+   "English": "SEND GLOBAL MESSAGE"
+  },
+  "SEND_TEAM": {
+   "English": "SEND TEAM MESSAGE"
+  },
+  "NO_TIME": {
+   "English": "No time limit"
+  },
+  "NEW_PLAYER": {
+   "English": "New player has joined"
+  },
+  "KBM_SEND_GLOBAL": {
+   "English": "Send Global Message"
+  },
+  "KBM_SEND_TEAM": {
+   "English": "Send Team Message"
+  },
+  "FRIENDLY_FIRE": {
+   "English": "FRIENDLY FIRE"
+  },
+  "KILLS_TO_WIN": {
+   "English": "KILLS TO WIN"
+  },
+  "FREE_FOR_ALL": {
+   "English": "FREE-FOR-ALL"
+  },
+  "NO_LIMIT": {
+   "English": "NO LIMIT"
+  },
+  "F4F_DEATHMATCH": {
+   "English": "DEATHMATCH"
+  },
+  "HLT": {
+   "English": "HUNTERSKILL"
+  },
+  "GER HABEN DEN WOLF ERLEGT": {
+   "English": "VIP_DEAD"
+  },
+  "VIP WURDE ERLEDIGT": {
+   "English": "VIP_ESC DER VIP IST GEFLOHEN; DIE VERTEIDIGER GEWINNEN"
+  },
+  "CKGEBRACHT": {
+   "English": "OBJ_DROPPED"
+  },
+  "ZIEL FALLENGELASSEN": {
+   "English": "X_DESTROYED %s ZERST"
+  },
+  "RT": {
+   "English": "ASS_DEFEND ANGRIFF/VERTEIDIGUNG"
+  },
+  "FEIND AUSGESCHALTET": {
+   "English": "SQUAD_DOWN"
+  },
+  "TEAMMITGLIED AUSGESCHALTET": {
+   "English": "RETRIEVED %s ERNEUERT"
+  },
+  "MPFER": {
+   "English": "NO_LIMIT"
+  },
+  "KEINE BEGRENZUNG": {
+   "English": "F4F_DEATHMATCH"
+  },
+  "SERVIDOR": {
+   "English": "CLIENT Cliente"
+  },
+  "N DEL JUGADOR": {
+   "English": "CONN_PLYR"
+  },
+  "JUGADORES CONECTADOS": {
+   "English": "PLAYER_INFO"
+  },
+  "INFORMACI": {
+   "English": "N SOBRE EL JUGADOR"
+  },
+  "N DERRIBADO": {
+   "English": "RETRIEVED %s RECUPERADO"
+  },
+  "MITE": {
+   "English": "F4F_DEATHMATCH"
+  },
+  "COMBATE A MUERTE": {
+   "English": "SERVER"
+  },
+  "STATO CHIUSO": {
+   "English": "KILLED_BY %s stato ucciso da %s"
+  },
+  "STATO DEPOSTO": {
+   "English": "VIP_ESC"
+  },
+  "IL VIP": {
+   "English": "FUGGITO; VINCONO LE FORZA DI DIFESA"
+  }
+ }
+}

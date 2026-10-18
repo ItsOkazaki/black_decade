@@ -1,0 +1,82 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 20,
+ "count": 22,
+ "strings": {
+  "OBJ_M11_1": {
+   "English": "Sewer"
+  },
+  "OBJ_M11_1A": {
+   "English": "OBJ_M11_2 Protect"
+  },
+  "OBJ_M11_2A": {
+   "English": "MOV_TXT1 18:43, March 1, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "South Baghdad"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "M11_BRF_DT": {
+   "English": "February 28, 1991"
+  },
+  "M11_BRF_HD": {
+   "English": "ON THE BRINK"
+  },
+  "M11_BRF_TX1": {
+   "English": "M11_BRF_TX2"
+  },
+  "SPEECH1": {
+   "English": "Alright fellas. Go and check for unwanted visitors"
+  },
+  "SPEECH2": {
+   "English": "Roger that"
+  },
+  "SPEECH3": {
+   "English": "You about ready Franklin?"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "TAG2": {
+   "English": "Objective Completed"
+  },
+  "M11_BRF_TX3": {
+   "English": "ALARM_RAISED The alarm has been raised!"
+  },
+  "FRANKLIN_KILLED": {
+   "English": "Dr Franklin has been killed."
+  },
+  "M11_BRF_TX4": {
+   "English": "OBJ_M11_1 Egouts"
+  },
+  "OBJ_M11_2": {
+   "English": "Prot gez"
+  },
+  "MOV_TXT1": {
+   "English": "18h43, 1 mars 1991"
+  },
+  "ALARM_RAISED": {
+   "English": "L'alerte a donn e!"
+  },
+  "M11_BRF_TX2": {
+   "English": "rchtungen best rpers im Vergleich zu neueren Raketen veraltet, verf gt aber ber einen Gefechtskopf mit furchteinfl ender Zerst"
+  },
+  "OK": {
+   "English": "SPEECH3 Sei pronto Franklin?"
+  },
+  "DZI": {
+   "English": "M11_BRF_TX1 Im bli ej ko ca wojny, tym bardziej Waszyngton obawia si , e Irak u yje broni masowego ra enia przeciwko naszym wojskom lub cz onkom koalicji pa stw arabskich."
+  }
+ }
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLACK DECADE — Mission 1</title>
+<style>
+  html,body{margin:0;padding:0;overflow:hidden;background:#191510;font-family:Segoe UI,Arial,sans-serif;color:#e8e4d8}
+  #view{position:fixed;inset:0}
+  canvas{display:block}
+  #cross{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;color:#ffe9b0;font-size:18px;text-shadow:0 0 4px #000;display:none}
+  #err{position:fixed;left:16px;bottom:16px;z-index:6;color:#ff9d5c;font-size:12px}
+  .gtext{display:block;image-rendering:pixelated}
+  /* ---- squad stack (game layout: portraits + health bar from GWint) ---- */
+  #squadbar{position:fixed;right:12px;top:120px;z-index:6;display:flex;flex-direction:column;gap:7px}
+  .card{display:flex;gap:7px;align-items:flex-start;background:rgba(8,10,6,.72);border:1px solid rgba(120,130,100,.55);padding:4px 6px;width:158px}
+  .card img.face{width:44px;height:54px;object-fit:cover;border:1px solid #222}
+  .card.active{border-color:#e8e4d8;background:rgba(20,26,14,.85)}
+  .card.down{opacity:.5}
+  .cname{font-size:11px;letter-spacing:.08em;color:#f0ead8;text-shadow:1px 1px 2px #000;margin-bottom:3px}
+  .cbar{width:100px;height:9px;background:#14160f;border:1px solid #000;overflow:hidden}
+  .cbar>div{height:100%;background:url(textures/hud/bar.png) left/cover no-repeat;transition:width .25s}
+  .cbar>div.low{filter:hue-rotate(-75deg) saturate(1.7)}
+  .cstate{font-size:9px;letter-spacing:.1em;color:#cfd4c4;margin-top:3px;text-shadow:1px 1px 2px #000}
+  #compass{position:fixed;top:12px;right:12px;z-index:6;width:92px;height:92px}
+  #compass img{width:100%;height:100%}
+  /* ---- weapon box: GWint IMAGE_WEAPON_BG slot + icon + digit sprites ---- */
+  #wpnbox{position:fixed;right:12px;bottom:12px;z-index:6;width:190px;height:64px;background:url(textures/ui/gwint/IMAGE_WEAPON_BG.png) center/100% 100% no-repeat;text-align:center}
+  #wpnbox .wicon{height:34px;max-width:150px;margin-top:3px;filter:drop-shadow(2px 2px 3px #000)}
+  #ammoDigits{position:absolute;right:8px;bottom:4px}
+  #ammoDigits img{height:20px;margin-left:1px;filter:drop-shadow(1px 1px 2px #000)}
+  #magline{position:absolute;left:8px;bottom:5px;color:#e8e4d8;font-size:10px;letter-spacing:.12em;text-shadow:1px 1px 2px #000}
+  /* ---- held-item bar (inventory slots, GWint art) ---- */
+  #itembar{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:6;display:flex;gap:5px}
+  .slot{width:86px;height:44px;background:url(textures/ui/gwint/IMAGE_WEAPON_BG.png) center/100% 100% no-repeat;position:relative;cursor:pointer;opacity:.92}
+  .slot img{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);max-width:74px;max-height:30px;filter:drop-shadow(1px 1px 2px #000)}
+  .slot .cnt{position:absolute;right:5px;bottom:3px;font-size:11px;font-weight:700;color:#ffe9a8;text-shadow:1px 1px 2px #000}
+  .slot .key{position:absolute;left:5px;top:2px;font-size:9px;color:#9db38a;text-shadow:1px 1px 2px #000}
+  .slot.held{outline:2px solid #f0ead8;outline-offset:-2px;filter:brightness(1.35)}
+  .slot.empty{opacity:.35}
+  /* ---- objective line (game font on canvas) ---- */
+  #objbox{position:fixed;left:12px;top:44px;z-index:6;display:flex;gap:8px;align-items:flex-start;background:rgba(8,10,6,.55);padding:6px 10px 6px 6px}
+  #objbox img{width:26px;height:26px}
+  #objsub{font-size:10px;letter-spacing:.14em;color:#cfd4c4;text-shadow:1px 1px 2px #000;margin-top:2px}
+  #kills{position:fixed;left:12px;top:104px;z-index:6}
+  /* ---- announcements ---- */
+  #msg{position:fixed;left:50%;top:24%;transform:translateX(-50%);z-index:8;text-align:center;pointer-events:none;opacity:0;transition:opacity .4s}
+  /* ---- inventory overlay (DefLoad-style panel) ---- */
+  #inv{position:fixed;inset:0;z-index:9;display:none;align-items:center;justify-content:center;background:rgba(5,6,4,.78)}
+  #inv .sheet{width:min(880px,94vw);background:#101208 url(textures/ui/defload.png) center/cover no-repeat;border:1px solid #6b725f;padding:0;box-shadow:0 0 60px #000}
+  #inv .inner{background:rgba(8,10,6,.88);padding:18px 22px}
+  #invSlots{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  #invSlots .slot{width:118px;height:58px}
+  #invSlots .slot img{max-width:100px;max-height:38px}
+  #invSlots .slot .nm{position:absolute;left:6px;bottom:3px;font-size:9px;letter-spacing:.08em;color:#e8e4d8;text-shadow:1px 1px 2px #000}
+  #invGear{font-size:11.5px;line-height:1.65;color:#cfd4c4;letter-spacing:.06em}
+  /* ---- deploy overlay on the game's DefLoad art ---- */
+  #start{position:fixed;inset:0;z-index:10;background:#0a0c07 url(textures/ui/defload.png) center/cover no-repeat;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  #start .shade{background:rgba(6,8,5,.82);padding:26px 34px;max-width:640px;text-align:center;border:1px solid rgba(150,160,120,.5)}
+  #start p{color:#d8d2c2;font-size:13.5px;line-height:1.65}
+  #start b{color:#f0d9a0}
+  #deployBtn{margin-top:10px;cursor:pointer;display:inline-block}
+  a.menulink{color:#b7e39a;font-size:12px;letter-spacing:.15em;text-decoration:none;background:rgba(10,14,8,.7);padding:6px 12px;border:1px solid #5c7042}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"./vendor/three.module.js?v=1",
+  "three/addons/":"./vendor/addons/"
+}}
+</script>
+</head>
+<body>
+<div id="view"></div>
+<div id="cross">+</div>
+<div id="dmg" style="position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center, transparent 55%, rgba(180,20,10,.55) 100%);opacity:0"></div>
+<div id="compass"><img id="compassImg" src="textures/hud/compass.png"></div>
+<div id="objbox"><img src="textures/ui/gwint/IMAGE_OBJECTIVE.png"><div><canvas id="objtext" class="gtext"></canvas><div id="objsub">MISSION 1 — NORTHERN ALGERIA, 1994</div></div></div>
+<div id="kills"><canvas id="killsCv" class="gtext"></canvas></div>
+<div id="squadbar">
+  <div class="card" id="card0"><img class="face" src="textures/portraits/sq1.png"><div><div class="cname">Bradley</div><div class="cbar"><div id="pb0" style="width:100%"></div></div><div class="cstate" id="ps0">READY</div></div></div>
+  <div class="card" id="card1"><img class="face" src="textures/portraits/sq2.png"><div><div class="cname">Connors</div><div class="cbar"><div id="pb1" style="width:100%"></div></div><div class="cstate" id="ps1">READY</div></div></div>
+  <div class="card" id="card2"><img class="face" src="textures/portraits/sq3.png"><div><div class="cname">JONES</div><div class="cbar"><div id="pb2" style="width:100%"></div></div><div class="cstate" id="ps2">READY</div></div></div>
+  <div class="card" id="card3"><img class="face" src="textures/portraits/sq4.png"><div><div class="cname">Foley</div><div class="cbar"><div id="pb3" style="width:100%"></div></div><div class="cstate" id="ps3">READY</div></div></div>
+</div>
+<div id="wpnbox"><img class="wicon" src="textures/ui/gwint/IMAGE_WEAPON_M16M203.png"><div id="magline">M16A2 · <span id="magtext">30</span></div><div id="ammoDigits"></div></div>
+<div id="itembar"></div>
+<div id="msg"><canvas id="msgtext" class="gtext"></canvas><div id="msgsub" style="margin-top:6px"></div></div>
+<div id="inv"><div class="sheet"><div class="inner">
+  <canvas id="invTitle" class="gtext"></canvas>
+  <div id="invSlots"></div>
+  <canvas id="invGearTitle" class="gtext"></canvas>
+  <div id="invGear"></div>
+  <p style="font-size:11.5px;color:#9db38a;letter-spacing:.08em;margin:12px 0 0">HOVER + CLICK A SLOT TO SELECT · SPACE OR TAB CLOSES · H = MEDI KIT · E = PLANT C4 AT THE MiG</p>
+</div></div></div>
+<div id="hud" style="display:none"><div id="ammo"></div><div id="stance"></div><div id="hp"></div><div id="foe"></div><div id="squad"></div></div>
+<div id="err"></div>
+<a class="menulink" href="index.html" style="position:fixed;top:12px;left:12px;z-index:9">◀ MAIN MENU</a>
+<div id="start"><div class="shade">
+  <canvas id="startTitle" class="gtext" style="margin:0 auto"></canvas>
+  <p style="letter-spacing:.25em;color:#9db38a;font-size:11px;margin:6px 0 2px">MISSION 1 — THE NORTHERN BASE</p>
+  <p>An insurgent cell holds the old northern base and a captured MiG.
+     Push north from the wadi, clear the compound, <b>destroy the MiG</b>
+     (Jones has the C4 — Bradley carries a LAW), then fall back to the
+     extraction point for pickup.</p>
+  <p><b>Mouse</b> look · <b>LMB</b> fire/use · <b>RMB</b> aim · <b>WASD</b> move ·
+     <b>Ctrl</b> walk · <b>Shift</b> sprint · <b>R</b> reload · <b>C</b> crouch · <b>X</b> prone<br>
+     <b>1–4</b> switch soldier · <b>Q</b>/wheel change weapon-item · <b>SPACE</b> inventory (mouse) ·
+     <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>T</b> new wave · <b>P</b> pause</p>
+  <canvas id="deployBtn" class="gtext"></canvas>
+  <div id="stats" style="font-size:12px;color:#9db38a;margin-top:8px">Loading…</div>
+</div></div>
+<script>
+window.addEventListener('error', function(e){
+  if (window.__playLoaded || !e.message) return;
+  var el=document.getElementById('err');
+  if(el) el.textContent='⚠ '+e.message;
+}, true);
+</script>
+<script src="font.js?v=1"></script>
+<script src="loadout.js?v=1"></script>
+<script type="module" src="play.js?v=42"></script>
+</body>
+</html>

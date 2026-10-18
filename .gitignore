@@ -1,0 +1,5 @@
+# BLACK DECADE — only the game code + decoded data (fidelity/) is committed.
+# The extracted proprietary game files from the user's "x" upload stay local.
+/*
+!/fidelity/
+!/.gitignore

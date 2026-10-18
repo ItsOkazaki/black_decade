@@ -1,0 +1,133 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 37,
+ "count": 39,
+ "strings": {
+  "OBJ_M9_1": {
+   "English": "Armor"
+  },
+  "OBJ_M9_1A": {
+   "English": "OBJ_M9_2 Anti-aircraft"
+  },
+  "OBJ_M9_2A": {
+   "English": "OBJ_M9_3 Clear Road"
+  },
+  "OBJ_M9_3A": {
+   "English": "M09_BRF_HD"
+  },
+  "CAVALRY CHARGE": {
+   "English": "M09_BRF_DT February 26, 1991"
+  },
+  "M09_BRF_TXT": {
+   "English": "MOV_TXT1 22:35, February 26, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Front line - Southern Iraq"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "Alpha Group Leader this is Scout Unit Blue."
+  },
+  "SPEECH2": {
+   "English": "SPEECH3 Affirmative, Group Leader. Holding position."
+  },
+  "SPEECH4": {
+   "English": "Roger that, Alpha Group Leader. Advancing now."
+  },
+  "SPEECH5": {
+   "English": "Roger that, Group Leader. Escorting Scout Group Blue."
+  },
+  "SPEECH6": {
+   "English": "Affirmative, Group leader. Following Scout Group Blue."
+  },
+  "SPEECH7": {
+   "English": "SPEECH8 Charge set sir."
+  },
+  "SPEECH9": {
+   "English": "Blow it!"
+  },
+  "SPEECH10": {
+   "English": "Fire in the hole!!!"
+  },
+  "SPEECH11": {
+   "English": "Good work soldier! Mount up!"
+  },
+  "TAG1": {
+   "English": "Objective Completed"
+  },
+  "TAG2": {
+   "English": "Objective Completed"
+  },
+  "M9_A10PILOT_NEGATIVE": {
+   "English": "M9_A10PILOT_STRIKEINBOUND"
+  },
+  "M09_BRF_TX2": {
+   "English": "M09_BRF_TX3"
+  },
+  "M09_BRF_TX4": {
+   "English": "SPEECH1B"
+  },
+  "SPEECH2B": {
+   "English": "SPEECH7B Get a C4 charge on that tank trap!"
+  },
+  "THUNDERBOLT_IN": {
+   "English": "A-10 Thunderbolt air strike inbound."
+  },
+  "ALARM_RAISED": {
+   "English": "The alarm has been raised!"
+  },
+  "UNLOCK_MISSIONS": {
+   "English": "M09_BRF_TX5 If your vehicle is destroyed continue the mission on foot."
+  },
+  "OBJ_M9_2": {
+   "English": "Antia rien"
+  },
+  "OBJ_M9_3": {
+   "English": "gager le passage"
+  },
+  "M09_BRF_HD": {
+   "English": "CHARGE DE CAVALERIE"
+  },
+  "M09_BRF_DT": {
+   "English": "26 f vrier 1991"
+  },
+  "MOV_TXT1": {
+   "English": "22h35, 26 f vrier 1991"
+  },
+  "SPEECH3": {
+   "English": "Affirmatif, Chef de groupe. Je reste en position."
+  },
+  "SPEECH8": {
+   "English": "Charge amorc e, commandant."
+  },
+  "M9_A10PILOT_STRIKEINBOUND": {
+   "English": "Euh... r ponse positive pour l'objectif. Attaque imminente, termin"
+  },
+  "M09_BRF_TX3": {
+   "English": "truire les chars de bataille T-72 retranch s que vous d signez. Les chars T-72 sont prot s des attaques a riennes par des plates-formes antia riennes mobiles SHILKA. Vous devez imp rativement neutraliser ces d fenses antia"
+  },
+  "SPEECH1B": {
+   "English": "Aucun contact ennemi. Je r te, aucun contact ennemi. Quels sont les ordres? Termin"
+  },
+  "SPEECH7B": {
+   "English": "Placez une charge C4 sur ce pi ge char!"
+  },
+  "M09_BRF_TX5": {
+   "English": "Si votre v hicule est d truit, continuez la mission pied."
+  },
+  "A KAWALERII": {
+   "English": "M09_BRF_DT 26 lutego 1991"
+  }
+ }
+}

@@ -1,0 +1,112 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 31,
+ "count": 32,
+ "strings": {
+  "OBJ_M7_1": {
+   "English": "Infantry"
+  },
+  "OBJ_M7_1A": {
+   "English": "OBJ_M7_2 Armor"
+  },
+  "OBJ_M7_2A": {
+   "English": "M07_BRF_DT January 31, 1991"
+  },
+  "M07_BRF_HD": {
+   "English": "PATRIOTIC DEFENSE"
+  },
+  "M07_BRF_TXT": {
+   "English": "MOV_TXT1 17:30, January 31, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Al-Khafji, Saudi Arabian border"
+  },
+  "MOV_TXT3": {
+   "English": "Movie text"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "SPEECH1": {
+   "English": "SPEECH2 Alpha-Two over..."
+  },
+  "SPEECH3": {
+   "English": "SPEECH4"
+  },
+  "SPEECH5": {
+   "English": "Affirmative, Alpha-Two. Taking the shot now..."
+  },
+  "SPEECH6": {
+   "English": "Target down Alpha-Two...see you in two, over..."
+  },
+  "SPEECH7": {
+   "English": "OK boys, looks like we have some company."
+  },
+  "SPEECH8": {
+   "English": "Get ready for contact!"
+  },
+  "M7_AIRSTRIKES_CANCELLED_NONE_LEFT": {
+   "English": "Negative Alpha-Two.  We are not in position yet."
+  },
+  "M7_AIRSTRIKES_AVAIL_INTRO": {
+   "English": "M7_AIRSTRIKES_AVAILABLE MLRS artillery strikes are available."
+  },
+  "M7_NO_AIRSTRIKES_LEFT": {
+   "English": "M7_THEYRE_CLOSING_ON_OUR_POSITION_FAST"
+  },
+  "T2_AIRSTRIKE_CANCELLED": {
+   "English": "Invalid target.  Air strike cancelled, over."
+  },
+  "T2_AIRSTRIKE_INBOUND": {
+   "English": "M07_BRF_TX2"
+  },
+  "M07_BRF_TX3": {
+   "English": "SPEECH3B"
+  },
+  "TAG_1": {
+   "English": "Objective Completed"
+  },
+  "MLRS_INBOUND": {
+   "English": "MLRS Artillery strike inbound."
+  },
+  "OBJ_M7_2": {
+   "English": "Blind"
+  },
+  "M07_BRF_DT": {
+   "English": "31 janvier 1991"
+  },
+  "MOV_TXT1": {
+   "English": "17h30, 31 janvier 1991"
+  },
+  "SPEECH2": {
+   "English": "Alpha deux, termin ..."
+  },
+  "SPEECH4": {
+   "English": "Bien re u il de lynx. Compris. Tirez, puis revenez cette position, termin ..."
+  },
+  "M7_AIRSTRIKES_AVAILABLE": {
+   "English": "Des tirs MLRS sont possibles."
+  },
+  "M7_THEYRE_CLOSING_ON_OUR_POSITION_FAST": {
+   "English": "Deux BMP appuy"
+  },
+  "M07_BRF_TX2": {
+   "English": "e sont capables de d truire des objectifs blind ploy"
+  },
+  "SPEECH3B": {
+   "English": "J'ai le commandant du char de t"
+  },
+  "TICA": {
+   "English": "M07_BRF_TXT La 5 Divisi n Mecanizada iraqu ha empezado a cruzar la frontera entre Kuwait y Arabia Saud , y han ocupado la poblaci n fronteriza de Al-Khafji. Su pelot s posible la fuerza de ocupaci n."
+  }
+ }
+}

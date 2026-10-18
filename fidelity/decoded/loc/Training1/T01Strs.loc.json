@@ -1,0 +1,157 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 44,
+ "count": 47,
+ "strings": {
+  "MOV_TXT1": {
+   "English": "07:00, July 29, 1990"
+  },
+  "MOV_TXT2": {
+   "English": "Special Forces Basic Training Area"
+  },
+  "T1_1": {
+   "English": "Move forwards (%s)"
+  },
+  "T1_2": {
+   "English": "Move backwards (%s)"
+  },
+  "T1_3": {
+   "English": "Strafe left and right (%s)"
+  },
+  "T1_4": {
+   "English": "Turn left and right (%s)"
+  },
+  "T1_5": {
+   "English": "To crouch, press Crouch (%s)"
+  },
+  "T1_6": {
+   "English": "To go prone, press and hold Crouch (%s)"
+  },
+  "T1_7": {
+   "English": "To stand back up press Crouch twice (%s)"
+  },
+  "T1_8": {
+   "English": "Go through the door ahead"
+  },
+  "T1_9": {
+   "English": "To climb a ladder, step up to it and press Action (%s)"
+  },
+  "T1_10": {
+   "English": "To pick up a weapon, stand next to it and press Action (%s)"
+  },
+  "T1_11": {
+   "English": "T1_12 Fire the gun (%s)"
+  },
+  "T1_13": {
+   "English": "T1_14 Switch into Aim Mode (%s)"
+  },
+  "T1_16": {
+   "English": "Fire the gun in Aim Mode (%s)"
+  },
+  "T1_15": {
+   "English": "Move the crosshair (%s)"
+  },
+  "T1_17": {
+   "English": "T1_18"
+  },
+  "T1_19": {
+   "English": "T1_20 Zoom in and out with Zoom (%s)"
+  },
+  "SPEECH1": {
+   "English": "Enter!"
+  },
+  "SPEECH2": {
+   "English": "Ah...about time. Good to see you soldier."
+  },
+  "SPEECH3": {
+   "English": "And you Sir."
+  },
+  "SPEECH4": {
+   "English": "OK, I've got two basic training courses for you today."
+  },
+  "T01_BRF_HD": {
+   "English": "BASIC TRAINING"
+  },
+  "T01_BRF_DT": {
+   "English": "July 28, 1990"
+  },
+  "T01_BRF_TXT": {
+   "English": "SPEECH5 Sir, no sir!"
+  },
+  "SPEECH6": {
+   "English": "OK then soldier, get moving!"
+  },
+  "SPPECH4B": {
+   "English": "SPEECH4C"
+  },
+  "SPEECH4D": {
+   "English": "Any questions?"
+  },
+  "T01_COMPLETED": {
+   "English": "CONGRATULATIONS You have passed Training Mission 1"
+  },
+  "T01_CYCLETARGETS": {
+   "English": "Click Cycle Targets (%s)"
+  },
+  "T1_PC11": {
+   "English": "T1_PC17"
+  },
+  "T1_PC19": {
+   "English": "T1_EXIT_HEADCAM Switch out of Aim Mode (%s)"
+  },
+  "T1_20PC": {
+   "English": "Zoom in and out with Zoom (%s/%s)"
+  },
+  "T1_XB11": {
+   "English": "T1_XB17"
+  },
+  "T1_XB19": {
+   "English": "MOV_TXT1 07h00, 29 juillet 1990"
+  },
+  "T1_12": {
+   "English": "Utilisez l'arme (%s)"
+  },
+  "T1_14": {
+   "English": "Passez en mode de vis e (%s)"
+  },
+  "T1_18": {
+   "English": "Maintenez la touche d'inventaire (%s) enfonc"
+  },
+  "T1_20": {
+   "English": "Zoom avant et arri re avec la touche de Zoom (%s)"
+  },
+  "SPEECH5": {
+   "English": "Chef, non chef!"
+  },
+  "SPEECH4C": {
+   "English": "L'adjudant va d'abord vous faire conna tre le parcours d'assaut ext rieur. Vous passerez ensuite au champ de tir int rieur."
+  },
+  "T1_PC17": {
+   "English": "e, mettez le fusil d'assaut en vidence chez la touche d'inventaire (%s)"
+  },
+  "T1_EXIT_HEADCAM": {
+   "English": "Quitter le mode de vis e (%s)"
+  },
+  "T1_XB17": {
+   "English": "e, mettez le fusil d'assaut en vidence chez la touche d'Inventaire (%s)."
+  },
+  "CKWUNSCH": {
+   "English": "Sie haben den Ausbildungseinsatz 1 bestanden"
+  },
+  "SICO": {
+   "English": "T01_BRF_DT 28 de Julio de 1990"
+  },
+  "ADDESTRAMENTO BASE": {
+   "English": "T01_BRF_DT 28 luglio 1990"
+  }
+ }
+}

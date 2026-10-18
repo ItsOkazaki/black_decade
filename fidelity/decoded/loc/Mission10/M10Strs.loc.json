@@ -1,0 +1,97 @@
+{
+ "languages": [
+  "English",
+  "French",
+  "German",
+  "Spanish",
+  "Italian",
+  "Japanese",
+  "American",
+  "Polish"
+ ],
+ "headerStrings": 26,
+ "count": 27,
+ "strings": {
+  "OBJ_M10_1": {
+   "English": "Infiltrate"
+  },
+  "OBJ_M10_1A": {
+   "English": "Infiltrate the compound under cover of the air raid."
+  },
+  "OBJ_M10_2": {
+   "English": "POWs"
+  },
+  "OBJ_M10_2A": {
+   "English": "Liberate all POWs and escort them out of the compound."
+  },
+  "OBJ_M10_3": {
+   "English": "Escape"
+  },
+  "OBJ_M10_3A": {
+   "English": "M10_BRF_DT February 29, 1991"
+  },
+  "M10_BRF_HD": {
+   "English": "HUMAN SHIELD"
+  },
+  "M10_BRF_TX1": {
+   "English": "M10_BRF_TX2"
+  },
+  "MISSION_BRF": {
+   "English": "Mission Briefing"
+  },
+  "MOV_TXT1": {
+   "English": "01:05, February 27, 1991"
+  },
+  "MOV_TXT2": {
+   "English": "Baghdad"
+  },
+  "SPEECH1": {
+   "English": "SPEECH2"
+  },
+  "SPEECH4": {
+   "English": "Right, let's go get our boys back!"
+  },
+  "TAG2": {
+   "English": "Objective Completed"
+  },
+  "M10_BRF_TX3": {
+   "English": "SECTIONHDR"
+  },
+  "COVERT OPERATIONS": {
+   "English": "SECTIONDATE February 27, 1991"
+  },
+  "SECTIONTEXT": {
+   "English": "SPEECH1B"
+  },
+  "ALARM_RAISED": {
+   "English": "The alarm has been raised!"
+  },
+  "POW_EXECUTED": {
+   "English": "A POW has been executed."
+  },
+  "POW_TRUCK": {
+   "English": "A POW has reached the escape truck."
+  },
+  "TRUCK_DEST": {
+   "English": "The escape truck has been destroyed."
+  },
+  "M10_BRF_DT": {
+   "English": "29 f vrier 1991"
+  },
+  "M10_BRF_TX2": {
+   "English": "Cette mission de sauvetage a programm e en fonction d'attaques sur des objectifs Bagdad par des chasseurs furtifs et des missiles de croisi re. Le commandement esp re que, dans le chaos g ral, votre quipe sera en mesure d'acc der l'enceinte, de localiser les prisonniers, de les lib rer, puis de rejoindre le point de rendez-vous o un v hicule d' vasion vous attendra."
+  },
+  "SPEECH2": {
+   "English": "Bien re u Faucheuse trois. Beau travail. On se revoit de l'autre c . Alpha deux termin"
+  },
+  "SECTIONHDR": {
+   "English": "OPERATIONS SECRETES"
+  },
+  "SECTIONDATE": {
+   "English": "27 f vrier 1991"
+  },
+  "SPEECH1B": {
+   "English": "Le bruit devrait suffisamment vous prot ger pour vous permettre d'entrer et de r cup rer nos gars. Bonne chance. Faucheuse trois termin"
+  }
+ }
+}
