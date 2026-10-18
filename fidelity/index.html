@@ -6,8 +6,8 @@
 <title>BLACK DECADE</title>
 <style>
   html,body{margin:0;padding:0;min-height:100%;background:#070804;font-family:'Segoe UI',Arial,sans-serif;color:#e8e4d8}
-  /* the game's own DefLoad screen art (Catalog/0115) as the menu backdrop */
-  #bg{position:fixed;inset:0;background:url(textures/ui/defload.png) center/cover no-repeat;background-color:#0c0e08}
+  /* cover art backdrop; the menu itself is real UI built over it (never a menu screenshot) */
+  #bg{position:fixed;inset:0;background:url(textures/ui/menu_cover.jpg) center 42%/cover no-repeat;background-color:#0c0e08}
   #shade{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%, rgba(5,7,4,.12) 30%, rgba(5,7,4,.55) 100%)}
   .gtext{display:block;image-rendering:auto}
   /* ---- frontend windows: one screen at a time, like the original ---- */
@@ -16,9 +16,14 @@
   .window{background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.35);padding:22px 26px;max-width:880px;width:min(880px,94vw);max-height:92vh;overflow:auto;text-align:center}
   .window .ptitle{margin:0 auto}
   /* main menu: translucent olive panel + green pill buttons, no title art */
-  #menupanel{width:min(430px,92vw);background:rgba(74,88,44,.45);border:2px solid rgba(190,205,160,.45);border-radius:22px;padding:22px 26px 18px;box-shadow:0 8px 32px rgba(0,0,0,.45)}
-  .mbtn{display:block;width:100%;margin:7px 0;padding:9px 10px 7px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat,linear-gradient(180deg,#3d6120,#2a4712);border:1.5px solid #a8bf8d;border-radius:999px;cursor:pointer;text-decoration:none;color:#ffe14d;font-family:inherit;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(0,0,0,.4)}
-  .mbtn:hover{filter:brightness(1.3);border-color:#ffe14d}
+  #menupanel{width:min(500px,92vw);background:rgba(96,104,58,.52);border:1.5px solid rgba(210,220,180,.35);border-radius:26px;padding:24px 30px 20px;box-shadow:0 10px 34px rgba(0,0,0,.5);transform:translateY(9vh)}
+  .mbtn{display:block;width:100%;margin:8px 0;padding:10px 10px 8px;background:linear-gradient(180deg,#33511a,#26400f);border:1.5px solid rgba(190,205,160,.75);border-radius:999px;cursor:pointer;text-decoration:none;color:#ffe14d;font-family:inherit;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 6px rgba(0,0,0,.4)}
+  .mbtn:hover,.mbtn:focus-visible{border:2px solid #fff;outline:none;filter:brightness(1.18)}
+  .mbtn:hover canvas,.mbtn:focus-visible canvas{filter:grayscale(1) brightness(2.6) contrast(.92)}   /* selected item turns white, like the original */
+  #miniRow{display:flex;gap:10px;justify-content:center;margin-top:12px}
+  .minibtn{padding:6px 18px 5px;background:rgba(20,26,12,.55);border:1.5px solid rgba(190,205,160,.6);border-radius:999px;cursor:pointer;text-decoration:none}
+  .minibtn:hover{border-color:#fff}
+  .minibtn canvas{margin:0 auto}
   .mbtn canvas{margin:0 auto}
   .backbtn{max-width:230px;margin:20px auto 0}
   /* ---- SELECT FORCE cards ---- */
@@ -50,18 +55,44 @@
   .slot .tp{position:absolute;left:112px;bottom:8px;font-size:9px;letter-spacing:.1em;color:#9db38a;text-shadow:1px 1px 2px #000}
   .slot .cnt{position:absolute;right:8px;bottom:6px;font-size:11px;font-weight:700;color:#ffe9a8;text-shadow:1px 1px 2px #000}
   .cornerhint{position:fixed;bottom:12px;font-size:11.5px;color:rgba(255,255,255,.88);text-shadow:1px 1px 3px #000;z-index:5}
+  /* ---- loading splash (shown until the menu data is really loaded behind it) ---- */
+  #splash{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease}
+  #splash.done{opacity:0;pointer-events:none}
+  #splash .sp-kicker{font-size:11px;letter-spacing:.55em;color:#8fa07a;text-indent:.55em}
+  #splash .sp-title{margin-top:10px;font-family:Impact,'Arial Black',Arial,sans-serif;font-size:min(64px,11vw);letter-spacing:.08em;color:#e8e4d8;line-height:1;text-shadow:0 3px 0 #57150f,0 6px 18px rgba(0,0,0,.8)}
+  #splash .sp-title b{color:#c22e1f;font-weight:900}
+  #splash .sp-sub{margin-top:8px;font-size:12px;letter-spacing:.4em;color:#cfe0b8;text-indent:.4em}
+  #splash .sp-barwrap{margin-top:44px;width:min(420px,78vw);height:10px;border:1px solid #6d7a58;background:#101408}
+  #splashBar{height:100%;width:0%;background:linear-gradient(180deg,#d8e6bd,#7fae5c);transition:width .25s}
+  #splashPct{margin-top:10px;font-size:12px;letter-spacing:.3em;color:#ffe14d}
+  #splashMsg{margin-top:6px;font-size:11px;letter-spacing:.22em;color:#a9b895}
+  #splash .sp-wait{margin-top:30px;font-size:10.5px;letter-spacing:.35em;color:#5f6d4e;animation:spblink 1.2s steps(2) infinite}
+  @keyframes spblink{50%{opacity:.25}}
 </style>
 </head>
 <body>
+<div id="splash" role="status" aria-label="Loading">
+  <div class="sp-kicker">OPERATION</div>
+  <div class="sp-title">BLACK <b>DECADE</b></div>
+  <div class="sp-sub">ALGERIA · 1994</div>
+  <div class="sp-barwrap"><div id="splashBar"></div></div>
+  <div id="splashPct">0%</div>
+  <div id="splashMsg">LOADING…</div>
+  <div class="sp-wait">PLEASE WAIT</div>
+</div>
 <div id="bg"></div><div id="shade"></div>
 
 <!-- MAIN MENU -->
 <div class="screen open" id="scr-main">
   <div id="menupanel">
     <button class="mbtn" id="btnSingle"><canvas class="gtext mtxt" data-t="SINGLE PLAYER" data-c="#ffe14d"></canvas></button>
-    <a class="mbtn" href="reskin.html"><canvas class="gtext mtxt" data-t="SQUAD" data-c="#ffe14d"></canvas></a>
+    <button class="mbtn" id="btnMulti"><canvas class="gtext mtxt" data-t="MULTIPLAYER" data-c="#ffe14d"></canvas></button>
     <button class="mbtn" id="btnOptions"><canvas class="gtext mtxt" data-t="OPTIONS" data-c="#ffe14d"></canvas></button>
-    <button class="mbtn" id="btnCredits"><canvas class="gtext mtxt" data-t="CREDITS" data-c="#ffe14d"></canvas></button>
+    <button class="mbtn" id="btnQuit"><canvas class="gtext mtxt" data-t="QUIT" data-c="#ffe14d"></canvas></button>
+    <div id="miniRow">
+      <a class="minibtn" href="reskin.html"><canvas class="gtext mtxt" data-t="SQUAD" data-c="#cfe0b8"></canvas></a>
+      <button class="minibtn" id="btnCredits" style="font-family:inherit"><canvas class="gtext mtxt" data-t="CREDITS" data-c="#cfe0b8"></canvas></button>
+    </div>
   </div>
 </div>
 
@@ -99,7 +130,7 @@
   <div class="window">
     <canvas class="gtext ptitle" data-t="SELECT MISSION"></canvas>
     <div id="misList" style="margin-top:16px;max-height:52vh;overflow:auto"></div>
-    <button class="mbtn backbtn" data-back="scr-force"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
+    <button class="mbtn backbtn" id="misBack" data-back="scr-force"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
   </div>
 </div>
 
@@ -141,6 +172,17 @@
   </div>
 </div>
 
+<!-- QUIT -->
+<div class="screen" id="scr-quit">
+  <div class="window" style="max-width:520px">
+    <canvas class="gtext ptitle" data-t="QUIT"></canvas>
+    <p style="font-size:13px;color:#cfe0b8;letter-spacing:.08em">LEAVE BLACK DECADE AND RETURN TO THE DESKTOP?</p>
+    <button class="mbtn" id="btnQuitYes" style="max-width:300px;margin:10px auto 0"><canvas class="gtext mtxt" data-t="YES — QUIT" data-c="#ffe14d"></canvas></button>
+    <button class="mbtn backbtn" data-back="scr-main"><canvas class="gtext mtxt" data-t="NO — BACK" data-c="#ffe14d"></canvas></button>
+    <p id="quitMsg" style="display:none;font-size:12px;color:#ffe14d;letter-spacing:.1em;margin-top:12px">YOUR BROWSER KEPT THIS TAB OPEN — CLOSE IT TO EXIT. O7</p>
+  </div>
+</div>
+
 <div class="cornerhint" style="left:14px">Return: Select</div>
 <div class="cornerhint" style="right:14px">Esc: Back</div>
 <script src="font.js?v=1"></script>
@@ -148,10 +190,13 @@
 <script>
   const $ = id => document.getElementById(id);
   // ---- frontend screen windows (one at a time, like the original game) ----
-  const SCREENS = ['scr-main', 'scr-force', 'scr-missions', 'scr-loadout', 'scr-options', 'scr-credits'];
+  const SCREENS = ['scr-main', 'scr-force', 'scr-missions', 'scr-loadout', 'scr-options', 'scr-credits', 'scr-quit'];
   let loadoutBack = 'scr-main';
   function showScreen(id) { SCREENS.forEach(s => $(s).classList.toggle('open', s === id)); }
   $('btnSingle').onclick = () => showScreen('scr-force');
+  $('btnMulti').onclick = () => { listMode = 'mp'; $('misBack').dataset.back = 'scr-main'; buildMissionList(); showScreen('scr-missions'); };
+  $('btnQuit').onclick = () => showScreen('scr-quit');
+  $('btnQuitYes').onclick = () => { window.close(); setTimeout(() => { $('quitMsg').style.display = 'block'; }, 350); };
   $('btnOptions').onclick = () => showScreen('scr-options');
   $('btnCredits').onclick = () => showScreen('scr-credits');
   document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => showScreen(b.dataset.back));
@@ -159,8 +204,10 @@
   addEventListener('keydown', e => { if (e.code === 'Escape') showScreen('scr-main'); });
 
   // ---- SELECT FORCE: ANP or G.I.S (stored for the squad screens/game) ----
+  let listMode = 'sp';
   function pickForce(f) {
     localStorage.setItem('bd_force', f);
+    listMode = 'sp'; $('misBack').dataset.back = 'scr-force'; buildMissionList();
     showScreen('scr-missions');
   }
   // ---- SELECT MISSION (every mission is built from its own .env data) ----
@@ -174,7 +221,8 @@
     if (dl) dl.href = 'play.html?m=' + id;
   }
   function buildMissionList() {
-    $('misList').innerHTML = MISSIONS.map(me =>
+    const list = MISSIONS.filter(me => listMode === 'mp' ? !me.id.startsWith('mission') : me.id.startsWith('mission'));
+    $('misList').innerHTML = list.map(me =>
       '<button class="mbtn misbtn" data-m="' + me.id + '" style="display:flex;align-items:center;gap:12px;text-align:left"><img src="textures/ui/maps/' + me.id + '.png" alt="" style="width:96px;height:60px;object-fit:cover;border:1px solid rgba(178,202,150,.6);flex:0 0 auto" onerror="this.remove()"><canvas class="gtext mtxt" data-t="' + me.name + '" data-c="#ffe14d"></canvas></button>').join('');
     document.querySelectorAll('.misbtn').forEach(b => b.onclick = () => { setMission(b.dataset.m); location.href = 'play.html?m=' + b.dataset.m; });
     if (window.GF && GF.text) document.querySelectorAll('.misbtn .mtxt').forEach(cv => {
@@ -233,6 +281,54 @@
 <audio id="menumusic" src="sounds/music/menu.wav" loop preload="auto"></audio>
 <script>(function(){var a=document.getElementById("menumusic");if(!a)return;a.volume=.5;function kick(){a.play().catch(function(){});removeEventListener("pointerdown",kick);removeEventListener("keydown",kick);}addEventListener("pointerdown",kick);addEventListener("keydown",kick);})();</script>
 <audio id="uiclick" src="sounds/ui/click.wav" preload="auto"></audio>
+<script>
+/* ---- loading splash: preload the frontend data behind it, then reveal a finished menu ---- */
+(function () {
+  var splash = document.getElementById('splash'), bar = document.getElementById('splashBar'),
+      pct = document.getElementById('splashPct'), msg = document.getElementById('splashMsg');
+  if (!splash) return;
+  var done = false, t0 = performance.now();
+  function finish() {
+    if (done) return; done = true;
+    var wait = Math.max(0, 1100 - (performance.now() - t0));   // long enough to read as loading
+    setTimeout(function () {
+      bar.style.width = '100%'; pct.textContent = '100%'; msg.textContent = 'READY';
+      splash.classList.add('done');
+      setTimeout(function () { splash.remove(); }, 700);
+    }, wait);
+  }
+  setTimeout(finish, 10000);   // failsafe: the menu can never be trapped behind the splash
+  function img(url) { return new Promise(function (res) { var i = new Image(); i.onload = i.onerror = function () { res(); }; i.src = url; }); }
+  function cap(p, ms) { return Promise.race([p, new Promise(function (res) { setTimeout(res, ms); })]); }
+  var tasks = [
+    ['LOADING COVER ART', function () { return img('textures/ui/menu_cover.jpg'); }],
+    ['LOADING FRONTEND ART', function () { return Promise.all([img('textures/ui/defload.png'), img('textures/gis_patch.png')]); }],
+    ['LOADING TYPEFACE', function () { return (window.GF && GF.load) ? GF.load() : Promise.resolve(); }],
+    ['LOADING MISSION DATA', function () { return fetch('missions.json').then(function (r) { return r.json(); }).catch(function () {}); }],
+    ['LOADING SQUAD FILES', function () { return Promise.all([1, 2, 3, 4].map(function (i) { return img('textures/portraits/sq' + i + '.png?v=2'); })); }],
+    ['LOADING THEATRE MAPS', function () {
+      return fetch('missions.json').then(function (r) { return r.json(); }).then(function (l) {
+        return Promise.all((l || []).map(function (me) { return img('textures/ui/maps/' + me.id + '.png'); }));
+      }).catch(function () {});
+    }],
+    ['LOADING AUDIO', function () {
+      var click = fetch('sounds/ui/click.wav').catch(function () {});
+      var music = new Promise(function (res) { var a = document.getElementById('menumusic'); if (!a) return res(); a.addEventListener('canplaythrough', function () { res(); }, { once: true }); setTimeout(res, 2500); });
+      return Promise.all([click, music]);
+    }],
+    ['LOADING GAME DATA', function () { return fetch('play.js?v=62').then(function (r) { return r.text(); }).catch(function () {}); }]
+  ];
+  (async function () {
+    for (var i = 0; i < tasks.length; i++) {
+      msg.textContent = tasks[i][0] + '…';
+      try { await cap(tasks[i][1](), 4500); } catch (e) {}
+      var p = Math.round((i + 1) / tasks.length * 100);
+      bar.style.width = p + '%'; pct.textContent = p + '%';
+    }
+    finish();
+  })();
+})();
+</script>
 <script>addEventListener("pointerdown",function(e){if(!e.target.closest(".mbtn,.fcard,.backbtn,a"))return;var a=document.getElementById("uiclick");if(a){try{a.currentTime=0;a.play().catch(function(){});}catch(_){}}},true);</script>
 </body>
 </html>
