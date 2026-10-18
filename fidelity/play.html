@@ -13,7 +13,7 @@
   #err{position:fixed;left:16px;bottom:16px;z-index:6;color:#ff9d5c;font-size:12px}
   .gtext{display:block;image-rendering:auto}
   /* ---- squad stack: bottom-left green cards, as the original ---- */
-  #squadbar{position:fixed;left:10px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:6px}
+  #squadbar{position:fixed;left:10px;bottom:10px;z-index:6;display:flex;flex-direction:column;gap:6px}
   .card{position:relative;width:82px;display:flex;flex-direction:column;background:rgba(20,26,14,.72);border:1.5px solid rgba(150,170,120,.55);padding:3px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.45)}
   .card .wpn{order:2;position:relative;display:block;margin:2px auto 0;height:18px;max-width:70px;object-fit:contain;filter:drop-shadow(1px 1px 1px #000);pointer-events:none}
   .card .cname{font-size:9.5px;letter-spacing:.06em;color:#fff;text-shadow:1px 1px 2px #000;margin-top:2px}
@@ -43,7 +43,7 @@
   #magline{color:#f2eeda;font-size:10.5px;letter-spacing:.14em;text-shadow:1px 1px 3px #000}
   #ammoDigits img{height:21px;margin-left:1px;filter:drop-shadow(1px 1px 2px #000)}
   /* ---- held-item quick bar (GWint slots) ---- */
-  #itembar{display:none;position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:6;gap:4px}
+  #itembar{display:none;position:fixed;right:12px;bottom:118px;z-index:7;gap:4px;justify-content:flex-end;flex-wrap:wrap;max-width:min(660px,96vw)}
   .slot{width:74px;height:38px;background:url(textures/ui/gwint/IMAGE_WEAPON_BG.png) center/100% 100% no-repeat;position:relative;cursor:pointer;opacity:.88}
   .slot img{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);max-width:62px;max-height:25px;filter:drop-shadow(1px 1px 2px #000)}
   .slot .cnt{position:absolute;right:4px;bottom:2px;font-size:10px;font-weight:700;color:#ffe9a8;text-shadow:1px 1px 2px #000}
@@ -136,7 +136,7 @@
   <div id="invHint">CLICK A SLOT, THEN CLICK A SOLDIER ABOVE TO HAND IT OVER · DOUBLE-CLICK A SLOT TO CARRY IT</div>
   <canvas id="invGearTitle" class="gtext"></canvas>
   <div id="invGear"></div>
-  <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.08em;margin:12px 0 0">TAB / ESC CLOSES · IN GAME, HOLD SHIFT FOR THE QUICK INVENTORY (W/S SELECT, CLICK/L USE) · H = MEDI KIT · E = PLANT C4</p>
+  <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.08em;margin:12px 0 0">TAB / ESC CLOSES · IN GAME, HOLD SPACE FOR THE QUICK INVENTORY (W/S SELECT, CLICK/L USE) · H = MEDI KIT · E = PLANT C4</p>
 </div></div></div>
 <div id="hud" style="display:none"><div id="ammo"></div><div id="stance"></div><div id="hp"></div><div id="foe"></div><div id="squad"></div></div>
 <div id="err"></div>
@@ -170,8 +170,8 @@
     </div>
   </div>
   <p><b>Mouse</b> look · <b>LMB</b> fire/use · <b>RMB</b> aim · <b>WASD</b> move ·
-     <b>Ctrl</b> walk · <b>Right Shift</b> sprint · <b>R</b> reload · <b>C</b> crouch · <b>X</b> prone<br>
-     <b>1–4</b> switch soldier · <b>HOLD SHIFT</b> inventory — <b>W/S</b> or wheel select, <b>A/D</b> fire mode, <b>click/L</b> use, release closes · <b>TAB</b> squad kit ·
+     <b>Ctrl</b> walk · <b>Shift</b> sprint · <b>R</b> reload · <b>C</b> crouch · <b>X</b> prone<br>
+     <b>1–4</b> switch soldier · <b>HOLD SPACE</b> inventory — <b>W/S</b> or wheel select, <b>A/D</b> fire mode, <b>click/L</b> use, release closes · <b>TAB</b> squad kit ·
      <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>F1</b> objectives · <b>P</b> pause</p>
   <canvas id="deployBtn" class="gtext" style="display:none"></canvas>
 </div></div>
@@ -185,6 +185,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=61"></script>
+<script type="module" src="play.js?v=62"></script>
 </body>
 </html>

@@ -47,18 +47,36 @@ scene.add(fill);
 const loader = new GLTFLoader();
 const downRay = new THREE.Raycaster();
 const DOWN_DIR = new THREE.Vector3(0, -1, 0);
-function groundY(x, z) {
+function groundHitY(x, z) {   // null = NO terrain there (the void) — never silently 0
   downRay.set(new THREE.Vector3(x, 90, z), DOWN_DIR);
   downRay.far = 220;
   const hits = downRay.intersectObjects(_groundMeshes, false);
-  return hits.length ? hits[0].point.y : 0;
+  return hits.length ? hits[0].point.y : null;
+}
+function groundY(x, z) { const h = groundHitY(x, z); return h === null ? 0 : h; }
+// Can a character stand at (nx,nz) heading (dx,dz)? Blocks: no ground (void),
+// cliffs/too-steep slopes, and ledges too high to step onto. Normal hills pass.
+const _hitCache = new Map();   // quantised ground hits so collision stays cheap
+function groundHitCached(x, z) {
+  const k = Math.round(x * 4) + ':' + Math.round(z * 4);
+  let v = _hitCache.get(k);
+  if (v === undefined) { v = groundHitY(x, z); _hitCache.set(k, v); if (_hitCache.size > 9000) _hitCache.clear(); }
+  return v;
+}
+function canStandAt(nx, nz, dx, dz, refY) {
+  const h = groundHitCached(nx, nz); if (h === null) return false;
+  const L = Math.hypot(dx, dz) || 1; dx /= L; dz /= L;
+  const hF = groundHitCached(nx + dx * 0.6, nz + dz * 0.6), hB = groundHitCached(nx - dx * 0.6, nz - dz * 0.6);
+  if (hF !== null && hB !== null && Math.abs(hF - hB) / 1.2 > 1.25) return false;   // >46 deg face
+  if (h - refY > 0.95) return false;                                                // ledge/cliff face
+  return true;
 }
 const _groundMeshes = [];   // zone ground meshes only — never the whole world
 const _gCache = new Map();
 function groundYCached(x, z) {
   const k = Math.round(x * 2) + ':' + Math.round(z * 2);
   let v = _gCache.get(k);
-  if (v === undefined) { v = groundY(x, z); _gCache.set(k, v); }
+  if (v === undefined) { v = groundY(x, z); _gCache.set(k, v); if (_gCache.size > 6000) _gCache.clear(); }
   return v;
 }
 const world = new THREE.Group();
@@ -98,7 +116,7 @@ function applyAimPitch(bones, pitchUp) {
   // pitchUp > 0 = muzzle rising. Applied AFTER mixer.update(), so it bends
   // the animated torso/rifle up or down with the aim -- the whole character.
   if (!bones) return;
-  const p = THREE.MathUtils.clamp(pitchUp, -0.7, 0.9);
+  const p = THREE.MathUtils.clamp(pitchUp, -1.0, 1.15);
   _pitchBone(bones.spine, -p * 0.38);
   _pitchBone(bones.spine2, -p * 0.34);
   _pitchBone(bones.spine3, -p * 0.22);
@@ -238,9 +256,13 @@ const voiceAudio = {};
   const a = new Audio('sounds/voice/' + n + '.wav'); a.preload = 'auto'; voiceAudio[n] = a;
 });
 let _voiceNext = 0;
+let _vLast = {};
 function playVoice(name, vol = 0.55) {
   const a = voiceAudio[name]; if (!a) return;
   const t = performance.now();
+  // a man under fire does NOT scream on every bullet: per-line cooldowns
+  const gap = name === 'im_hit' ? 14000 : name === 'spotted_infantry_loud' ? 6000 : 2600;
+  if (t - (_vLast[name] || 0) < gap) return; _vLast[name] = t;
   if (t < _voiceNext) return; _voiceNext = t + 1600;   // one call-out at a time
   try { a.volume = vol * (SET.vol || 1); a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
 }
@@ -250,11 +272,11 @@ let _stepAlt = 0, _stepAcc = 0;
 function updateFootsteps(dt, speed) {
   if (!speed || speed <= 0.1) { _stepAcc = 0; return; }
   _stepAcc += speed * dt;
-  const stride = player.stance === 'prone' ? 0.85 : player.stance === 'crouch' ? 1.15 : speed > 3 ? 2.0 : 1.5;
+  const stride = player.stance === 'prone' ? 0.85 : player.stance === 'crouch' ? 1.35 : speed > 3 ? 2.6 : 2.0;
   if (_stepAcc < stride) return;
   _stepAcc = 0;
   const a = stepAudio[_stepAlt++ % stepAudio.length];
-  try { a.volume = Math.min(0.5, 0.16 + speed * 0.07) * (SET.vol || 1); a.playbackRate = 0.92 + Math.random() * 0.16; a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
+  try { a.volume = Math.min(0.34, 0.09 + speed * 0.05) * (SET.vol || 1); a.playbackRate = 0.92 + Math.random() * 0.16; a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
 }
 // desert ambience: looped filtered wind, started on deploy (user gesture)
 let _ambOn = false;
@@ -1516,7 +1538,7 @@ document.addEventListener('mousemove', (e) => {
   lastMX = e.clientX; lastMY = e.clientY;
   const sens = (aiming || firing) ? 0.55 : 1.0; // finer control while aiming (original had this backwards)
   camYaw -= dx * 0.0026 * sens * SET.sens;
-  camPitch = THREE.MathUtils.clamp(camPitch + (SET.inv ? -dy : dy) * 0.0022 * sens * SET.sens, -0.15, 1.0);
+  camPitch = THREE.MathUtils.clamp(camPitch + (SET.inv ? -dy : dy) * 0.0022 * sens * SET.sens, -1.05, 1.15);
 });
 renderer.domElement.addEventListener('mousedown', (e) => {
   if (!playing) return;
@@ -1550,7 +1572,7 @@ addEventListener('keydown', (e) => {
   }
   if (e.code === 'KeyP') { playing = false; startEl.style.display = 'flex'; document.exitPointerLock?.(); }
   if (e.code === 'Tab' && playing) { e.preventDefault(); toggleInv(); }
-  if (e.code === 'ShiftLeft' && playing && !invOpen && !e.repeat) setQuickInv(true);
+  if (e.code === 'Space') { e.preventDefault(); if (playing && !invOpen && !e.repeat) setQuickInv(true); }
   if (quickInv && playing && !e.repeat && (e.code === 'KeyW' || e.code === 'KeyS'))
     setHeld(members[activeIdx].held + (e.code === 'KeyS' ? 1 : -1));
   if (quickInv && playing && !e.repeat && (e.code === 'KeyA' || e.code === 'KeyD')) {
@@ -1577,7 +1599,7 @@ addEventListener('wheel', (e) => {
 });
 addEventListener('keyup', (e) => {
   keys.delete(e.code);
-  if (e.code === 'ShiftLeft' && quickInv) setQuickInv(false);
+  if (e.code === 'Space' && quickInv) setQuickInv(false);
 });
 
 function startReload() {
@@ -1680,8 +1702,8 @@ function updateEnemy(E, dt, now) {
   while (dyaw > Math.PI) dyaw -= Math.PI * 2;
   while (dyaw < -Math.PI) dyaw += Math.PI * 2;
   // line of sight: enemy head -> player chest, blocked by environment
-  const head = new THREE.Vector3(E.pos.x, 1.55, E.pos.z);
-  const chest = new THREE.Vector3(T.pos.x, 1.25, T.pos.z);
+  const head = new THREE.Vector3(E.pos.x, E.pos.y + 1.55, E.pos.z);
+  const chest = new THREE.Vector3(T.pos.x, T.pos.y + 1.2, T.pos.z);
   const dir = new THREE.Vector3().subVectors(chest, head);
   raycaster.set(head, dir.clone().normalize());
   raycaster.far = dist;
@@ -1691,7 +1713,12 @@ function updateEnemy(E, dt, now) {
     E.losT = 0.15;
   } else E.losT -= dt;
   const blocked = E._blocked;
-  const canSee = dist < E_SIGHT && (Math.cos(dyaw) > 0.08 || dist < 9) && !blocked;
+  // ~150 deg frontal cone (plus point-blank awareness) + a detection build-up:
+  // distant / crouched / prone / still targets take seconds to be spotted.
+  const canSee = dist < E_SIGHT && (Math.cos(dyaw) > 0.26 || dist < 6) && !blocked;   // no eyes behind his head
+  E.spotNeed = (dist < 18 ? 0.35 : dist < 45 ? 0.7 : 1.3)
+    * (T.stance === 'crouch' ? 1.7 : T.stance === 'prone' ? 2.6 : 1)
+    * (!T.moving && dist > 15 ? 1.5 : 1);
   E.aimPitch = Math.atan2((T.pos.y + 1.25) - (E.pos.y + 1.5), Math.max(1, dist));
 
   if (E.state === 'engage') {
@@ -1700,14 +1727,16 @@ function updateEnemy(E, dt, now) {
     if (E.phaseT <= 0) { E.planted = !E.planted; E.phaseT = E.planted ? 1.7 + Math.random() * 1.6 : 1.8 + Math.random() * 2; }
     if (canSee) {
       E.lastSeen = T.pos.clone();
-      if (now > E.alertT) { E.alertT = now + 7; raiseAlert(E.pos, 42); }   // shout the contact to nearby guards
+      if (now > E.alertT) { E.alertT = now + 7; raiseAlert(E.pos, 20); }   // shout the contact to nearby guards
     }
     E._moving = false;
     if (!canSee && E.lastSeen) {
       // lost visual: RUN to the last seen position and sweep it
       const to = new THREE.Vector3().subVectors(E.lastSeen, E.pos); to.y = 0;
       if (to.length() > 1.6) {
-        to.normalize(); E.pos.addScaledVector(to, 4.35 * dt); E._moving = true;
+        to.normalize();
+        { const nx = E.pos.x + to.x * 4.35 * dt, nz = E.pos.z + to.z * 4.35 * dt;
+          if (canStandAt(nx, nz, to.x, to.z, E.pos.y)) { E.pos.x = nx; E.pos.z = nz; E._moving = true; } }
         enemySetAnim(E, E_ANIM.run); if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
         E.yaw = Math.atan2(to.x, to.z);
       } else { enemySetAnim(E, E_ANIM.idle); E.yaw += Math.sin(now * 0.9 + E.scanPh) * dt * 1.4; }
@@ -1717,7 +1746,8 @@ function updateEnemy(E, dt, now) {
       const stag = Math.sin(now * 1.5 + E.scanPh) * 0.35;
       const px = -step.z, pz = step.x;
       step.x += px * stag; step.z += pz * stag; step.normalize();
-      E.pos.addScaledVector(step, 4.35 * dt); E._moving = true;
+      { const nx = E.pos.x + step.x * 4.35 * dt, nz = E.pos.z + step.z * 4.35 * dt;
+        if (canStandAt(nx, nz, step.x, step.z, E.pos.y)) { E.pos.x = nx; E.pos.z = nz; E._moving = true; } }
       enemySetAnim(E, E_ANIM.run);
       if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
     } else enemySetAnim(E, E_ANIM.aim);
@@ -1750,7 +1780,7 @@ function updateEnemy(E, dt, now) {
         } else {
           playerHP -= 8 + Math.random() * 6;
           dmgT = 0.45;
-          playVoice('im_hit', 0.45);
+          if (Math.random() < 0.13) playVoice('im_hit', 0.5);   // occasional pain reaction, not every hit
           if (playerHP <= 0) {
             playerHP = 0;
             playing = false;
@@ -1769,7 +1799,7 @@ function updateEnemy(E, dt, now) {
     // heard something: move to the spot, look around, then return to post
     if (canSee) {
       E.spotT += dt;
-      if (E.spotT > 0.4) { E.state = 'engage'; E.nextShot = now + 0.35; }
+      if (E.spotT > E.spotNeed * 0.6) { E.state = 'engage'; E.nextShot = now + 0.35; }
     } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
     const tp = E.invPos || E.homePos;
     const to = new THREE.Vector3().subVectors(tp, E.pos); to.y = 0;
@@ -1780,7 +1810,8 @@ function updateEnemy(E, dt, now) {
       if (E.invT <= 0) { E.state = 'patrol'; enemySetAnim(E, E_ANIM.walk); }
     } else {
       to.normalize();
-      E.pos.addScaledVector(to, 3.9 * dt);
+      { const nx = E.pos.x + to.x * 3.9 * dt, nz = E.pos.z + to.z * 3.9 * dt;
+        if (canStandAt(nx, nz, to.x, to.z, E.pos.y)) { E.pos.x = nx; E.pos.z = nz; } }
       E.yaw = Math.atan2(to.x, to.z);
       enemySetAnim(E, E_ANIM.run);
       if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 3.9 / AUTH.run;
@@ -1788,10 +1819,10 @@ function updateEnemy(E, dt, now) {
   } else { // patrol between waypoints
     if (canSee) {
       E.spotT += dt;
-      if (E.spotT > (dist < 25 ? 0.45 : dist < 60 ? 0.8 : 1.25)) {
+      if (E.spotT > E.spotNeed) {
         E.state = 'engage'; E.nextShot = now + 0.45; E.lastSeen = T.pos.clone();
         if (Math.random() < 0.55) playVoice('spotted_infantry_loud', 0.5);
-        raiseAlert(E.pos, 34);
+        if (Math.random() < 0.5) raiseAlert(E.pos, 22);   // only sometimes does a shout carry (alerts keep last-seen only)
       }
     } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
     if (E.waypoints.length <= 1) {
@@ -2350,7 +2381,7 @@ function animate() {
     let s = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0);
     if (quickInv) { f = 0; s = 0; }
     const walkMode = keys.has('ControlLeft') || keys.has('ControlRight'); // CDS: Ctrl = walk
-    const sprint = keys.has('ShiftRight');   // Left Shift = inventory (original controls)
+    const sprint = keys.has('ShiftLeft') || keys.has('ShiftRight');   // Shift = sprint, SPACE = inventory
     const fwd = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw));
     const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
     const move = new THREE.Vector3().addScaledVector(fwd, f).addScaledVector(right, s);
@@ -2362,10 +2393,17 @@ function animate() {
       speed = player.stance === 'prone' ? 0.55 : player.stance === 'crouch' ? 1.05 : walkMode ? 1.3 : sprint ? 4.3 : 3.4;
       if ((aiming || firing) && player.stance === 'stand') speed = Math.min(speed, 1.1); // tactical aim-walk
       if (player.reloading && player.stance === 'stand') speed = Math.min(speed, 1.3); // no running mid-reload
-      player.pos.addScaledVector(move, speed * dt);
-      const cb = worldBox;
-      player.pos.x = THREE.MathUtils.clamp(player.pos.x, cb ? cb.min.x + 1 : -352, cb ? cb.max.x - 1 : 24);
-      player.pos.z = THREE.MathUtils.clamp(player.pos.z, cb ? cb.min.z + 1 : -700, cb ? cb.max.z - 1 : -78);
+      const stepLen = speed * dt, cb = worldBox;
+      const tryStep = (ax, az) => {
+        if (!ax && !az) return false;
+        const nx = THREE.MathUtils.clamp(player.pos.x + ax, cb ? cb.min.x + 1 : -352, cb ? cb.max.x - 1 : 24);
+        const nz = THREE.MathUtils.clamp(player.pos.z + az, cb ? cb.min.z + 1 : -700, cb ? cb.max.z - 1 : -78);
+        if (!canStandAt(nx, nz, move.x, move.z, player.pos.y)) return false;   // void / cliff / ledge: blocked
+        player.pos.x = nx; player.pos.z = nz; return true;
+      };
+      const stepped = tryStep(move.x * stepLen, move.z * stepLen)
+        || tryStep(move.x * stepLen, 0) || tryStep(0, move.z * stepLen);   // slide along the face
+      if (!stepped) { player.moving = false; speed = 0; }
       for (const c of colliders) {
         if (c.top !== undefined && player.pos.y > c.top - 0.45) continue;   // standing on it
         const dx = player.pos.x - c.x, dz = player.pos.z - c.z;
@@ -2384,6 +2422,8 @@ function animate() {
     while (dy > Math.PI) dy -= Math.PI * 2;
     while (dy < -Math.PI) dy += Math.PI * 2;
     player.yaw += dy * Math.min(1, dt * 10);
+    if (groundHitCached(player.pos.x, player.pos.z) === null && player._safePos) player.pos.copy(player._safePos);   // void failsafe
+    else player._safePos = player.pos.clone();
     player.pos.y += (groundYCached(player.pos.x, player.pos.z) - player.pos.y) * Math.min(1, dt * 10);
     heroObj.position.copy(player.pos);
     // prone-aim's bones sit at/below y=0 (pelvis 0.024, calves -0.005):
@@ -2460,7 +2500,7 @@ function animate() {
   // aim pitch: your spine follows the camera pitch; AI spines track their target
   if (heroObj) {
     if (!heroObj.userData.aimBones) heroObj.userData.aimBones = findAimBones(heroObj);
-    if (aiming || firing || current === ANIM.aim) applyAimPitch(heroObj.userData.aimBones, -camPitch * 0.9);
+    applyAimPitch(heroObj.userData.aimBones, -camPitch * (aiming || firing ? 1.0 : 0.55));   // torso pitches with your view ALWAYS, hardest while aiming
   }
   enemies.forEach(E => { if (E.mixer) { E.mixer.update(dt); if (E.alive && (E.state === 'engage' || E.aimPitch)) applyAimPitch(E.aimBones, E.aimPitch || 0); } positionHeadGear(E); });
   members.forEach((M, i) => { if (i !== activeIdx && M.mixer) { M.mixer.update(dt); if (M.aimPitch) applyAimPitch(M.aimBones, M.aimPitch); } });
@@ -2497,11 +2537,16 @@ function animate() {
     const shoulder = aimNow ? 0.55 : 0.12;
     const cx = player.pos.x + Math.sin(camYaw) * Math.cos(camPitch) * dist + rgt.x * shoulder;
     const cz = player.pos.z + Math.cos(camYaw) * Math.cos(camPitch) * dist + rgt.z * shoulder;
-    const cy = player.pos.y + 1.55 + Math.sin(camPitch) * dist;
+    let cy = player.pos.y + 1.55 + Math.sin(camPitch) * dist;
+    cy = Math.max(cy, groundYCached(cx, cz) + 0.45);   // looking up must not bury the camera
     camera.position.lerp(new THREE.Vector3(cx, cy, cz), 1 - Math.pow(0.0001, dt));
-    camera.lookAt(player.pos.x + rgt.x * (aimNow ? 0.4 : 0),
-                  player.pos.y + (aimNow ? 1.42 : 1.35),
-                  player.pos.z + rgt.z * (aimNow ? 0.4 : 0));
+    { // the camera looks where YOU look (pitch included), not at a fixed head height
+      const fx = -Math.sin(camYaw), fz = -Math.cos(camYaw);
+      const ey = player.pos.y + (aimNow ? 1.42 : 1.38);
+      camera.lookAt(player.pos.x + fx * 12 + rgt.x * (aimNow ? 0.4 : 0),
+                    ey - Math.sin(camPitch) * 12,
+                    player.pos.z + fz * 12 + rgt.z * (aimNow ? 0.4 : 0));
+    }
   }
 
   sun.position.set(player.pos.x + 25, player.pos.y + 38, player.pos.z + 14);
