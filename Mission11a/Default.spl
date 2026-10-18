@@ -1,0 +1,53 @@
+Version 4
+51
+"Default" 00ffffff 00ffffff ffffffff ffffffff ffffffff ffffffff 1.000000 1 16 3544 -1 3240 -1 -1 2283 -1 -1 -1 -1 
+"Blocking Sand" ffffff80 ffffff80 ff8e6204 3f9a8972 fffceecf ffffffff 1.000000 8 1616 3701 -1 3332 -1 -1 4021 -1 -1 -1 -1 4 "IMAGE_DIRT0" -5336212 "IMAGE_DIRT1" -6522026 "IMAGE_DIRT2" -3100796 "IMAGE_DIRT3" -5602731 -858993459 4 2 250.000000 100.000000 400.000000 100.000000 
+"Blocking Baked Earth" ffffff80 ffffff80 bf725434 186c5c46 fffceecf ffffffff 1.000000 8 1776 3544 -1 3240 -1 -1 472 -1 -1 -1 -1 4 "IMAGE_DIRT0" -9020351 "IMAGE_DIRT1" -5335956 "IMAGE_DIRT2" -9020351 "IMAGE_DIRT3" -6522026 -858993459 5 3 250.000000 100.000000 200.000000 100.000000 
+"Blocking Metal" ff00b0b0 ff00b0b0 ffffffff ffffffff fffec501 ffffffff 1.000000 8 1696 2812 -1 3084 -1 -1 1836 -1 -1 -1 -1 4 "IMAGE_METAL0" -1 "IMAGE_METAL1" -1 "IMAGE_METAL2" -1 "IMAGE_METAL3" -1 -858993459 3 1 1000.000000 300.000000 40.000000 10.000000 
+"Blocking Concrete" ffc0c0c0 ffc0c0c0 ffeeeeee 3ffdfdfd fffbfaf9 ffffffff 1.000000 8 1248 4005 -1 3317 -1 -1 629 -1 -1 -1 -1 1 "IMAGE_ROCK1" -1 -858993459 5 3 300.000000 100.000000 25.000000 15.000000 
+"Blocking Tarmac" ff181818 ff181818 ffffffff ffffffff ffc7c7c7 ffffffff 1.000000 8 160 3972 -1 3731 -1 -1 3139 -1 -1 -1 -1 
+"Blocking Rock" ff808080 ff808080 7fba9c7a 3fb6a087 ffc7b7a3 ffffffff 1.000000 8 1248 2859 -1 2619 -1 -1 2283 -1 -1 -1 -1 1 "IMAGE_ROCK2" -1 -858993459 3 1 500.000000 200.000000 15.000000 5.000000 
+"Blocking Marble Tile" ff60ffb0 ff60ffb0 ff6b6b6b ffecdfd5 ffffffff ffffffff 1.000000 8 224 325 -1 53 -1 -1 3733 -1 -1 -1 -1 
+"Blocking Ladder" ffff0000 ffff0000 ffffffff ffffffff ffffffff ffffffff 0.494118 8 0 -1 -1 -1 -1 -1 1836 -1 -1 -1 -1 
+"Blocking Glass" ff706cff ff706cff ffffffff ffffffff ffffffff ffffffff 1.000000 8 0 -1 -1 -1 -1 -1 67 -1 -1 -1 -1 
+"Blocking Water" ff0000ff ff0000ff ffffffff ffffffff ffffffff ffffffff 0.000000 8 0 322 -1 1618 -1 -1 3442 -1 -1 -1 -1 
+"Blocking Cloth" ffff8000 ffff8000 ffffffff ffffffff ffffffff ffffffff 0.003922 8 0 904 -1 1912 -1 -1 3674 -1 -1 -1 -1 
+"Blocking Wood" ffb05800 ffb05800 ffa78258 ffffffff ff624b33 ffffffff 0.094118 8 1184 3220 -1 3012 -1 -1 2388 -1 -1 -1 -1 4 "IMAGE_WOOD0" -1 "IMAGE_WOOD1" -1 "IMAGE_WOOD2" -1 "IMAGE_WOOD3" -1 -858993459 5 3 500.000000 100.000000 50.000000 5.000000 
+"Blocking Breakable" ffff00ff ffff00ff ffffffff ffffffff ffffffff ffffffff 0.247059 8 1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Blocking Chain Link Fence" ff8080ff ff8080ff ffffffff ffffffff ffffdd55 ffffffff 0.000000 8 130 -1 -1 -1 -1 -1 1836 -1 -1 -1 -1 
+"Blocking Flesh" ffff8080 ffff8080 ffffffff ffffffff ffffffff ffffffff 0.247059 8 0 -1 -1 -1 -1 -1 4024 -1 -1 -1 -1 
+"Sand" ffffff80 ffffff80 ff8e6204 3f9a8972 fffceecf ffffffff 1.000000 1 1616 3701 -1 3332 -1 -1 4021 -1 -1 -1 -1 4 "IMAGE_DIRT0" -5336212 "IMAGE_DIRT1" -6522026 "IMAGE_DIRT2" -3100796 "IMAGE_DIRT3" -5602731 -858993459 4 2 250.000000 100.000000 400.000000 100.000000 
+"Baked Earth" ffffff80 ffffff80 bf725434 186c5c46 fffceecf ffffffff 1.000000 1 1776 3544 -1 3240 -1 -1 472 -1 -1 -1 -1 4 "IMAGE_DIRT0" -9020351 "IMAGE_DIRT1" -5335956 "IMAGE_DIRT2" -9020351 "IMAGE_DIRT3" -6522026 -858993459 5 3 250.000000 100.000000 200.000000 100.000000 
+"Metal" ff00b0b0 ff00b0b0 ffffffff ffffffff fffec501 ffffffff 1.000000 1 1696 2812 -1 3084 -1 -1 1836 -1 -1 -1 -1 4 "IMAGE_METAL0" -1 "IMAGE_METAL1" -1 "IMAGE_METAL2" -1 "IMAGE_METAL3" -1 -858993459 3 1 1000.000000 300.000000 40.000000 10.000000 
+"Concrete" ffc0c0c0 ffc0c0c0 ffeeeeee 3ffdfdfd fffbfaf9 ffffffff 1.000000 1 1248 4005 -1 3317 -1 -1 629 -1 -1 -1 -1 1 "IMAGE_ROCK1" -1 -858993459 5 3 300.000000 100.000000 25.000000 15.000000 
+"Tarmac" ff181818 ff181818 ffffffff ffffffff ffc7c7c7 ffffffff 1.000000 1 160 3972 -1 3731 -1 -1 3139 -1 -1 -1 -1 
+"Rock" ff808080 ff808080 7fba9c7a 3fb6a087 ffc7b7a3 ffffffff 1.000000 1 1248 2859 -1 2619 -1 -1 2283 -1 -1 -1 -1 1 "IMAGE_ROCK2" -1 -858993459 3 1 500.000000 200.000000 15.000000 5.000000 
+"Marble Tile" ff60ffb0 ff60ffb0 ff6b6b6b ffecdfd5 ffffffff ffffffff 1.000000 1 224 325 -1 53 -1 -1 3733 -1 -1 -1 -1 
+"Ladder" 00ff0000 ffff0000 ffffffff ffffffff ffffffff ffffffff 0.498039 1 0 -1 -1 -1 -1 -1 1836 -1 -1 -1 -1 
+"Glass" 00706cff 00706cff ffffffff ffffffff ffffffff ffffffff 1.000000 1 0 -1 -1 -1 -1 -1 67 -1 -1 -1 -1 
+"Water" 000000ff 000000ff ffffffff ffffffff ffffffff ffffffff 0.000000 1 0 322 -1 1618 -1 -1 3442 -1 -1 -1 -1 
+"Cloth" 00ff8000 00ff8000 ffffffff ffffffff ffffffff ffffffff 0.003922 1 0 904 -1 1912 -1 -1 3674 -1 -1 -1 -1 
+"Wood" ffb05800 ffb05800 ffa78258 ffffffff ff624b33 ffffffff 0.094118 1 1184 3220 -1 3012 -1 -1 2388 -1 -1 -1 -1 4 "IMAGE_WOOD0" -1 "IMAGE_WOOD1" -1 "IMAGE_WOOD2" -1 "IMAGE_WOOD3" -1 -858993459 5 3 500.000000 100.000000 50.000000 5.000000 
+"Breakable" 00ff00ff ffff00ff ffffffff ffffffff ffffffff ffffffff 0.250000 1 1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Chain Link Fence" ff8080ff ff8080ff ffffffff ffffffff ffffdd55 ffffffff 0.000000 1 130 -1 -1 -1 -1 -1 1836 -1 -1 -1 -1 
+"Flesh" 00ff8080 ffff8080 ffffffff ffffffff ffffffff ffffffff 0.247059 1 0 -1 -1 -1 -1 -1 4024 -1 -1 -1 -1 
+"Grass" ff008000 ff008000 ffffffff ffffffff ff6a9131 ffffffff 1.000000 1 128 2067 -1 3843 -1 -1 1059 -1 -1 -1 -1 
+"Render Only" 000000ff ff0000ff ffffffff ffffffff ffffffff ffffffff 1.000000 1 4 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Blocking Grass" ff008000 ff008000 ffffffff ffffffff ff6a9131 ffffffff 1.000000 8 128 2067 -1 3843 -1 -1 1059 -1 -1 -1 -1 
+"Blocking Iron Railings" ff400040 ff400040 ffffffff ffffffff ffffdd55 ffffffff 0.000000 8 130 -1 -1 -1 -1 -1 1836 -1 -1 -1 -1 
+"Blocking Invisible" 00c0c0c0 ffc0c0c0 ffffffff ffffffff ffffffff ffffffff 0.000000 8 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Blocking Wood Fence" ff800000 ff800000 ffa78258 ffffffff ffa78258 ffffffff 0.000000 8 162 -1 -1 -1 -1 -1 2388 -1 -1 -1 -1 
+"Blocking Hedge" ff008000 ff008000 ffffffff ffffffff ff618640 ffffffff 0.000000 8 130 -1 -1 -1 -1 -1 1059 -1 -1 -1 -1 
+"Iron Railings" 00400040 ff400040 ffffffff ffffffff ffffffff ffffffff 0.000000 1 2 -1 -1 -1 -1 -1 1836 -1 -1 -1 -1 
+"Invisible" 00c0c0c0 ffc0c0c0 ffffffff ffffffff ffffffff ffffffff 0.000000 1 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Wood Fence" ff800000 ff800000 ffa78258 ffffffff ffa78258 ffffffff 0.000000 1 162 -1 -1 -1 -1 -1 2388 -1 -1 -1 -1 
+"Hedge" ff008000 ff008000 ffffffff ffffffff ff6a9131 ffffffff 0.000000 1 130 -1 -1 -1 -1 -1 1059 -1 -1 -1 -1 
+"River Bed" ffffff80 ffffff80 ff8e6204 66826031 fffceecf ffffffff 1.000000 1 1744 3701 -1 3332 -1 -1 4021 -1 -1 -1 -1 4 "IMAGE_DIRT0" -8232911 "IMAGE_DIRT1" -8232911 "IMAGE_DIRT2" -8232911 "IMAGE_DIRT3" -8232911 -858993459 5 3 250.000000 100.000000 200.000000 100.000000 
+"Blocking River Bed" ffffff80 ffffff80 ff8e6204 66826031 fffceecf ffffffff 1.000000 8 1744 3701 -1 3332 -1 -1 4021 -1 -1 -1 -1 4 "IMAGE_DIRT0" -8232911 "IMAGE_DIRT1" -8232911 "IMAGE_DIRT2" -8232911 "IMAGE_DIRT3" -8232911 -858993459 5 3 250.000000 100.000000 200.000000 100.000000 
+"Forest Floor" ff008000 ff008000 ff725434 7e745e3f ff6a9131 ffffffff 0.000000 1 1218 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 3 "IMAGE_DIRT0" -4150131 "IMAGE_DIRT1" -10004925 "IMAGE_DIRT2" -6256272 -858993459 4 2 700.000000 250.000000 2000.000000 1250.000000 
+"Blocking Forest Floor" ff008000 ff008000 ffffffff ffffffff ff6a9131 ffffffff 0.000000 1 130 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Player Barrier" ffff0000 ffff0000 ffffffff ffffffff ffffffff ffffffff 0.000000 16 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Enemy Barrier" ff00ff00 ff00ff00 ffffffff ffffffff ffffffff ffffffff 0.000000 32 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Non Controlled Barrier" ff0000ff ff0000ff ffffffff ffffffff ffffffff ffffffff 0.000000 64 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+"Stairs" ffff0000 ffff0000 ffffffff ffffffff ffffffff ffffffff 0.003922 1 8192 3220 -1 3012 -1 -1 1572 -1 -1 -1 -1 
+"Blocking Stairs" ffff0000 ffff0000 ffffffff ffffffff ffffffff ffffffff 0.003922 8 8320 3220 -1 3012 -1 -1 1572 -1 -1 -1 -1 
