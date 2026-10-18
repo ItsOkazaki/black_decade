@@ -16,3 +16,15 @@ changes can be *seen* without a local browser.
 
 Note: SwiftShader runs at a few FPS, so game-time (dt-clamped) advances
 slower than wall time — allow generous waits.
+
+## shot3.mjs — state-assertion tests (v64 bug round)
+
+Drives the game through `window.BD_TEST` hooks and asserts behaviour, not
+just pixels: no pre-carried C4, pickups work with E + flash, tank patrols,
+finite ammo (reload drains reserve exactly), guards shoot from their post,
+falls hurt/kill, LAW sight + rocket damages armour (900→560), death shows
+the KIA screen, restart resets HP/ammo, bridge deck crossable + gorge
+passable underneath. SwiftShader runs game-time ~20x slower than wall
+clock, so every wait polls game state — never fixed sleeps. Exit code 0 =
+all passed. Run: `cd /tmp/snap && node shot3.mjs` (game must be served on
+:5175 as above).
