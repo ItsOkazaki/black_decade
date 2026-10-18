@@ -1,0 +1,9 @@
+# Extracted proprietary game data — local reference only, never committed
+/Catalog/
+/Chardata/
+/FrontEnd/
+/Mission1/
+/Training1/
+/reverse_engineering/
+/image-search/
+node_modules/
