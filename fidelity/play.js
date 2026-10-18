@@ -1295,7 +1295,7 @@ async function load() {
         if (!o.isMesh) return;
         o.receiveShadow = !SET.lowGfx;
         o.castShadow = false;               // zones never cast — big win
-        if (/GROUND|TERRAIN/i.test(o.name) || !o.material || o.geometry?.attributes?.position?.count > 400) _groundMeshes.push(o);
+        _groundMeshes.push(o);   // zone meshes are static world geometry (CDS zones tile the ground)
       });
       world.add(g.scene);
     }));
