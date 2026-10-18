@@ -12,21 +12,23 @@ window.BD = (() => {
   const ICON = n => 'textures/ui/gwint/' + n + '.png';
 
   // guns: key -> Weaps.txt row (mag, reload s, shot interval s, damage class)
+  // full display names from decoded InvStrs.loc (Catalog/0003)
   const WEAPONS = {
-    M16A2:   { label: 'M16A2',        type: 'GRENADE LAUNCH/RIFLE', mag: 30,  reload: 1.5, interval: 0.086, dmg: 34, burst: 4, acc: 0.38, model: 'models/scene/Rifle02_M16wM203.glb',        icon: 'IMAGE_WEAPON_M16M203',     bank: 'M16A2' },
-    SAW:     { label: 'M249 SAW',     type: 'MACHINE GUN',          mag: 100, reload: 2.0, interval: 0.10,  dmg: 30, burst: 9, acc: 0.30, model: 'models/weapons/LMG01_M249SAW.glb',       icon: 'IMAGE_WEAPON_SAW',         bank: 'SAW-LIGHTMG' },
-    BARRETT: { label: 'BARRETT L50',  type: 'SNIPER RIFLE',         mag: 11,  reload: 1.5, interval: 1.15,  dmg: 95, burst: 1, acc: 0.65, model: 'models/weapons/Sniper01_BarretL50.glb',   icon: 'IMAGE_WEAPON_BARRETSNIPER', bank: 'BARRETTSNIPER' },
-    SIGP228: { label: 'SIG P228',     type: 'PISTOL',               mag: 13,  reload: 1.5, interval: 0.20,  dmg: 22, burst: 1, acc: 0.30, model: 'models/weapons/Pistol03_SIGP228.glb',    icon: 'IMAGE_WEAPON_SIG_P228',    bank: 'SIGP228' },
-    LAW66:   { label: 'LAW 66',       type: 'ANTI TANK',            mag: 1,   reload: 3.0, interval: 1.0,   dmg: 300, burst: 1, acc: 0.90, model: 'models/weapons/Law66_AntiTankLauncher.glb', icon: 'IMAGE_WEAPON_LAW66',    bank: 'LAW66', rocket: true },
-    KNIFE:   { label: 'COMBAT KNIFE', type: 'MELEE',                mag: 0,   reload: 0,   interval: 0.55,  dmg: 200, burst: 1, acc: 1.0, model: 'models/weapons/Knife01_Combat.glb',       icon: 'IMAGE_WEAPON_KNIFE',       bank: null, melee: true },
+    M16A2:   { label: 'M16A2',        name: 'Colt M16A2 Assault Rifle',              type: 'GRENADE LAUNCH/RIFLE', mag: 30,  reload: 1.5, interval: 0.086, dmg: 34, burst: 4, acc: 0.38, model: 'models/scene/Rifle02_M16wM203.glb',        icon: 'IMAGE_WEAPON_M16M203',     bank: 'M16A2' },
+    SAW:     { label: 'M249 SAW',     name: 'M249 Squad Automatic Weapon',           type: 'MACHINE GUN',          mag: 100, reload: 2.0, interval: 0.10,  dmg: 30, burst: 9, acc: 0.30, model: 'models/weapons/LMG01_M249SAW.glb',       icon: 'IMAGE_WEAPON_SAW',         bank: 'SAW-LIGHTMG' },
+    BARRETT: { label: 'BARRETT L50',  name: "M82A1 Barrett 'Light Fifty' Sniper Rifle", type: 'SNIPER RIFLE',      mag: 11,  reload: 1.5, interval: 1.15,  dmg: 95, burst: 1, acc: 0.65, model: 'models/weapons/Sniper01_BarretL50.glb',   icon: 'IMAGE_WEAPON_BARRETSNIPER', bank: 'BARRETTSNIPER' },
+    SIGP228: { label: 'SIG P228',     name: 'SIG P-228 Silenced Pistol',             type: 'PISTOL',               mag: 13,  reload: 1.5, interval: 0.20,  dmg: 22, burst: 1, acc: 0.30, model: 'models/weapons/Pistol03_SIGP228.glb',    icon: 'IMAGE_WEAPON_SIG_P228',    bank: 'SIGP228' },
+    LAW66:   { label: 'LAW 66',       name: 'LAW 66 Anti-tank Rocket Launcher',      type: 'ANTI TANK',            mag: 1,   reload: 3.0, interval: 1.0,   dmg: 300, burst: 1, acc: 0.90, model: 'models/weapons/Law66_AntiTankLauncher.glb', icon: 'IMAGE_WEAPON_LAW66',    bank: 'LAW66', rocket: true },
+    KNIFE:   { label: 'COMBAT KNIFE', name: 'Combat Knife',                          type: 'MELEE',                mag: 0,   reload: 0,   interval: 0.55,  dmg: 200, burst: 1, acc: 1.0, model: 'models/weapons/Knife01_Combat.glb',       icon: 'IMAGE_WEAPON_KNIFE',       bank: null, melee: true },
+    AK47:    { label: 'AK-47',        name: 'AK-47 Assault Rifle',                   type: 'RIFLE (ENEMY)',        mag: 30,  reload: 2.2, interval: 0.11,  dmg: 26, burst: 5, acc: 0.28, model: 'models/enemy/Rifle05_AK47.glb',            icon: 'IMAGE_WEAPON_AK47',        bank: 'AK47' },
   };
 
   const ITEMS = {
-    FRAG:       { label: 'FRAG GRENADE',  icon: 'IMAGE_GRENADE_FRAG',        model: 'models/weapons/Grenade_Frag.glb' },
-    SMOKE:      { label: 'SMOKE GRENADE', icon: 'IMAGE_GRENADE_SMOKE',       model: 'models/weapons/Grenade_Smoke.glb' },
-    MEDIKIT:    { label: 'MEDI KIT',      icon: 'IMAGE_WEAPON_MEDIPACK',     model: 'models/weapons/MediKit.glb' },
-    BINOCULARS: { label: 'BINOCULARS',    icon: 'IMAGE_WEAPON_BINOCULARS',   model: 'models/weapons/Binoculars.glb' },
-    C4:         { label: 'C4 CHARGE',     icon: 'IMAGE_WEAPON_C4',           model: 'models/weapons/Explosive01_C4.glb' },
+    FRAG:       { label: 'FRAG GRENADE',  name: 'MK3A2 Concussion Offensive Hand Grenade', icon: 'IMAGE_GRENADE_FRAG',        model: 'models/weapons/Grenade_Frag.glb' },
+    SMOKE:      { label: 'SMOKE GRENADE', name: 'Smoke Grenade',                           icon: 'IMAGE_GRENADE_SMOKE',       model: 'models/weapons/Grenade_Smoke.glb' },
+    MEDIKIT:    { label: 'MEDI KIT',      name: 'MediKit',                                 icon: 'IMAGE_WEAPON_MEDIPACK',     model: 'models/weapons/MediKit.glb' },
+    BINOCULARS: { label: 'BINOCULARS',    name: 'Binoculars',                              icon: 'IMAGE_WEAPON_BINOCULARS',   model: 'models/weapons/Binoculars.glb' },
+    C4:         { label: 'C4 CHARGE',     name: 'C4 Plastic Explosive',                    icon: 'IMAGE_WEAPON_C4',           model: 'models/weapons/Explosive01_C4.glb' },
   };
 
   const NAMES = ['Bradley', 'CONNORS', 'JONES', 'Foley'];

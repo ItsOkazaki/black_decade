@@ -646,7 +646,7 @@ function renderInv() {
   }).join('');
   box.querySelectorAll('.slot').forEach(el => {
     el.addEventListener('mouseenter', () => box.querySelectorAll('.slot').forEach(s => s.classList.toggle('hov', s === el)));
-    el.addEventListener('click', () => { const k = +el.dataset.i; const sv = members[activeIdx].inv[k]; setHeld(k); showMsg('SELECTED', (sv.kind === 'gun' ? BD.WEAPONS[sv.key] : BD.ITEMS[sv.key]).label); });
+    el.addEventListener('click', () => { const k = +el.dataset.i; const sv = members[activeIdx].inv[k]; setHeld(k); showMsg('SELECTED', (sv.kind === 'gun' ? BD.WEAPONS[sv.key] : BD.ITEMS[sv.key]).name); });
   });
   document.getElementById('invGear').textContent = BD.GEAR[activeIdx].map(g => g[2]).join('  ·  ');
 }
