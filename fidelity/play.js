@@ -1955,6 +1955,7 @@ async function load() {
     const akTemplate = (await loader.loadAsync('models/enemy/Rifle05_AK47.glb')).scene;
     const texByUrl = {};
     Object.entries(FACE_TEX).forEach(([k, u]) => { texByUrl[u] = faceTexCache[k]; });
+    enemyFactory = createEnemyObjects;
     loadNote('Deploying ' + enemies.length + ' hostiles…');
     enemies.forEach(E => loadEnemy(E));
 
@@ -2019,7 +2020,7 @@ async function load() {
       members.push(M);
     }
 
-    enemyFactory = function createEnemyObjects(E) {
+    function createEnemyObjects(E) {
     if (E.obj) return;
     E.obj = skeletonClone(foeTemplate.scene);
     E.obj.position.copy(E.pos);
@@ -2063,7 +2064,7 @@ async function load() {
     E.aimBones = findAimBones(E.obj);
     enemySetAnim(E, E_ANIM.walk);
     };
-    function loadEnemy(E) { if (E.active) enemyFactory(E); }
+    function loadEnemy(E) { if (E.active && typeof enemyFactory === 'function') enemyFactory(E); }
 
     setAnim(ANIM.idle);
     window.__playLoaded = true;
