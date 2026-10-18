@@ -320,6 +320,11 @@ function resetEnemy(E) {
 }
 let enemyFactory = null;   // set inside load(): builds a materialised enemy
 let LOADP = null;          // loading progress callback (set by load())
+async function runJobs(items, fn, conc = 4) {
+  let i = 0;
+  const work = async () => { while (i < items.length) { const it = items[i++]; await fn(it); } };
+  await Promise.all(Array.from({ length: Math.min(conc, items.length) }, work));
+}
 let _loadBeat = null;
 function startLoadHeartbeat() {
   const t0 = performance.now();
@@ -741,12 +746,12 @@ async function buildStaticWorld() {
   const cache = {};
   const models = [...new Set(PROPS.statics.map(s => s.m))];
   let propsDone = 0;
-  await Promise.all(models.map(async m => {
+  await runJobs(models, async m => {
     try { const sc = (await loader.loadAsync(MISDIR + 'props/' + m + '.glb')).scene; sc.updateMatrixWorld(true); cache[m] = sc; }
     catch (e) { console.warn('prop failed:', m); }
     propsDone++;
     if (LOADP) LOADP(72 + 10 * propsDone / Math.max(1, models.length), 'Placing the base — ' + m + '…');
-  }));
+  }, 4);
   const groups = new Map();
   const info = {};   // per-model bounds -> collider size
   for (const m of models) {
@@ -1753,6 +1758,9 @@ async function load() {
     try { PROPS = await (await fetch(MISDIR + 'props.json')).json(); } catch (e) { PROPS = null; }
     try { const ml = await (await fetch('missions.json')).json(); const me = ml.find(e => e.id === MIS); if (me) MISNAME = me.name; } catch (e) { /* default name */ }
     { const mb = document.getElementById('misBriefLine'); if (mb) mb.textContent = MISNAME; }
+    { const gi = document.querySelector('#gpsmap img'); if (gi) { gi.src = 'textures/ui/maps/' + MIS + '.png'; gi.onerror = () => { gi.onerror = null; gi.src = 'textures/ui/mission1map.png'; }; }
+      if (MIS !== 'mission1') { const gm = document.getElementById('gpsmap'); if (gm) gm.querySelectorAll('svg,.gpsdot').forEach(el => el.style.display = 'none'); }
+      const gt = document.querySelector('#gpstext b'); if (gt && MIS !== 'mission1') gt.textContent = MISNAME; }
     applySky();
     loadStep(4, 'Loading ' + MISNAME + ' — mission data…');
     const zoneList = (PROPS && PROPS.zones && PROPS.zones.length) ? PROPS.zones
@@ -1760,7 +1768,7 @@ async function load() {
          { f: 'Mis1_Zone2', m: 'MIS1_ZONE2' }, { f: 'Mis1_Zone2A', m: 'MIS1_ZONE2A' }, { f: 'Mis1_Zone3', m: 'MIS1_ZONE3' },
          { f: 'Mis1_Zone3A', m: 'MIS1_ZONE3A' }, { f: 'Mis1_Zone4', m: 'MIS1_ZONE4' }];
     let zonesDone = 0;
-    await Promise.all(zoneList.map(async zn => {
+    await runJobs(zoneList, async zn => {
       try {
       const g = await loader.loadAsync(MISDIR + zn.f + '.glb');
       g.scene.updateMatrixWorld(true);
@@ -1794,7 +1802,7 @@ async function load() {
       } catch (e) { console.warn('zone failed:', zn.f); }
       zonesDone++;
       loadStep(4 + 66 * zonesDone / zoneList.length, 'World ' + zonesDone + '/' + zoneList.length + ' — ' + zn.f + '…');
-    }));
+    }, 4);
     LOADP = loadStep;
     loadStep(72, 'Placing the base — vehicles, bridge, buildings…');
     await buildStaticWorld();
@@ -2051,12 +2059,12 @@ async function load() {
     window.__playLoaded = true;
     if (_loadBeat) { clearInterval(_loadBeat); _loadBeat = null; }
     loadStep(100, 'Loaded — ' + enemies.length + ' hostiles placed from the mission data.');
-    stats.innerHTML = '✔ Loaded — ' + MISNAME + ' (' + enemies.length +
+    stats.innerHTML = '✔ LOADED — CLICK THE BRIEFING TO DEPLOY (' + enemies.length +
       ' hostiles placed from the mission .env). Full game inventory on TAB.';
     buildItemBar();
     GF.load().then(() => {
-      setCanvas('startTitle', GF.text(MISNAME, { size: 'L', color: '#f0d9a0', scale: 2.2 }));
       setCanvas('deployBtn', GF.text('▶ CLICK TO DEPLOY', { size: 'L', color: '#b7e39a', scale: 1.5 }));
+      try { setCanvas('startTitle', GF.text(MISNAME, { size: 'L', color: '#f0d9a0', scale: 2.2 })); } catch (e) { /* title is decoration */ }
       setObjectiveText();
       setCanvas('killsCv', GF.text('HOSTILES DOWN 0', { size: 'S', color: '#e8a09a', scale: 1.5 }));
     });

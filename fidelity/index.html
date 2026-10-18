@@ -58,6 +58,7 @@
 <!-- MAIN MENU -->
 <div class="screen open" id="scr-main">
   <div id="menupanel">
+    <img src="textures/ui/defload.png" alt="Black Decade" style="width:100%;height:150px;object-fit:cover;object-position:center 30%;display:block;border-radius:12px;border:1px solid rgba(178,202,150,.55);margin-bottom:12px">
     <button class="mbtn" id="btnSingle"><canvas class="gtext mtxt" data-t="SINGLE PLAYER" data-c="#ffe14d"></canvas></button>
     <button class="mbtn" id="btnLoadout"><canvas class="gtext mtxt" data-t="LOADOUT" data-c="#ffe14d"></canvas></button>
     <a class="mbtn" href="reskin.html"><canvas class="gtext mtxt" data-t="SQUAD" data-c="#ffe14d"></canvas></a>
@@ -177,7 +178,7 @@
   }
   function buildMissionList() {
     $('misList').innerHTML = MISSIONS.map(me =>
-      '<button class="mbtn misbtn" data-m="' + me.id + '"><canvas class="gtext mtxt" data-t="' + me.name + '" data-c="#ffe14d"></canvas></button>').join('');
+      '<button class="mbtn misbtn" data-m="' + me.id + '" style="display:flex;align-items:center;gap:12px;text-align:left"><img src="textures/ui/maps/' + me.id + '.png" alt="" style="width:96px;height:60px;object-fit:cover;border:1px solid rgba(178,202,150,.6);flex:0 0 auto" onerror="this.remove()"><canvas class="gtext mtxt" data-t="' + me.name + '" data-c="#ffe14d"></canvas></button>').join('');
     document.querySelectorAll('.misbtn').forEach(b => b.onclick = () => { setMission(b.dataset.m); loadoutBack = 'scr-missions'; showScreen('scr-loadout'); });
     if (window.GF && GF.text) document.querySelectorAll('.misbtn .mtxt').forEach(cv => {
       const s = GF.text(cv.dataset.t, { size: 'L', color: cv.dataset.c, scale: 1.1 });
