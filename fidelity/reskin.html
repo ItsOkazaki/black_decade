@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLACK DECADE — Squad</title>
+<style>
+  html,body{margin:0;padding:0;overflow:hidden;background:#141a12;font-family:Segoe UI,Arial,sans-serif;color:#e8e4d8}
+  #view{position:fixed;inset:0}
+  canvas{display:block}
+  #panel{position:fixed;top:16px;left:16px;z-index:5;max-width:370px;background:rgba(12,16,10,.88);border:1px solid #7fae5c;border-radius:8px;padding:16px 18px}
+  #panel h1{margin:0 0 2px;font-size:19px;letter-spacing:.12em;color:#b7e39a}
+  #panel h2{margin:0 0 10px;font-size:11px;letter-spacing:.22em;color:#9db38a;font-weight:400}
+  #panel p{font-size:13px;line-height:1.55;margin:6px 0;color:#d8d2c2}
+  #panel code{color:#ffd98a;font-size:12px}
+  .lbl{position:fixed;bottom:52px;z-index:5;transform:translateX(-50%);font-size:13px;letter-spacing:.14em;background:rgba(10,12,8,.7);padding:6px 14px;border-radius:4px;border:1px solid #4a5040}
+  #lblL{left:6%} #lblR{left:18%;border-color:#7fae5c;color:#b7e39a} #lblS2{left:31%;border-color:#7fae5c;color:#b7e39a} #lblS3{left:43%;border-color:#7fae5c;color:#b7e39a} #lblS4{left:56%;border-color:#7fae5c;color:#b7e39a}
+  #lblI{left:68%;border-color:#a8703c;color:#e8b98a} #lblM{left:81%;border-color:#a8703c;color:#e8b98a} #lblN{left:93%;border-color:#a8703c;color:#e8b98a}
+  #stats{margin-top:10px;font-size:12px;line-height:1.7;color:#b9bfae;border-top:1px solid #3a4034;padding-top:10px}
+  #hint{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;font-size:12px;color:#cfd4c4;background:rgba(10,12,8,.6);padding:6px 14px;border-radius:4px}
+  #err{color:#ff9d5c;font-size:12px;margin-top:8px}
+  #views{position:fixed;top:16px;right:16px;z-index:6;display:flex;gap:6px;flex-wrap:wrap;max-width:46vw;justify-content:flex-end}
+  #views button{background:rgba(12,16,10,.88);color:#d8d2c2;border:1px solid #7fae5c;border-radius:6px;padding:7px 12px;font-size:12px;letter-spacing:.08em;cursor:pointer}
+  #views button:hover{background:#2c4423;color:#fff}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"./vendor/three.module.js?v=1",
+  "three/addons/":"./vendor/addons/"
+}}
+</script>
+</head>
+<body>
+<div id="view"></div>
+<div id="panel">
+  <h1>BLACK DECADE</h1>
+  <h2>SQUAD &amp; ENEMY ROSTER — ORIGINAL GAME MODELS</h2>
+  <p>The squad in ANP woodland with their <b>full game kit</b>: role weapons
+     (Bradley M16A2 · Connors M249 SAW · JONES M16A2 · Foley BARRETT), caps,
+     backpacks and belt pouches from ConnObjs.txt on the game's own connectors.
+     Right: the insurgent roster — one body, the game's faces and props.</p>
+  <div id="stats">Loading…</div>
+  <div id="err"></div>
+</div>
+<div class="lbl" id="lblL">ORIGINAL — UK DESERT</div>
+<div class="lbl" id="lblR">SQUAD 1 — Bradley</div>
+<div class="lbl" id="lblS2">SQUAD 2 — Connors</div>
+<div class="lbl" id="lblS3">SQUAD 3 — JONES</div>
+<div class="lbl" id="lblS4">SQUAD 4 — Foley</div>
+<div class="lbl" id="lblI">F1 FACE + MOUSTACHE</div>
+<div class="lbl" id="lblM">OFFICER + BEARD + BERET</div>
+<div class="lbl" id="lblN">MECHANIC + BEARD + SHEMAGH</div>
+<div id="views">
+  <button data-v="all">ALL</button><button data-v="s1">SQUAD 1</button><button data-v="s2">SQUAD 2</button><button data-v="s3">SQUAD 3</button><button data-v="s4">SQUAD 4</button>
+  <button data-v="e1">INSURGENT 1</button><button data-v="e2">INSURGENT 2</button><button data-v="e3">INSURGENT 3</button>
+</div>
+<div id="hint">Free camera: drag = orbit · right-drag = pan · wheel = zoom right into a face</div>
+<script>
+window.addEventListener('error', function(e){
+  if (window.__dzLoaded || !e.message) return;
+  var el=document.getElementById('err');
+  if(el) el.textContent='⚠ '+e.message;
+}, true);
+</script>
+<script src="loadout.js?v=1"></script>
+<script type="module" src="reskin.js?v=25"></script>
+</body>
+</html>
