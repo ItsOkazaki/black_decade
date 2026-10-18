@@ -320,6 +320,8 @@ function resetEnemy(E) {
 }
 let enemyFactory = null;   // set inside load(): builds a materialised enemy
 let LOADP = null;          // loading progress callback (set by load())
+const UICLICK = new Audio('sounds/ui/click.wav');
+function uiClick() { try { UICLICK.currentTime = 0; UICLICK.play().catch(() => {}); } catch (e) { /* audio is decoration */ } }
 async function runJobs(items, fn, conc = 4) {
   let i = 0;
   const work = async () => { while (i < items.length) { const it = items[i++]; await fn(it); } };
@@ -1388,9 +1390,11 @@ function startCutscene() {
   if (bt) bt.style.display = 'block';
   if (bb) bb.style.display = 'block';
 }
-function endCutscene() { if (!cutscene) return; cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
+function endCutscene() { if (!cutscene) { playing = true; return; } cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
+function safeStartCutscene() { try { startCutscene(); if (!cutscene) endCutscene(); } catch (e) { console.warn('cutscene failed:', e); cutscene = null; playing = true; for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } } }
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', () => {
+  uiClick();
   if (!window.__playLoaded) { const st = document.getElementById('stats'); const pc = document.getElementById('loadpct'); if (st) st.textContent = 'STILL LOADING' + (pc ? ' — ' + pc.textContent : '') + ' — ONE MOMENT…'; return; }
   if (playerHP <= 0 || missionDone) {
     playerHP = 100; missionDone = false; objIdx = 0; kills = 0;
@@ -1401,7 +1405,7 @@ startEl.addEventListener('click', () => {
   if (h1) h1.textContent = '▶ CLICK TO PLAY';
   startEl.style.display = 'none';
   if (window.__deployedOnce && MIS === 'mission1') { playing = true; }   // M1 re-deploy: straight back in
-  else { window.__deployedOnce = true; startCutscene(); }
+  else { window.__deployedOnce = true; safeStartCutscene(); }
   updateHUD();
   renderer.domElement.requestPointerLock?.();
 });
@@ -1945,7 +1949,7 @@ async function load() {
     const akTemplate = (await loader.loadAsync('models/enemy/Rifle05_AK47.glb')).scene;
     const texByUrl = {};
     Object.entries(FACE_TEX).forEach(([k, u]) => { texByUrl[u] = faceTexCache[k]; });
-    stats.textContent = 'Deploying ' + enemies.length + ' hostiles…';
+    loadNote('Deploying ' + enemies.length + ' hostiles…');
     enemies.forEach(E => loadEnemy(E));
 
     // ---- the squad ----
@@ -2059,6 +2063,7 @@ async function load() {
     window.__playLoaded = true;
     if (_loadBeat) { clearInterval(_loadBeat); _loadBeat = null; }
     loadStep(100, 'Loaded — ' + enemies.length + ' hostiles placed from the mission data.');
+    { const dg = document.getElementById('deployGo'); if (dg) dg.style.display = 'block'; }
     stats.innerHTML = '✔ LOADED — CLICK THE BRIEFING TO DEPLOY (' + enemies.length +
       ' hostiles placed from the mission .env). Full game inventory on TAB.';
     buildItemBar();

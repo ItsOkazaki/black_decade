@@ -13,12 +13,12 @@
   /* ---- frontend windows: one screen at a time, like the original ---- */
   .screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:3;padding:18px}
   .screen.open{display:flex}
-  .window{background:rgba(38,54,22,.94);border:2px solid rgba(178,202,150,.8);border-radius:16px;padding:22px 26px;box-shadow:0 10px 44px rgba(0,0,0,.55);max-width:880px;width:min(880px,94vw);max-height:92vh;overflow:auto;text-align:center}
+  .window{background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.35);padding:22px 26px;max-width:880px;width:min(880px,94vw);max-height:92vh;overflow:auto;text-align:center}
   .window .ptitle{margin:0 auto}
   /* main menu: translucent olive panel + green pill buttons, no title art */
-  #menupanel{width:min(430px,92vw);background:rgba(88,104,58,.42);border:2px solid rgba(200,215,170,.5);border-radius:20px;padding:16px 18px 14px;box-shadow:0 10px 44px rgba(0,0,0,.5);backdrop-filter:blur(1.5px)}
-  .mbtn{display:block;width:100%;margin:7px 0;padding:8px 0 6px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat,linear-gradient(180deg,#33581a,#203a0e);border:1.5px solid #a8bf8d;border-radius:999px;cursor:pointer;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(0,0,0,.4);color:#ffe14d;font-family:inherit}
-  .mbtn:hover{filter:brightness(1.3);border-color:#ffe14d}
+  #menupanel{width:min(430px,92vw);background:none;border:none;padding:16px 18px 14px}
+  .mbtn{display:block;width:100%;margin:7px 0;padding:6px 10px;background:none;border:none;cursor:pointer;text-decoration:none;color:#ffe14d;font-family:inherit;text-align:left}
+  .mbtn:hover{filter:brightness(1.35)}
   .mbtn canvas{margin:0 auto}
   .backbtn{max-width:230px;margin:20px auto 0}
   /* ---- SELECT FORCE cards ---- */
@@ -60,7 +60,6 @@
   <div id="menupanel">
     <img src="textures/ui/defload.png" alt="Black Decade" style="width:100%;height:150px;object-fit:cover;object-position:center 30%;display:block;border-radius:12px;border:1px solid rgba(178,202,150,.55);margin-bottom:12px">
     <button class="mbtn" id="btnSingle"><canvas class="gtext mtxt" data-t="SINGLE PLAYER" data-c="#ffe14d"></canvas></button>
-    <button class="mbtn" id="btnLoadout"><canvas class="gtext mtxt" data-t="LOADOUT" data-c="#ffe14d"></canvas></button>
     <a class="mbtn" href="reskin.html"><canvas class="gtext mtxt" data-t="SQUAD" data-c="#ffe14d"></canvas></a>
     <button class="mbtn" id="btnOptions"><canvas class="gtext mtxt" data-t="OPTIONS" data-c="#ffe14d"></canvas></button>
     <button class="mbtn" id="btnCredits"><canvas class="gtext mtxt" data-t="CREDITS" data-c="#ffe14d"></canvas></button>
@@ -154,7 +153,6 @@
   let loadoutBack = 'scr-main';
   function showScreen(id) { SCREENS.forEach(s => $(s).classList.toggle('open', s === id)); }
   $('btnSingle').onclick = () => showScreen('scr-force');
-  $('btnLoadout').onclick = () => { loadoutBack = 'scr-main'; showScreen('scr-loadout'); };
   $('btnOptions').onclick = () => showScreen('scr-options');
   $('btnCredits').onclick = () => showScreen('scr-credits');
   document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => showScreen(b.dataset.back));
@@ -179,7 +177,7 @@
   function buildMissionList() {
     $('misList').innerHTML = MISSIONS.map(me =>
       '<button class="mbtn misbtn" data-m="' + me.id + '" style="display:flex;align-items:center;gap:12px;text-align:left"><img src="textures/ui/maps/' + me.id + '.png" alt="" style="width:96px;height:60px;object-fit:cover;border:1px solid rgba(178,202,150,.6);flex:0 0 auto" onerror="this.remove()"><canvas class="gtext mtxt" data-t="' + me.name + '" data-c="#ffe14d"></canvas></button>').join('');
-    document.querySelectorAll('.misbtn').forEach(b => b.onclick = () => { setMission(b.dataset.m); loadoutBack = 'scr-missions'; showScreen('scr-loadout'); });
+    document.querySelectorAll('.misbtn').forEach(b => b.onclick = () => { setMission(b.dataset.m); location.href = 'play.html?m=' + b.dataset.m; });
     if (window.GF && GF.text) document.querySelectorAll('.misbtn .mtxt').forEach(cv => {
       const s = GF.text(cv.dataset.t, { size: 'L', color: cv.dataset.c, scale: 1.1 });
       cv.width = s.width; cv.height = s.height; cv.getContext('2d').drawImage(s, 0, 0);
@@ -235,5 +233,7 @@
 </script>
 <audio id="menumusic" src="sounds/music/menu.wav" loop preload="auto"></audio>
 <script>(function(){var a=document.getElementById("menumusic");if(!a)return;a.volume=.5;function kick(){a.play().catch(function(){});removeEventListener("pointerdown",kick);removeEventListener("keydown",kick);}addEventListener("pointerdown",kick);addEventListener("keydown",kick);})();</script>
+<audio id="uiclick" src="sounds/ui/click.wav" preload="auto"></audio>
+<script>addEventListener("pointerdown",function(e){if(!e.target.closest(".mbtn,.fcard,.backbtn,a"))return;var a=document.getElementById("uiclick");if(a){try{a.currentTime=0;a.play().catch(function(){});}catch(_){}}},true);</script>
 </body>
 </html>

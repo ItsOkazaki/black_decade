@@ -40,17 +40,17 @@ window.BD = (() => {
   const LOADOUTS = [
     [ { kind: 'gun', key: 'M16A2' }, { kind: 'gun', key: 'SIGP228' }, { kind: 'gun', key: 'KNIFE' },
       { kind: 'item', key: 'FRAG', count: 2 }, { kind: 'item', key: 'SMOKE', count: 2 },
-      { kind: 'gun', key: 'LAW66', count: 1 }, { kind: 'item', key: 'MEDIKIT', count: 1 },
+      { kind: 'gun', key: 'LAW66', count: 1 }, { kind: 'item', key: 'MEDIKIT', count: 5 },
       { kind: 'item', key: 'BINOCULARS' } ],
     [ { kind: 'gun', key: 'SAW' }, { kind: 'gun', key: 'SIGP228' }, { kind: 'gun', key: 'KNIFE' },
       { kind: 'item', key: 'FRAG', count: 2 }, { kind: 'item', key: 'SMOKE', count: 1 },
-      { kind: 'item', key: 'MEDIKIT', count: 1 } ],
+      { kind: 'item', key: 'MEDIKIT', count: 5 } ],
     [ { kind: 'gun', key: 'M16A2' }, { kind: 'gun', key: 'SIGP228' }, { kind: 'gun', key: 'KNIFE' },
       { kind: 'item', key: 'FRAG', count: 2 }, { kind: 'item', key: 'SMOKE', count: 2 },
-      { kind: 'item', key: 'C4', count: 2 }, { kind: 'item', key: 'MEDIKIT', count: 1 } ],
+      { kind: 'item', key: 'C4', count: 2 }, { kind: 'item', key: 'MEDIKIT', count: 5 } ],
     [ { kind: 'gun', key: 'BARRETT' }, { kind: 'gun', key: 'SIGP228' }, { kind: 'gun', key: 'KNIFE' },
       { kind: 'item', key: 'FRAG', count: 2 }, { kind: 'item', key: 'SMOKE', count: 1 },
-      { kind: 'item', key: 'MEDIKIT', count: 1 } ],
+      { kind: 'item', key: 'MEDIKIT', count: 5 } ],
   ];
 
   // worn kit: ConnObjs.txt SAS rows + the exact set on Bradley's live
