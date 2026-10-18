@@ -321,6 +321,12 @@ function resetEnemy(E) {
 }
 let enemyFactory = null;   // set inside load(): builds a materialised enemy
 let LOADP = null;          // loading progress callback (set by load())
+function updateCompass() {
+  const im = document.getElementById('compassImg');
+  if (!im) return;
+  const yaw = (typeof camYaw !== 'undefined') ? camYaw : player.yaw;
+  im.style.transform = 'rotate(' + (-yaw * 57.29578).toFixed(1) + 'deg)';
+}
 const UICLICK = new Audio('sounds/ui/click.wav');
 function uiClick() { try { UICLICK.currentTime = 0; UICLICK.play().catch(() => {}); } catch (e) { /* audio is decoration */ } }
 async function runJobs(items, fn, conc = 4) {
@@ -874,7 +880,7 @@ function finishMission() {
   missionDone = true; playing = false;
   const st = document.getElementById('stats');
   if (st) st.textContent = 'MISSION COMPLETE — ' + kills + ' hostiles down. Click to redeploy.';
-  setCanvas('deployBtn', GF.text('▶ REDEPLOY', { size: 'L', color: '#b7e39a', scale: 1.5 }));
+  { const dg = document.getElementById('deployGo'); if (dg) { dg.textContent = '▶ REDEPLOY'; dg.style.display = 'block'; } }
   startEl.style.display = 'flex';
   document.exitPointerLock?.();
 }
@@ -1394,14 +1400,12 @@ function startCutscene() {
 function endCutscene() { if (!cutscene) { playing = true; return; } cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
 function safeStartCutscene() { try { startCutscene(); if (!cutscene) endCutscene(); } catch (e) { console.warn('cutscene failed:', e); cutscene = null; playing = true; for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } } }
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
-startEl.addEventListener('click', () => {
+startEl.addEventListener('click', (e) => {
   uiClick();
-  if (!window.__playLoaded) {
-    // if loading truly died (an asset hung with no error), the world may
-    // still be playable enough: offer the emergency door after 90s
-    const fp = document.getElementById('forcePlay');
-    if (fp && fp.dataset.armed) { fp.style.display = 'block'; }
-  } { const st = document.getElementById('stats'); const pc = document.getElementById('loadpct'); if (st) st.textContent = 'STILL LOADING' + (pc ? ' — ' + pc.textContent : '') + ' — ONE MOMENT…'; return; }
+  // the briefing is inert until the DEPLOY button exists: no click can
+  // strand the player on a 'STILL LOADING' message ever again
+  if (!window.__playLoaded) return;
+  if (!e.target.closest('#deployGo')) return;
   if (playerHP <= 0 || missionDone) {
     playerHP = 100; missionDone = false; objIdx = 0; kills = 0;
     resetEnemies(true); resetSquadToStart(); setObjectiveText();
@@ -1735,6 +1739,8 @@ function updateHUD() {
     const pb = document.getElementById('pb' + i);
     pb.style.width = hpv + '%';
     pb.className = hpv <= 30 ? 'low' : '';
+    const pw = document.getElementById('pw' + i);
+    if (pw && M.inv) { const hd = M.inv[M.held] || M.inv[0]; const hdDef = hd ? (hd.kind === 'gun' ? BD.WEAPONS[hd.key] : BD.ITEMS[hd.key]) : null; if (hdDef) { const ps = BD.ICON(hdDef.icon); if (pw.dataset.s !== ps) { pw.dataset.s = ps; pw.src = ps; } } }
     const pi = document.getElementById('pi' + i);
     if (pi) {
       const ic = M.prisoner ? 'IMAGE_VIP' : !M.alive ? 'IMAGE_DOGTAGSINGLE' : i === activeIdx ? 'IMAGE_ORDER_RADIO'
@@ -2075,12 +2081,12 @@ async function load() {
       ' hostiles placed from the mission .env). Full game inventory on TAB.';
     buildItemBar();
     GF.load().then(() => {
-      setCanvas('deployBtn', GF.text('▶ CLICK TO DEPLOY', { size: 'L', color: '#b7e39a', scale: 1.5 }));
       try { setCanvas('startTitle', GF.text(MISNAME, { size: 'L', color: '#f0d9a0', scale: 2.2 })); } catch (e) { /* title is decoration */ }
       setObjectiveText();
       setCanvas('killsCv', GF.text('HOSTILES DOWN 0', { size: 'S', color: '#e8a09a', scale: 1.5 }));
     });
     updateHUD();
+    updateCompass();
   } catch (err) {
     if (_loadBeat) { clearInterval(_loadBeat); _loadBeat = null; }
     const p = document.getElementById('loadpct');
