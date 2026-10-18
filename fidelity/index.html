@@ -88,10 +88,19 @@
         <div class="flagbg flagGIS"><img src="textures/gis_patch.png" alt="G.I.S emblem"></div>
         <img class="squadpic" src="textures/ui/defload.png" alt="Squad">
         <canvas class="gtext fname" data-t="G.I.S" data-c="#ffe14d"></canvas>
-        <div class="fsub">GROUPE D'INTERVENTION SPECIALE</div>
+        <div class="fsub">GROUPE D'INTERVENTION SPÉCIALE</div>
       </div>
     </div>
     <button class="mbtn backbtn" data-back="scr-main"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
+  </div>
+</div>
+
+<!-- SELECT MISSION -->
+<div class="screen" id="scr-missions">
+  <div class="window">
+    <canvas class="gtext ptitle" data-t="SELECT MISSION"></canvas>
+    <div id="misList" style="margin-top:16px;max-height:52vh;overflow:auto"></div>
+    <button class="mbtn backbtn" data-back="scr-force"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
   </div>
 </div>
 
@@ -102,7 +111,7 @@
     <div id="forceLine" style="font-size:11px;letter-spacing:.22em;color:#cfe0b8;margin-top:6px"></div>
     <div id="men"></div>
     <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.06em;margin:12px 0 0;text-align:left">EVERY MAN CARRIES HIS ROLE WEAPON, A SIG P228, COMBAT KNIFE, FRAG + SMOKE GRENADES AND A MEDI KIT. BENALI ADDS A LAW 66 + BINOCULARS · BOUDIAF CARRIES THE C4.</p>
-    <a class="mbtn" href="play.html" style="max-width:340px;margin:18px auto 0"><canvas class="gtext mtxt" data-t="DEPLOY - MISSION 1" data-c="#b7e39a"></canvas></a>
+    <a class="mbtn" href="play.html" id="deployLink" style="max-width:340px;margin:18px auto 0"><canvas class="gtext mtxt" data-t="DEPLOY" data-c="#b7e39a"></canvas></a>
     <button class="mbtn backbtn" id="btnLoadoutBack"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
   </div>
 </div>
@@ -140,7 +149,7 @@
 <script>
   const $ = id => document.getElementById(id);
   // ---- frontend screen windows (one at a time, like the original game) ----
-  const SCREENS = ['scr-main', 'scr-force', 'scr-loadout', 'scr-options', 'scr-credits'];
+  const SCREENS = ['scr-main', 'scr-force', 'scr-missions', 'scr-loadout', 'scr-options', 'scr-credits'];
   let loadoutBack = 'scr-main';
   function showScreen(id) { SCREENS.forEach(s => $(s).classList.toggle('open', s === id)); }
   $('btnSingle').onclick = () => showScreen('scr-force');
@@ -154,10 +163,29 @@
   // ---- SELECT FORCE: ANP or G.I.S (stored for the squad screens/game) ----
   function pickForce(f) {
     localStorage.setItem('bd_force', f);
-    $('forceLine').textContent = 'FORCE: ' + (f === 'ANP' ? 'ANP — ARMEE NATIONALE POPULAIRE' : 'G.I.S — GROUPE D\'INTERVENTION SPECIALE');
-    loadoutBack = 'scr-force';
-    showScreen('scr-loadout');
+    showScreen('scr-missions');
   }
+  // ---- SELECT MISSION (every mission is built from its own .env data) ----
+  let MISSIONS = [{ id: 'mission1', name: 'MISSION 1 — RESCUE' }];
+  function setMission(id) {
+    localStorage.setItem('bd_mission', id);
+    const me = MISSIONS.find(e => e.id === id);
+    const f = localStorage.getItem('bd_force') || 'ANP';
+    $('forceLine').textContent = 'FORCE: ' + f + '   ·   ' + (me ? me.name : id.toUpperCase());
+    const dl = document.getElementById('deployLink');
+    if (dl) dl.href = 'play.html?m=' + id;
+  }
+  function buildMissionList() {
+    $('misList').innerHTML = MISSIONS.map(me =>
+      '<button class="mbtn misbtn" data-m="' + me.id + '"><canvas class="gtext mtxt" data-t="' + me.name + '" data-c="#ffe14d"></canvas></button>').join('');
+    document.querySelectorAll('.misbtn').forEach(b => b.onclick = () => { setMission(b.dataset.m); loadoutBack = 'scr-missions'; showScreen('scr-loadout'); });
+    if (window.GF && GF.text) document.querySelectorAll('.misbtn .mtxt').forEach(cv => {
+      const s = GF.text(cv.dataset.t, { size: 'L', color: cv.dataset.c, scale: 1.1 });
+      cv.width = s.width; cv.height = s.height; cv.getContext('2d').drawImage(s, 0, 0);
+    });
+  }
+  fetch('missions.json').then(r => r.json()).then(l => { if (Array.isArray(l) && l.length) MISSIONS = l; buildMissionList(); setMission(localStorage.getItem('bd_mission') || 'mission1'); }).catch(() => buildMissionList());
+  setMission(localStorage.getItem('bd_mission') || 'mission1');
   $('fcANP').onclick = () => pickForce('ANP');
   $('fcGIS').onclick = () => pickForce('G.I.S');
   if (localStorage.getItem('bd_force') === 'G.I.S') $('forceLine').textContent = 'FORCE: G.I.S — GROUPE D\'INTERVENTION SPECIALE';

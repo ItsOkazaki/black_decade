@@ -1,0 +1,2932 @@
+{
+ "start": {
+  "name": "Bradley",
+  "model": "HERO01_ARMSTRONG",
+  "pos": [
+   -8.67,
+   0.0,
+   -145.01
+  ],
+  "yaw": -3.142,
+  "weapons": [
+   "US_WPN_M16A2",
+   "US_WPN_SIGP228",
+   "US_WPN_GrenadeFrag",
+   "US_WPN_GrenadeSmoke"
+  ],
+  "gear": [],
+  "inst": "BRADLEY"
+ },
+ "enemies": [
+  {
+   "unit": "Iraqi_Regular_Officer",
+   "inst": "LAST_SPAWN_1",
+   "pos": [
+    -65.87,
+    -12.0,
+    192.95
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "LAST_SPAWN_2",
+   "pos": [
+    -68.09,
+    -12.0,
+    194.82
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_RPK",
+   "face": "IR_BEARD03_SUNGLASSES",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "LAST_SPAWN_3",
+   "pos": [
+    -70.02,
+    -12.0,
+    193.67
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "HUNTER",
+   "pos": [
+    -18.38,
+    -0.25,
+    -160.86
+   ],
+   "yaw": -1.92,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "LAST_SPAWN01",
+   "pos": [
+    -3.65,
+    -12.0,
+    225.92
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE01",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "LAST_SPAWN02",
+   "pos": [
+    -7.84,
+    -12.0,
+    225.92
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "BMP_2Crew",
+   "pos": [
+    123.81,
+    -12.0,
+    123.12
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "",
+   "hat": ""
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FLYOVER_SNIPER_3",
+   "pos": [
+    -19.42,
+    -4.79,
+    55.23
+   ],
+   "yaw": -2.967,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "STREET_SNIPER_2",
+   "pos": [
+    125.44,
+    -8.09,
+    -69.17
+   ],
+   "yaw": -3.054,
+   "weapon": "IR_WPN_AK47",
+   "face": "AN_SUNGLASSES",
+   "hat": "IR_SHEMAGH03_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "STREET_SNIPER_3",
+   "pos": [
+    121.2,
+    -7.94,
+    -70.53
+   ],
+   "yaw": -3.054,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FLYOVER_SNIPER_9",
+   "pos": [
+    -15.96,
+    -7.0,
+    150.45
+   ],
+   "yaw": -5.149,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE01",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_8",
+   "pos": [
+    21.03,
+    -11.96,
+    133.98
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE02",
+   "hat": "IR_HELMET_FLAG"
+  },
+  {
+   "unit": "Iraqi_Regular_Officer",
+   "inst": "SPAWN_9",
+   "pos": [
+    17.26,
+    -11.97,
+    133.95
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01",
+   "hat": "IR_BERET_BLACK"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_10",
+   "pos": [
+    103.04,
+    -12.0,
+    112.48
+   ],
+   "yaw": -1.484,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD03",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "COURTYARD_SNIPER_2",
+   "pos": [
+    82.97,
+    -1.0,
+    25.2
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "START_SNIPER_3",
+   "pos": [
+    16.71,
+    8.0,
+    -26.93
+   ],
+   "yaw": -4.974,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE02_SUNGLASSES",
+   "hat": "UK_CAP_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "STREET_SNIPER_1",
+   "pos": [
+    141.7,
+    -11.86,
+    29.59
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01_SUNGLASSES",
+   "hat": "UK_CAP_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_3",
+   "pos": [
+    76.71,
+    -8.0,
+    -53.66
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "COURTYARD_SNIPER_1",
+   "pos": [
+    99.58,
+    7.37,
+    2.85
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE02_SUNGLASSES",
+   "hat": "UK_CAP_GREEN"
+  },
+  {
+   "unit": "Iraqi_Regular_Officer",
+   "inst": "COURTYARD_SNIPER_3",
+   "pos": [
+    49.92,
+    2.12,
+    -19.7
+   ],
+   "yaw": -1.222,
+   "weapon": "IR_WPN_SVDDragunov",
+   "face": "IR_MOUSTACHE02",
+   "hat": "IR_BERET_BLACK"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_4",
+   "pos": [
+    95.07,
+    -3.96,
+    22.92
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01_SUNGLASSES",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_5",
+   "pos": [
+    95.06,
+    -3.93,
+    25.65
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE01",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "START_SNIPER_1",
+   "pos": [
+    0.51,
+    8.03,
+    -38.71
+   ],
+   "yaw": -6.021,
+   "weapon": "IR_WPN_AK47",
+   "face": "",
+   "hat": "IR_SHEMAGH02_REDWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_0",
+   "pos": [
+    19.04,
+    0.0,
+    -51.91
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE02",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_2",
+   "pos": [
+    11.04,
+    -0.05,
+    -4.46
+   ],
+   "yaw": -1.571,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FREEWAY_SNIPER_5",
+   "pos": [
+    8.65,
+    0.33,
+    112.64
+   ],
+   "yaw": -0.611,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01",
+   "hat": "UK_CAP_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FREEWAY_SNIPER_4",
+   "pos": [
+    38.51,
+    1.07,
+    55.54
+   ],
+   "yaw": -3.142,
+   "weapon": "IR_WPN_AK47",
+   "face": "AN_SUNGLASSES",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FREEWAY_SNIPER_1",
+   "pos": [
+    103.29,
+    0.66,
+    124.48
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_SVDDragunov",
+   "face": "IR_BEARD03",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FREEWAY_SNIPER_3",
+   "pos": [
+    89.92,
+    0.0,
+    68.45
+   ],
+   "yaw": -3.142,
+   "weapon": "IR_WPN_AK47",
+   "face": "",
+   "hat": "IR_SHEMAGH04_SANDY"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "BMP_GUNNER",
+   "pos": [
+    115.2,
+    -6.49,
+    -32.9
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE01_SUNGLASSES",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FLYOVER_T62_COMMANDER",
+   "pos": [
+    58.73,
+    -5.1,
+    98.84
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE02",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FLYOVER_T62_GUNNER",
+   "pos": [
+    58.86,
+    -5.1,
+    94.8
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FREEWAY_SNIPER_2",
+   "pos": [
+    143.91,
+    -12.0,
+    111.54
+   ],
+   "yaw": -6.021,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01",
+   "hat": "UK_CAP_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_6",
+   "pos": [
+    113.25,
+    -12.0,
+    69.63
+   ],
+   "yaw": -1.571,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE02",
+   "hat": "UK_CAP_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_7",
+   "pos": [
+    145.95,
+    -12.0,
+    90.26
+   ],
+   "yaw": -6.196,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_1",
+   "pos": [
+    24.41,
+    -0.1,
+    -52.58
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01_SUNGLASSES",
+   "hat": "IR_HELMET_FLAG"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_6A",
+   "pos": [
+    145.42,
+    -12.0,
+    92.5
+   ],
+   "yaw": -4.974,
+   "weapon": "IR_WPN_RPK",
+   "face": "IR_BEARD03",
+   "hat": "UK_CAP_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "FREEWAY_SNIPER_8",
+   "pos": [
+    -40.4,
+    5.04,
+    121.96
+   ],
+   "yaw": -1.571,
+   "weapon": "IR_WPN_SVDDragunov",
+   "face": "IR_BEARD03",
+   "hat": ""
+  }
+ ],
+ "waypoints": [
+  {
+   "id": 0,
+   "name": "BMP_1_1",
+   "pos": [
+    95.81,
+    -8.14,
+    -32.04
+   ],
+   "next": 1
+  },
+  {
+   "id": 1,
+   "name": "BMP_1_3",
+   "pos": [
+    83.62,
+    -8.0,
+    -31.89
+   ],
+   "next": 11
+  },
+  {
+   "id": 2,
+   "name": "CHINOOK_0",
+   "pos": [
+    -23.65,
+    14.61,
+    89.55
+   ],
+   "next": 3
+  },
+  {
+   "id": 3,
+   "name": "CHINOOK_1",
+   "pos": [
+    -23.25,
+    9.74,
+    114.07
+   ],
+   "next": 4
+  },
+  {
+   "id": 4,
+   "name": "CHINOOK_2",
+   "pos": [
+    -33.69,
+    5.34,
+    183.93
+   ],
+   "next": 212
+  },
+  {
+   "id": 5,
+   "name": "EMIR_W0",
+   "pos": [
+    -15.72,
+    0.0,
+    -39.59
+   ],
+   "next": 6
+  },
+  {
+   "id": 6,
+   "name": "EMIR_W1",
+   "pos": [
+    -25.6,
+    0.0,
+    -39.24
+   ],
+   "next": 7
+  },
+  {
+   "id": 7,
+   "name": "EMIR_W2",
+   "pos": [
+    -27.79,
+    0.0,
+    -42.01
+   ],
+   "next": -1
+  },
+  {
+   "id": 8,
+   "name": "BODYGUARD_ONE_W0",
+   "pos": [
+    -15.82,
+    0.0,
+    -37.91
+   ],
+   "next": 9
+  },
+  {
+   "id": 9,
+   "name": "BODYGUARD_ONE_W1",
+   "pos": [
+    -25.94,
+    0.0,
+    -38.76
+   ],
+   "next": -1
+  },
+  {
+   "id": 10,
+   "name": "NEWS_HELICOPTER_1",
+   "pos": [
+    -24.96,
+    14.0,
+    136.46
+   ],
+   "next": 44
+  },
+  {
+   "id": 11,
+   "name": "BMP_1_4",
+   "pos": [
+    81.78,
+    -8.25,
+    -29.9
+   ],
+   "next": 89
+  },
+  {
+   "id": 12,
+   "name": "FLYOVER_SNIPER_3_W0",
+   "pos": [
+    -17.93,
+    -4.79,
+    55.67
+   ],
+   "next": -1
+  },
+  {
+   "id": 13,
+   "name": "CS_ALLEY_BRADLEY02",
+   "pos": [
+    126.79,
+    -12.1,
+    135.69
+   ],
+   "next": 22
+  },
+  {
+   "id": 14,
+   "name": "CS_ALLEY_FOLEY02",
+   "pos": [
+    128.59,
+    -12.1,
+    136.05
+   ],
+   "next": 23
+  },
+  {
+   "id": 15,
+   "name": "CS_RAMIREZ01",
+   "pos": [
+    133.44,
+    -12.0,
+    78.87
+   ],
+   "next": 16
+  },
+  {
+   "id": 16,
+   "name": "CS_RAMIREZ02",
+   "pos": [
+    131.53,
+    -12.0,
+    60.25
+   ],
+   "next": -1
+  },
+  {
+   "id": 17,
+   "name": "CS_LIMO01",
+   "pos": [
+    14.28,
+    0.15,
+    16.33
+   ],
+   "next": 18
+  },
+  {
+   "id": 18,
+   "name": "CS_LIMO02",
+   "pos": [
+    7.1,
+    -0.1,
+    16.32
+   ],
+   "next": 19
+  },
+  {
+   "id": 19,
+   "name": "CS_LIMO03",
+   "pos": [
+    0.06,
+    -0.1,
+    10.18
+   ],
+   "next": 20
+  },
+  {
+   "id": 20,
+   "name": "CS_LIMO04",
+   "pos": [
+    -7.43,
+    -0.1,
+    -20.36
+   ],
+   "next": 47
+  },
+  {
+   "id": 21,
+   "name": "CS_LIMO06",
+   "pos": [
+    -11.89,
+    0.0,
+    -40.33
+   ],
+   "next": -1
+  },
+  {
+   "id": 22,
+   "name": "CS_ALLEY_BRADLEY03",
+   "pos": [
+    126.22,
+    -12.1,
+    145.94
+   ],
+   "next": -1
+  },
+  {
+   "id": 23,
+   "name": "CS_ALLEY_FOLEY03",
+   "pos": [
+    128.6,
+    -12.1,
+    146.53
+   ],
+   "next": -1
+  },
+  {
+   "id": 24,
+   "name": "CS_ALLEY_BRADLEY01",
+   "pos": [
+    125.37,
+    -12.1,
+    129.79
+   ],
+   "next": 13
+  },
+  {
+   "id": 25,
+   "name": "CS_ALLEY_FOLEY01",
+   "pos": [
+    129.63,
+    -12.1,
+    129.52
+   ],
+   "next": 14
+  },
+  {
+   "id": 26,
+   "name": "CS_GATE_BRAD01",
+   "pos": [
+    -9.47,
+    -0.1,
+    -144.52
+   ],
+   "next": 27
+  },
+  {
+   "id": 27,
+   "name": "CS_GATE_BRAD02",
+   "pos": [
+    -9.81,
+    -0.1,
+    -135.2
+   ],
+   "next": -1
+  },
+  {
+   "id": 28,
+   "name": "CS_GATE_FOLEY01",
+   "pos": [
+    -7.43,
+    -0.1,
+    -144.89
+   ],
+   "next": 29
+  },
+  {
+   "id": 29,
+   "name": "CS_GATE_FOLEY02",
+   "pos": [
+    -7.87,
+    -0.1,
+    -135.99
+   ],
+   "next": -1
+  },
+  {
+   "id": 30,
+   "name": "CS_RAMIREZ_START",
+   "pos": [
+    124.05,
+    -12.0,
+    11.73
+   ],
+   "next": -1
+  },
+  {
+   "id": 31,
+   "name": "CS_LIMO_BODGE",
+   "pos": [
+    18.97,
+    8.0,
+    -25.82
+   ],
+   "next": -1
+  },
+  {
+   "id": 32,
+   "name": "CS_RAM_BODGE",
+   "pos": [
+    134.45,
+    -12.0,
+    71.13
+   ],
+   "next": -1
+  },
+  {
+   "id": 33,
+   "name": "CS_RAMCAM_01",
+   "pos": [
+    138.17,
+    -11.41,
+    91.76
+   ],
+   "next": 34
+  },
+  {
+   "id": 34,
+   "name": "CS_RAMCAM_02",
+   "pos": [
+    137.81,
+    -7.74,
+    78.48
+   ],
+   "next": 35
+  },
+  {
+   "id": 35,
+   "name": "CS_RAMCAM_03",
+   "pos": [
+    129.29,
+    -4.15,
+    88.63
+   ],
+   "next": -1
+  },
+  {
+   "id": 36,
+   "name": "CS_ALLEYPAN_01",
+   "pos": [
+    123.48,
+    -9.58,
+    130.39
+   ],
+   "next": 37
+  },
+  {
+   "id": 37,
+   "name": "CS_ALLEYPAN_02",
+   "pos": [
+    126.41,
+    -10.58,
+    131.91
+   ],
+   "next": 38
+  },
+  {
+   "id": 38,
+   "name": "CS_ALLEYPAN_03",
+   "pos": [
+    128.63,
+    -11.37,
+    137.23
+   ],
+   "next": -1
+  },
+  {
+   "id": 39,
+   "name": "CS_GATEPAN_01",
+   "pos": [
+    -6.81,
+    1.47,
+    -144.36
+   ],
+   "next": 40
+  },
+  {
+   "id": 40,
+   "name": "CS_GATEPAN_02",
+   "pos": [
+    -4.97,
+    3.1,
+    -145.93
+   ],
+   "next": 41
+  },
+  {
+   "id": 41,
+   "name": "CS_GATEPAN_03",
+   "pos": [
+    -4.55,
+    9.0,
+    -145.43
+   ],
+   "next": -1
+  },
+  {
+   "id": 42,
+   "name": "CS_AMBCAM_01",
+   "pos": [
+    2.88,
+    2.44,
+    -28.23
+   ],
+   "next": 43
+  },
+  {
+   "id": 43,
+   "name": "CS_AMBCAM_02",
+   "pos": [
+    9.69,
+    1.69,
+    -27.34
+   ],
+   "next": -1
+  },
+  {
+   "id": 44,
+   "name": "NEWS_HELICOPTER_2",
+   "pos": [
+    24.09,
+    4.51,
+    93.79
+   ],
+   "next": 45
+  },
+  {
+   "id": 45,
+   "name": "NEWS_HELICOPTER_3",
+   "pos": [
+    48.02,
+    4.63,
+    87.54
+   ],
+   "next": 64
+  },
+  {
+   "id": 46,
+   "name": "CHINOOK_3",
+   "pos": [
+    -41.41,
+    -12.1,
+    209.42
+   ],
+   "next": -1
+  },
+  {
+   "id": 47,
+   "name": "CS_LIMO05",
+   "pos": [
+    -8.36,
+    -0.1,
+    -35.15
+   ],
+   "next": 21
+  },
+  {
+   "id": 48,
+   "name": "TELEPORT_5",
+   "pos": [
+    -31.98,
+    -12.1,
+    191.6
+   ],
+   "next": -1
+  },
+  {
+   "id": 49,
+   "name": "TELEPORT_4",
+   "pos": [
+    64.79,
+    -5.0,
+    107.88
+   ],
+   "next": -1
+  },
+  {
+   "id": 50,
+   "name": "TELEPORT_2",
+   "pos": [
+    -0.55,
+    -0.1,
+    13.76
+   ],
+   "next": -1
+  },
+  {
+   "id": 51,
+   "name": "TELEPORT_1",
+   "pos": [
+    -22.13,
+    0.0,
+    -46.16
+   ],
+   "next": -1
+  },
+  {
+   "id": 52,
+   "name": "TELEPORT_3",
+   "pos": [
+    80.01,
+    -5.69,
+    -5.79
+   ],
+   "next": -1
+  },
+  {
+   "id": 53,
+   "name": "CS_LIMO02a",
+   "pos": [
+    2.18,
+    -0.1,
+    15.14
+   ],
+   "next": 19
+  },
+  {
+   "id": 54,
+   "name": "CS_AMB2_01",
+   "pos": [
+    1.33,
+    0.0,
+    -38.38
+   ],
+   "next": -1
+  },
+  {
+   "id": 55,
+   "name": "CS_AMB1_01",
+   "pos": [
+    -0.3,
+    0.0,
+    -29.89
+   ],
+   "next": 56
+  },
+  {
+   "id": 56,
+   "name": "CS_AMB1_02",
+   "pos": [
+    -2.29,
+    0.0,
+    -32.94
+   ],
+   "next": -1
+  },
+  {
+   "id": 57,
+   "name": "CS_AMB3_01",
+   "pos": [
+    0.88,
+    -0.1,
+    -27.38
+   ],
+   "next": 58
+  },
+  {
+   "id": 58,
+   "name": "CS_AMB3_02",
+   "pos": [
+    -6.34,
+    -0.1,
+    -29.38
+   ],
+   "next": -1
+  },
+  {
+   "id": 59,
+   "name": "CS_RAMRUN_01",
+   "pos": [
+    137.42,
+    -11.75,
+    78.45
+   ],
+   "next": 60
+  },
+  {
+   "id": 60,
+   "name": "CS_RAMRUN_02",
+   "pos": [
+    136.08,
+    -11.0,
+    80.59
+   ],
+   "next": 61
+  },
+  {
+   "id": 61,
+   "name": "CS_RAMRUN_03",
+   "pos": [
+    133.57,
+    -10.0,
+    80.97
+   ],
+   "next": -1
+  },
+  {
+   "id": 62,
+   "name": "CS_AMBUSH_PAN_01",
+   "pos": [
+    2.6,
+    1.5,
+    -41.09
+   ],
+   "next": 63
+  },
+  {
+   "id": 63,
+   "name": "CS_AMBUSH_PAN_02",
+   "pos": [
+    2.2,
+    1.5,
+    -29.17
+   ],
+   "next": -1
+  },
+  {
+   "id": 64,
+   "name": "NEWS_HELICOPTER_4",
+   "pos": [
+    48.82,
+    4.63,
+    87.26
+   ],
+   "next": 65
+  },
+  {
+   "id": 65,
+   "name": "NEWS_HELICOPTER_5",
+   "pos": [
+    49.52,
+    4.63,
+    86.68
+   ],
+   "next": 66
+  },
+  {
+   "id": 66,
+   "name": "NEWS_HELICOPTER_6",
+   "pos": [
+    49.98,
+    4.63,
+    85.87
+   ],
+   "next": 67
+  },
+  {
+   "id": 67,
+   "name": "NEWS_HELICOPTER_7",
+   "pos": [
+    50.59,
+    4.63,
+    85.11
+   ],
+   "next": 68
+  },
+  {
+   "id": 68,
+   "name": "NEWS_HELICOPTER_8",
+   "pos": [
+    51.58,
+    4.63,
+    84.34
+   ],
+   "next": 69
+  },
+  {
+   "id": 69,
+   "name": "NEWS_HELICOPTER_9",
+   "pos": [
+    53.16,
+    4.63,
+    84.06
+   ],
+   "next": 70
+  },
+  {
+   "id": 70,
+   "name": "NEWS_HELICOPTER_10",
+   "pos": [
+    55.11,
+    4.63,
+    84.07
+   ],
+   "next": 71
+  },
+  {
+   "id": 71,
+   "name": "NEWS_HELICOPTER_11",
+   "pos": [
+    58.04,
+    4.63,
+    85.18
+   ],
+   "next": 72
+  },
+  {
+   "id": 72,
+   "name": "NEWS_HELICOPTER_13",
+   "pos": [
+    75.43,
+    4.63,
+    91.41
+   ],
+   "next": 73
+  },
+  {
+   "id": 73,
+   "name": "NEWS_HELICOPTER_14",
+   "pos": [
+    78.36,
+    4.63,
+    93.3
+   ],
+   "next": 74
+  },
+  {
+   "id": 74,
+   "name": "NEWS_HELICOPTER_15",
+   "pos": [
+    80.69,
+    4.63,
+    96.55
+   ],
+   "next": 75
+  },
+  {
+   "id": 75,
+   "name": "NEWS_HELICOPTER_16",
+   "pos": [
+    81.15,
+    4.63,
+    100.83
+   ],
+   "next": 76
+  },
+  {
+   "id": 76,
+   "name": "NEWS_HELICOPTER_17",
+   "pos": [
+    77.92,
+    4.63,
+    104.98
+   ],
+   "next": 77
+  },
+  {
+   "id": 77,
+   "name": "NEWS_HELICOPTER_18",
+   "pos": [
+    73.53,
+    4.63,
+    106.93
+   ],
+   "next": 78
+  },
+  {
+   "id": 78,
+   "name": "NEWS_HELICOPTER_19",
+   "pos": [
+    68.45,
+    4.63,
+    105.75
+   ],
+   "next": 79
+  },
+  {
+   "id": 79,
+   "name": "NEWS_HELICOPTER_20",
+   "pos": [
+    64.89,
+    4.63,
+    101.5
+   ],
+   "next": 80
+  },
+  {
+   "id": 80,
+   "name": "NEWS_HELICOPTER_21",
+   "pos": [
+    65.51,
+    4.63,
+    95.75
+   ],
+   "next": 81
+  },
+  {
+   "id": 81,
+   "name": "NEWS_HELICOPTER_22",
+   "pos": [
+    68.98,
+    4.63,
+    91.1
+   ],
+   "next": 82
+  },
+  {
+   "id": 82,
+   "name": "NEWS_HELICOPTER_23",
+   "pos": [
+    73.74,
+    4.63,
+    89.39
+   ],
+   "next": 83
+  },
+  {
+   "id": 83,
+   "name": "NEWS_HELICOPTER_24",
+   "pos": [
+    78.58,
+    4.63,
+    89.3
+   ],
+   "next": 84
+  },
+  {
+   "id": 84,
+   "name": "NEWS_HELICOPTER_25",
+   "pos": [
+    82.43,
+    4.63,
+    89.48
+   ],
+   "next": 85
+  },
+  {
+   "id": 85,
+   "name": "NEWS_HELICOPTER_26",
+   "pos": [
+    120.57,
+    7.15,
+    110.79
+   ],
+   "next": 86
+  },
+  {
+   "id": 86,
+   "name": "NEWS_HELICOPTER_27",
+   "pos": [
+    134.21,
+    8.52,
+    127.26
+   ],
+   "next": 87
+  },
+  {
+   "id": 87,
+   "name": "NEWS_HELICOPTER_28",
+   "pos": [
+    145.43,
+    12.94,
+    159.51
+   ],
+   "next": 88
+  },
+  {
+   "id": 88,
+   "name": "NEWS_HELICOPTER_29",
+   "pos": [
+    190.45,
+    11.86,
+    303.43
+   ],
+   "next": -1
+  },
+  {
+   "id": 89,
+   "name": "BMP_1_5",
+   "pos": [
+    80.38,
+    -8.25,
+    -25.4
+   ],
+   "next": 213
+  },
+  {
+   "id": 90,
+   "name": "BMP_1_6",
+   "pos": [
+    79.55,
+    -4.1,
+    12.51
+   ],
+   "next": 91
+  },
+  {
+   "id": 91,
+   "name": "BMP_1_7",
+   "pos": [
+    79.35,
+    -4.1,
+    10.07
+   ],
+   "next": 215
+  },
+  {
+   "id": 92,
+   "name": "BMP_1_8",
+   "pos": [
+    80.32,
+    -8.1,
+    -27.12
+   ],
+   "next": 93
+  },
+  {
+   "id": 93,
+   "name": "BMP_1_9",
+   "pos": [
+    83.34,
+    -8.1,
+    -32.35
+   ],
+   "next": 94
+  },
+  {
+   "id": 94,
+   "name": "BMP_1_10",
+   "pos": [
+    90.34,
+    -8.0,
+    -40.78
+   ],
+   "next": 95
+  },
+  {
+   "id": 95,
+   "name": "BMP_1_11",
+   "pos": [
+    94.31,
+    -8.0,
+    -38.92
+   ],
+   "next": 96
+  },
+  {
+   "id": 96,
+   "name": "BMP_1_12",
+   "pos": [
+    94.83,
+    -8.1,
+    -34.29
+   ],
+   "next": 1
+  },
+  {
+   "id": 97,
+   "name": "PODIUM_POSITION_1",
+   "pos": [
+    -35.63,
+    -12.1,
+    199.01
+   ],
+   "next": -1
+  },
+  {
+   "id": 98,
+   "name": "PODIUM_POSITION_2",
+   "pos": [
+    12.84,
+    -5.1,
+    97.9
+   ],
+   "next": -1
+  },
+  {
+   "id": 99,
+   "name": "PODIUM_POSITION_3",
+   "pos": [
+    65.03,
+    -4.0,
+    2.11
+   ],
+   "next": -1
+  },
+  {
+   "id": 100,
+   "name": "PODIUM_POSITION_4",
+   "pos": [
+    28.68,
+    -0.1,
+    -5.68
+   ],
+   "next": -1
+  },
+  {
+   "id": 101,
+   "name": "COURTYARD_SNIPER_1_1",
+   "pos": [
+    91.8,
+    7.37,
+    2.92
+   ],
+   "next": 178
+  },
+  {
+   "id": 102,
+   "name": "STREET_SNIPER_2_1",
+   "pos": [
+    125.28,
+    -8.0,
+    -64.38
+   ],
+   "next": 103
+  },
+  {
+   "id": 103,
+   "name": "STREET_SNIPER_2_2",
+   "pos": [
+    124.51,
+    -8.0,
+    -59.23
+   ],
+   "next": 104
+  },
+  {
+   "id": 104,
+   "name": "STREET_SNIPER_2_3",
+   "pos": [
+    124.51,
+    -8.0,
+    -56.59
+   ],
+   "next": -1
+  },
+  {
+   "id": 105,
+   "name": "STREET_SNIPER_3_1",
+   "pos": [
+    122.39,
+    -8.0,
+    -63.77
+   ],
+   "next": 106
+  },
+  {
+   "id": 106,
+   "name": "STREET_SNIPER_3_2",
+   "pos": [
+    121.23,
+    -8.0,
+    -56.93
+   ],
+   "next": -1
+  },
+  {
+   "id": 107,
+   "name": "SPAWN_7_1",
+   "pos": [
+    145.34,
+    -12.0,
+    71.04
+   ],
+   "next": 108
+  },
+  {
+   "id": 108,
+   "name": "SPAWN_7_2",
+   "pos": [
+    137.4,
+    -12.0,
+    61.29
+   ],
+   "next": 109
+  },
+  {
+   "id": 109,
+   "name": "SPAWN_7_3_kneel",
+   "pos": [
+    136.59,
+    -12.0,
+    59.44
+   ],
+   "next": 110
+  },
+  {
+   "id": 110,
+   "name": "SPAWN_7_4",
+   "pos": [
+    134.54,
+    -12.0,
+    55.78
+   ],
+   "next": 111
+  },
+  {
+   "id": 111,
+   "name": "SPAWN_7_5",
+   "pos": [
+    133.01,
+    -12.0,
+    46.2
+   ],
+   "next": -1
+  },
+  {
+   "id": 112,
+   "name": "SPAWN_6_1",
+   "pos": [
+    119.43,
+    -12.0,
+    69.89
+   ],
+   "next": 113
+  },
+  {
+   "id": 113,
+   "name": "SPAWN_6_2",
+   "pos": [
+    121.78,
+    -12.0,
+    68.11
+   ],
+   "next": 114
+  },
+  {
+   "id": 114,
+   "name": "SPAWN_6_3",
+   "pos": [
+    125.04,
+    -12.1,
+    59.0
+   ],
+   "next": 115
+  },
+  {
+   "id": 115,
+   "name": "SPAWN_6_4",
+   "pos": [
+    121.45,
+    -12.0,
+    47.93
+   ],
+   "next": 116
+  },
+  {
+   "id": 116,
+   "name": "SPAWN_6_5",
+   "pos": [
+    121.25,
+    -12.0,
+    45.33
+   ],
+   "next": -1
+  },
+  {
+   "id": 117,
+   "name": "SPAWN_6A_1",
+   "pos": [
+    140.96,
+    -12.0,
+    90.33
+   ],
+   "next": 118
+  },
+  {
+   "id": 118,
+   "name": "SPAWN_6A_2",
+   "pos": [
+    139.93,
+    -12.0,
+    70.79
+   ],
+   "next": 119
+  },
+  {
+   "id": 119,
+   "name": "SPAWN_6A_3",
+   "pos": [
+    137.47,
+    -11.57,
+    69.07
+   ],
+   "next": -1
+  },
+  {
+   "id": 120,
+   "name": "BRF_OBJ1_PATH2",
+   "pos": [
+    -9.93,
+    9.65,
+    -45.92
+   ],
+   "next": -1
+  },
+  {
+   "id": 121,
+   "name": "BRF_OBJ1_PATH1",
+   "pos": [
+    -9.93,
+    13.51,
+    -45.92
+   ],
+   "next": 120
+  },
+  {
+   "id": 122,
+   "name": "BRF_OBJ1_TARGET1",
+   "pos": [
+    -20.2,
+    0.0,
+    -38.54
+   ],
+   "next": -1
+  },
+  {
+   "id": 123,
+   "name": "BRF_OBJ2_TARGET2",
+   "pos": [
+    97.09,
+    -2.8,
+    98.87
+   ],
+   "next": -1
+  },
+  {
+   "id": 124,
+   "name": "BRF_OBJ2_TARGET1",
+   "pos": [
+    93.73,
+    -0.64,
+    102.9
+   ],
+   "next": 123
+  },
+  {
+   "id": 125,
+   "name": "BRF_OBJ3_TARGET1",
+   "pos": [
+    128.34,
+    -0.76,
+    8.45
+   ],
+   "next": 30
+  },
+  {
+   "id": 126,
+   "name": "BRF_OBJ4_TARGET1",
+   "pos": [
+    -34.35,
+    -12.1,
+    209.78
+   ],
+   "next": 127
+  },
+  {
+   "id": 127,
+   "name": "BRF_OBJ4_TARGET2",
+   "pos": [
+    -48.03,
+    -12.1,
+    205.03
+   ],
+   "next": -1
+  },
+  {
+   "id": 128,
+   "name": "BMP_2_1",
+   "pos": [
+    128.04,
+    -12.1,
+    117.14
+   ],
+   "next": 129
+  },
+  {
+   "id": 129,
+   "name": "BMP_2_2",
+   "pos": [
+    128.03,
+    -12.1,
+    56.48
+   ],
+   "next": 150
+  },
+  {
+   "id": 130,
+   "name": "FLEEING_CIV01_1",
+   "pos": [
+    -14.24,
+    0.0,
+    -114.58
+   ],
+   "next": 131
+  },
+  {
+   "id": 131,
+   "name": "FLEEING_CIV01_2",
+   "pos": [
+    -12.95,
+    0.0,
+    -118.66
+   ],
+   "next": 132
+  },
+  {
+   "id": 132,
+   "name": "FLEEING_CIV01_3",
+   "pos": [
+    -10.81,
+    -0.1,
+    -135.61
+   ],
+   "next": 133
+  },
+  {
+   "id": 133,
+   "name": "FLEEING_CIV01_4",
+   "pos": [
+    -9.83,
+    -0.1,
+    -148.16
+   ],
+   "next": 164
+  },
+  {
+   "id": 134,
+   "name": "FLEEING_CIV02_1",
+   "pos": [
+    -9.07,
+    -0.1,
+    -63.3
+   ],
+   "next": 135
+  },
+  {
+   "id": 135,
+   "name": "FLEEING_CIV02_3",
+   "pos": [
+    -5.72,
+    -0.1,
+    -138.26
+   ],
+   "next": 136
+  },
+  {
+   "id": 136,
+   "name": "FLEEING_CIV02_4",
+   "pos": [
+    -5.08,
+    -0.1,
+    -144.84
+   ],
+   "next": 174
+  },
+  {
+   "id": 137,
+   "name": "FLEEING_CIV03_1",
+   "pos": [
+    -8.58,
+    -0.1,
+    -110.66
+   ],
+   "next": 138
+  },
+  {
+   "id": 138,
+   "name": "FLEEING_CIV03_2",
+   "pos": [
+    -5.75,
+    -0.1,
+    -136.08
+   ],
+   "next": 139
+  },
+  {
+   "id": 139,
+   "name": "FLEEING_CIV03_3",
+   "pos": [
+    -5.05,
+    -0.1,
+    -145.56
+   ],
+   "next": 170
+  },
+  {
+   "id": 140,
+   "name": "FLEEING_CIV04_1",
+   "pos": [
+    -0.5,
+    0.0,
+    -82.11
+   ],
+   "next": 141
+  },
+  {
+   "id": 141,
+   "name": "FLEEING_CIV04_2",
+   "pos": [
+    2.74,
+    0.0,
+    -92.76
+   ],
+   "next": 142
+  },
+  {
+   "id": 142,
+   "name": "FLEEING_CIV04_3",
+   "pos": [
+    -1.13,
+    0.0,
+    -104.33
+   ],
+   "next": 143
+  },
+  {
+   "id": 143,
+   "name": "FLEEING_CIV04_4",
+   "pos": [
+    -10.03,
+    -0.1,
+    -147.79
+   ],
+   "next": 167
+  },
+  {
+   "id": 144,
+   "name": "CIV03_pause",
+   "pos": [
+    -4.84,
+    -0.1,
+    -57.36
+   ],
+   "next": 137
+  },
+  {
+   "id": 145,
+   "name": "CIV04_pause",
+   "pos": [
+    -1.01,
+    0.0,
+    -44.32
+   ],
+   "next": 140
+  },
+  {
+   "id": 146,
+   "name": "FLYOVER_T62_W0",
+   "pos": [
+    30.57,
+    -5.1,
+    94.54
+   ],
+   "next": 147
+  },
+  {
+   "id": 147,
+   "name": "FLYOVER_T62_W2",
+   "pos": [
+    24.64,
+    -5.1,
+    94.62
+   ],
+   "next": 148
+  },
+  {
+   "id": 148,
+   "name": "FLYOVER_T62_W3",
+   "pos": [
+    59.98,
+    -5.1,
+    94.73
+   ],
+   "next": 149
+  },
+  {
+   "id": 149,
+   "name": "FLYOVER_T62_W4",
+   "pos": [
+    67.09,
+    -5.1,
+    94.79
+   ],
+   "next": 146
+  },
+  {
+   "id": 150,
+   "name": "BMP_2_3",
+   "pos": [
+    127.93,
+    -12.1,
+    40.34
+   ],
+   "next": -1
+  },
+  {
+   "id": 151,
+   "name": "CS_ALLEYPAN_00",
+   "pos": [
+    121.02,
+    -8.36,
+    132.98
+   ],
+   "next": 36
+  },
+  {
+   "id": 152,
+   "name": "CS_RAMCAM_T03",
+   "pos": [
+    121.71,
+    -11.0,
+    89.62
+   ],
+   "next": -1
+  },
+  {
+   "id": 153,
+   "name": "CS_RAMCAM_T02",
+   "pos": [
+    134.22,
+    -11.0,
+    79.18
+   ],
+   "next": 152
+  },
+  {
+   "id": 154,
+   "name": "CS_RAMCAM_T01",
+   "pos": [
+    139.3,
+    -11.41,
+    97.06
+   ],
+   "next": 153
+  },
+  {
+   "id": 155,
+   "name": "CS_GO_CAM1",
+   "pos": [
+    -7.37,
+    2.67,
+    -35.62
+   ],
+   "next": 156
+  },
+  {
+   "id": 156,
+   "name": "CS_GO_CAM2",
+   "pos": [
+    -7.6,
+    1.64,
+    -35.4
+   ],
+   "next": -1
+  },
+  {
+   "id": 157,
+   "name": "CS_BG_DIE1",
+   "pos": [
+    -14.12,
+    5.57,
+    -37.33
+   ],
+   "next": 158
+  },
+  {
+   "id": 158,
+   "name": "CS_BG_DIE2",
+   "pos": [
+    -14.08,
+    2.57,
+    -37.5
+   ],
+   "next": 159
+  },
+  {
+   "id": 159,
+   "name": "CS_BG_DIE3",
+   "pos": [
+    -13.14,
+    1.6,
+    -37.34
+   ],
+   "next": 160
+  },
+  {
+   "id": 160,
+   "name": "CS_BG_DIE4",
+   "pos": [
+    -12.49,
+    1.8,
+    -36.85
+   ],
+   "next": -1
+  },
+  {
+   "id": 161,
+   "name": "CS_RAM_BMPCAM1",
+   "pos": [
+    140.0,
+    -9.0,
+    101.5
+   ],
+   "next": 162
+  },
+  {
+   "id": 162,
+   "name": "CS_RAM_BMPCAM2",
+   "pos": [
+    136.66,
+    -10.85,
+    101.15
+   ],
+   "next": -1
+  },
+  {
+   "id": 163,
+   "name": "CS_LIMO_BOOM",
+   "pos": [
+    -11.05,
+    -0.1,
+    -39.04
+   ],
+   "next": -1
+  },
+  {
+   "id": 164,
+   "name": "FLEEING_CIV01_5",
+   "pos": [
+    -8.13,
+    -0.19,
+    -150.55
+   ],
+   "next": 165
+  },
+  {
+   "id": 165,
+   "name": "FLEEING_CIV01_6",
+   "pos": [
+    -10.65,
+    -0.25,
+    -155.58
+   ],
+   "next": 166
+  },
+  {
+   "id": 166,
+   "name": "FLEEING_CIV01_7",
+   "pos": [
+    -19.19,
+    -0.25,
+    -160.69
+   ],
+   "next": -1
+  },
+  {
+   "id": 167,
+   "name": "FLEEING_CIV04_5",
+   "pos": [
+    -8.5,
+    -0.1,
+    -150.42
+   ],
+   "next": 168
+  },
+  {
+   "id": 168,
+   "name": "FLEEING_CIV04_6",
+   "pos": [
+    -10.82,
+    -0.1,
+    -155.22
+   ],
+   "next": 169
+  },
+  {
+   "id": 169,
+   "name": "FLEEING_CIV04_7",
+   "pos": [
+    -18.95,
+    -0.1,
+    -160.27
+   ],
+   "next": -1
+  },
+  {
+   "id": 170,
+   "name": "FLEEING_CIV03_4",
+   "pos": [
+    -6.28,
+    -0.1,
+    -147.76
+   ],
+   "next": 171
+  },
+  {
+   "id": 171,
+   "name": "FLEEING_CIV03_5",
+   "pos": [
+    -6.74,
+    -0.1,
+    -150.31
+   ],
+   "next": 172
+  },
+  {
+   "id": 172,
+   "name": "FLEEING_CIV03_6",
+   "pos": [
+    -9.76,
+    -0.1,
+    -155.81
+   ],
+   "next": 173
+  },
+  {
+   "id": 173,
+   "name": "FLEEING_CIV03_7",
+   "pos": [
+    -18.53,
+    -0.1,
+    -161.34
+   ],
+   "next": -1
+  },
+  {
+   "id": 174,
+   "name": "FLEEING_CIV02_5",
+   "pos": [
+    -6.37,
+    -0.1,
+    -147.85
+   ],
+   "next": 175
+  },
+  {
+   "id": 175,
+   "name": "FLEEING_CIV02_6",
+   "pos": [
+    -7.1,
+    -0.18,
+    -150.44
+   ],
+   "next": 176
+  },
+  {
+   "id": 176,
+   "name": "FLEEING_CIV02_7",
+   "pos": [
+    -13.33,
+    -0.25,
+    -156.63
+   ],
+   "next": 177
+  },
+  {
+   "id": 177,
+   "name": "FLEEING_CIV02_8",
+   "pos": [
+    -21.37,
+    -0.25,
+    -160.51
+   ],
+   "next": -1
+  },
+  {
+   "id": 178,
+   "name": "COURTYARD_SNIPER_1_2",
+   "pos": [
+    87.21,
+    7.37,
+    2.81
+   ],
+   "next": -1
+  },
+  {
+   "id": 179,
+   "name": "0",
+   "pos": [
+    -12.86,
+    -0.25,
+    -157.97
+   ],
+   "next": 180
+  },
+  {
+   "id": 180,
+   "name": "1",
+   "pos": [
+    -5.81,
+    -0.1,
+    -148.22
+   ],
+   "next": 181
+  },
+  {
+   "id": 181,
+   "name": "2",
+   "pos": [
+    -5.76,
+    -0.1,
+    -141.31
+   ],
+   "next": -1
+  },
+  {
+   "id": 182,
+   "name": "LAST_SPAWN_1_1",
+   "pos": [
+    -63.03,
+    -11.9,
+    184.53
+   ],
+   "next": 183
+  },
+  {
+   "id": 183,
+   "name": "LAST_SPAWN_1_2",
+   "pos": [
+    -41.2,
+    -11.9,
+    184.76
+   ],
+   "next": -1
+  },
+  {
+   "id": 184,
+   "name": "LAST_SPAWN_2_1",
+   "pos": [
+    -65.25,
+    -12.0,
+    182.71
+   ],
+   "next": 185
+  },
+  {
+   "id": 185,
+   "name": "LAST_SPAWN_2_2",
+   "pos": [
+    -34.04,
+    -12.0,
+    180.93
+   ],
+   "next": -1
+  },
+  {
+   "id": 186,
+   "name": "LAST_SPAWN_3_1",
+   "pos": [
+    -66.83,
+    -12.0,
+    181.85
+   ],
+   "next": 187
+  },
+  {
+   "id": 187,
+   "name": "LAST_SPAWN_3_2",
+   "pos": [
+    -39.07,
+    -12.0,
+    177.6
+   ],
+   "next": -1
+  },
+  {
+   "id": 188,
+   "name": "3",
+   "pos": [
+    -7.89,
+    -0.25,
+    -153.47
+   ],
+   "next": 189
+  },
+  {
+   "id": 189,
+   "name": "4",
+   "pos": [
+    -6.18,
+    -0.1,
+    -147.1
+   ],
+   "next": -1
+  },
+  {
+   "id": 190,
+   "name": "FLEEING_CIV05_1",
+   "pos": [
+    95.41,
+    -4.0,
+    15.55
+   ],
+   "next": 191
+  },
+  {
+   "id": 191,
+   "name": "FLEEING_CIV05_2",
+   "pos": [
+    84.62,
+    -4.0,
+    10.37
+   ],
+   "next": 192
+  },
+  {
+   "id": 192,
+   "name": "FLEEING_CIV05_3",
+   "pos": [
+    73.74,
+    -4.98,
+    -2.2
+   ],
+   "next": 193
+  },
+  {
+   "id": 193,
+   "name": "FLEEING_CIV05_4",
+   "pos": [
+    73.8,
+    -8.0,
+    -25.76
+   ],
+   "next": 194
+  },
+  {
+   "id": 194,
+   "name": "FLEEING_CIV05_5",
+   "pos": [
+    78.6,
+    -8.0,
+    -35.16
+   ],
+   "next": 195
+  },
+  {
+   "id": 195,
+   "name": "FLEEING_CIV05_6",
+   "pos": [
+    82.89,
+    -8.0,
+    -39.05
+   ],
+   "next": 196
+  },
+  {
+   "id": 196,
+   "name": "FLEEING_CIV05_7",
+   "pos": [
+    82.8,
+    -8.0,
+    -55.91
+   ],
+   "next": 197
+  },
+  {
+   "id": 197,
+   "name": "FLEEING_CIV05_8",
+   "pos": [
+    78.26,
+    -8.0,
+    -56.28
+   ],
+   "next": -1
+  },
+  {
+   "id": 198,
+   "name": "FLEEING_CIV07_1",
+   "pos": [
+    64.96,
+    -4.0,
+    7.52
+   ],
+   "next": 199
+  },
+  {
+   "id": 199,
+   "name": "FLEEING_CIV07_2",
+   "pos": [
+    69.51,
+    -4.0,
+    -37.37
+   ],
+   "next": 200
+  },
+  {
+   "id": 200,
+   "name": "FLEEING_CIV07_3",
+   "pos": [
+    74.61,
+    -4.0,
+    -50.16
+   ],
+   "next": 201
+  },
+  {
+   "id": 201,
+   "name": "FLEEING_CIV07_4",
+   "pos": [
+    77.97,
+    -4.0,
+    -49.42
+   ],
+   "next": 202
+  },
+  {
+   "id": 202,
+   "name": "FLEEING_CIV07_5",
+   "pos": [
+    79.16,
+    -8.0,
+    -38.06
+   ],
+   "next": 203
+  },
+  {
+   "id": 203,
+   "name": "FLEEING_CIV07_6",
+   "pos": [
+    82.76,
+    -8.0,
+    -38.54
+   ],
+   "next": 204
+  },
+  {
+   "id": 204,
+   "name": "FLEEING_CIV07_7",
+   "pos": [
+    82.66,
+    -8.0,
+    -55.0
+   ],
+   "next": 205
+  },
+  {
+   "id": 205,
+   "name": "FLEEING_CIV07_8",
+   "pos": [
+    78.36,
+    -8.0,
+    -55.92
+   ],
+   "next": -1
+  },
+  {
+   "id": 206,
+   "name": "FLEEING_CIV06_1",
+   "pos": [
+    72.01,
+    -4.0,
+    16.27
+   ],
+   "next": 207
+  },
+  {
+   "id": 207,
+   "name": "FLEEING_CIV06_2",
+   "pos": [
+    72.0,
+    -4.0,
+    10.99
+   ],
+   "next": 208
+  },
+  {
+   "id": 208,
+   "name": "FLEEING_CIV06_3",
+   "pos": [
+    85.0,
+    -7.92,
+    -22.19
+   ],
+   "next": 209
+  },
+  {
+   "id": 209,
+   "name": "FLEEING_CIV06_4",
+   "pos": [
+    83.48,
+    -8.0,
+    -55.79
+   ],
+   "next": 210
+  },
+  {
+   "id": 210,
+   "name": "FLEEING_CIV06_5",
+   "pos": [
+    78.22,
+    -8.0,
+    -56.24
+   ],
+   "next": -1
+  },
+  {
+   "id": 211,
+   "name": "FLEEING_CIV06_0",
+   "pos": [
+    67.59,
+    -4.1,
+    22.99
+   ],
+   "next": 206
+  },
+  {
+   "id": 212,
+   "name": "CHINOOK_2_A",
+   "pos": [
+    -39.42,
+    5.19,
+    206.05
+   ],
+   "next": 46
+  },
+  {
+   "id": 213,
+   "name": "BMP_1_5B",
+   "pos": [
+    79.8,
+    -4.15,
+    6.03
+   ],
+   "next": 90
+  },
+  {
+   "id": 214,
+   "name": "BMP_1_7B",
+   "pos": [
+    80.0,
+    -8.09,
+    -23.72
+   ],
+   "next": 92
+  },
+  {
+   "id": 215,
+   "name": "BMP_1_7A",
+   "pos": [
+    79.49,
+    -4.1,
+    6.06
+   ],
+   "next": 214
+  }
+ ],
+ "triggers": [
+  {
+   "name": "BIRD01",
+   "pos": [
+    64.77,
+    31.15,
+    -10.95
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "PROXTRIG_NEWS_HELICOPTER",
+   "pos": [
+    76.75,
+    -3.86,
+    107.97
+   ],
+   "r": 5.0
+  },
+  {
+   "name": "SPAWN_RAMIREZ",
+   "pos": [
+    115.67,
+    -8.2,
+    -31.97
+   ],
+   "r": 12.0
+  },
+  {
+   "name": "SPAWN_0_1_OFF",
+   "pos": [
+    -8.19,
+    -0.1,
+    -52.21
+   ],
+   "r": 12.0
+  },
+  {
+   "name": "PROXTRIG_T62",
+   "pos": [
+    96.61,
+    -8.0,
+    107.95
+   ],
+   "r": 5.0
+  },
+  {
+   "name": "PROXTRIG_EMIR",
+   "pos": [
+    -29.18,
+    0.45,
+    -45.26
+   ],
+   "r": 2.0
+  },
+  {
+   "name": "SPAWN_2_OFF",
+   "pos": [
+    6.6,
+    0.0,
+    -15.56
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "SPAWN_3_OFF",
+   "pos": [
+    82.72,
+    -8.0,
+    -49.99
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "SPAWN_6_7_OFF",
+   "pos": [
+    128.96,
+    -12.1,
+    68.14
+   ],
+   "r": 15.0
+  },
+  {
+   "name": "SPAWN_8_9_OFF",
+   "pos": [
+    -12.84,
+    -12.0,
+    134.88
+   ],
+   "r": 10.0
+  },
+  {
+   "name": "SPAWN_10_OFF",
+   "pos": [
+    115.76,
+    -12.0,
+    111.72
+   ],
+   "r": 19.0
+  },
+  {
+   "name": "SHUT_GATE",
+   "pos": [
+    20.34,
+    -5.61,
+    87.63
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "BATTLE_EMITTERS3",
+   "pos": [
+    64.76,
+    -3.09,
+    -0.09
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "BATTLE_EMITTERS4",
+   "pos": [
+    83.07,
+    -8.1,
+    -31.55
+   ],
+   "r": 10.0
+  },
+  {
+   "name": "BATTLE_EMITTERS1",
+   "pos": [
+    -7.99,
+    -0.1,
+    -105.94
+   ],
+   "r": 10.0
+  },
+  {
+   "name": "M02_AUTOSAVE01",
+   "pos": [
+    111.76,
+    -10.29,
+    108.03
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "PROXTRIG_HELICOPTER_RESCUE",
+   "pos": [
+    -30.39,
+    -12.1,
+    159.58
+   ],
+   "r": 15.0
+  },
+  {
+   "name": "BIRD02",
+   "pos": [
+    -10.8,
+    41.46,
+    -35.0
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "BIRD03",
+   "pos": [
+    36.98,
+    25.74,
+    89.06
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "LAST_SPAWN_TRIGGER_OFF",
+   "pos": [
+    -50.48,
+    -12.0,
+    181.16
+   ],
+   "r": 7.0
+  },
+  {
+   "name": "SPAWN_8_9",
+   "pos": [
+    16.35,
+    -4.47,
+    84.48
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "BEGIN_SPAWNING",
+   "pos": [
+    -7.82,
+    -0.1,
+    -87.76
+   ],
+   "r": 15.0
+  },
+  {
+   "name": "LAST_SPAWN_OFF",
+   "pos": [
+    -33.94,
+    -12.1,
+    216.2
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "ACTIVATE_RADIO",
+   "pos": [
+    37.14,
+    2.27,
+    -15.14
+   ],
+   "r": 3.0
+  },
+  {
+   "name": "SPAWN_OFF01",
+   "pos": [
+    90.93,
+    -4.1,
+    40.36
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "SPAWN_OFF02",
+   "pos": [
+    93.34,
+    -4.0,
+    12.83
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "TRIGGER_CIVS",
+   "pos": [
+    35.69,
+    0.64,
+    27.42
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "PROXTRIG_RAMIREZ",
+   "pos": [
+    127.93,
+    -12.1,
+    12.99
+   ],
+   "r": 0.0
+  }
+ ]
+}

@@ -14,16 +14,16 @@
   .gtext{display:block;image-rendering:auto}
   /* ---- squad stack: bottom-left green cards, as the original ---- */
   #squadbar{position:fixed;left:10px;bottom:10px;z-index:6;display:flex;flex-direction:column;gap:5px}
-  .card{width:106px;background:rgba(76,112,48,.85);border:1.5px solid rgba(178,202,150,.75);border-radius:7px;padding:5px 6px 6px;box-shadow:0 2px 8px rgba(0,0,0,.45)}
-  .card .ctop{display:flex;justify-content:space-between;align-items:flex-start}
-  .card img.face{width:42px;height:50px;object-fit:cover;border:1px solid rgba(0,0,0,.65);border-radius:3px}
-  .card img.sticon{width:30px;height:30px;object-fit:contain;filter:drop-shadow(1px 1px 2px rgba(0,0,0,.7))}
+  .card{width:140px;background:rgba(76,112,48,.85);border:1.5px solid rgba(178,202,150,.75);border-radius:7px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+  .card .ctop{display:flex;gap:6px;justify-content:space-between;align-items:flex-start}
+  .card img.face{width:54px;height:54px;object-fit:cover;border:1.5px solid rgba(0,0,0,.7);border-radius:3px;background:#101408}
+  .card img.sticon{width:28px;height:28px;object-fit:contain;filter:drop-shadow(1px 1px 2px rgba(0,0,0,.7))}
   .card.active{border:2.5px solid #f2f2e8;background:rgba(64,94,40,.88)}
   .card.down{filter:grayscale(.85);opacity:.62}
   .cname{margin-top:4px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat;color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.1em;padding:2px 5px;border-radius:3px;text-shadow:1px 1px 2px #000}
-  .cbar{margin-top:4px;height:7px;background:rgba(10,14,6,.9);border:1px solid rgba(0,0,0,.8);border-radius:3px;overflow:hidden}
-  .cbar>div{height:100%;background:url(textures/ui/gwint/IMAGE_HEALTH_BAR.png) left center/auto 100% repeat-x;transition:width .25s}
-  .cbar>div.low{filter:hue-rotate(-75deg) saturate(1.7)}
+  .cbar{margin-top:5px;height:9px;background:rgba(10,14,6,.92);border:1px solid rgba(0,0,0,.85);border-radius:2px;overflow:hidden}
+  .cbar>div{height:100%;background:linear-gradient(180deg,#c4e8a2,#79ab4c 55%,#5d8a38);transition:width .25s}
+  .cbar>div.low{background:linear-gradient(180deg,#f0b9a0,#c05a3a 55%,#96382a)}
   .cstate{display:none}
   /* ---- compass: original lettered ring, top-right ---- */
   #compass{position:fixed;top:10px;right:10px;z-index:6;width:96px;height:96px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
@@ -98,8 +98,6 @@
 <div id="cross"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="15" cy="15" r="1.4" fill="#fff" stroke="none"/><path d="M15 3v6M15 21v6M3 15h6M21 15h6"/></svg></div>
 <div id="dmg" style="position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center, transparent 55%, rgba(180,20,10,.55) 100%);opacity:0"></div>
 <div id="compass"><img id="compassImg" src="textures/hud/compass.png"></div>
-<div id="objbox"><img src="textures/ui/gwint/IMAGE_OBJECTIVE.png"><div><canvas id="objtext" class="gtext"></canvas><div id="objsub">MISSION 1 — NORTHERN ALGERIA, 1994</div></div></div>
-<div id="kills"><canvas id="killsCv" class="gtext"></canvas></div>
 <div id="squadbar">
   <div class="card" id="card0"><div class="ctop"><img class="face" src="textures/portraits/sq1.png?v=2"><img class="sticon" id="pi0" src="textures/ui/gwint/IMAGE_ORDER_RADIO.png"></div><div class="cname">BENALI</div><div class="cbar"><div id="pb0" style="width:100%"></div></div><div class="cstate" id="ps0">READY</div></div>
   <div class="card" id="card1"><div class="ctop"><img class="face" src="textures/portraits/sq2.png?v=2"><img class="sticon" id="pi1" src="textures/ui/gwint/IMAGE_FOLLOW.png"></div><div class="cname">CHERIF</div><div class="cbar"><div id="pb1" style="width:100%"></div></div><div class="cstate" id="ps1">READY</div></div>
@@ -109,6 +107,22 @@
 <div id="wpnbox"><img class="wicon" src="textures/ui/gwint/IMAGE_WEAPON_M16M203.png"><div id="ammoRow"><span id="magline">M16A2 · <span id="magtext">30</span></span><span id="ammoDigits"></span></div><div id="stars"><img src="textures/ui/gwint/IMAGE_STAR.png"><img src="textures/ui/gwint/IMAGE_STAR.png"><img src="textures/ui/gwint/IMAGE_STAR.png"></div></div>
 <div id="itembar"></div>
 <div id="msg"><canvas id="msgtext" class="gtext"></canvas><div id="msgsub" style="margin-top:6px"></div></div>
+<div id="f1win" style="position:fixed;inset:0;z-index:11;display:none;align-items:center;justify-content:center;background:rgba(5,6,4,.62)">
+  <div style="width:min(680px,94vw);background:rgba(38,54,22,.95);border:2px solid rgba(178,202,150,.85);border-radius:16px;box-shadow:0 0 60px #000;padding:20px 24px">
+    <canvas id="f1title" class="gtext"></canvas>
+    <div id="f1objs" style="margin-top:14px"></div>
+    <div id="f1stats" style="margin-top:14px;font-size:11.5px;letter-spacing:.1em;color:#ffe9a8;line-height:1.7"></div>
+    <p style="font-size:11px;color:#cfe0b8;letter-spacing:.12em;margin:14px 0 0">F1 / ESC — CLOSE</p>
+  </div>
+</div>
+<style>
+  .f1row{display:flex;gap:12px;align-items:baseline;padding:7px 10px;margin:5px 0;background:rgba(10,13,7,.5);border:1px solid rgba(178,202,150,.4);border-radius:8px;font-size:13px;letter-spacing:.06em;color:#e8e4d8}
+  .f1row .f1st{flex:none;font-size:9.5px;font-weight:700;letter-spacing:.14em;color:#9db38a}
+  .f1row.cur{border-color:#ffe14d;color:#fff}
+  .f1row.cur .f1st{color:#ffe14d}
+  .f1row.done{opacity:.55}
+  .f1row.done .f1st{color:#b7e39a}
+</style>
 <div id="inv"><div class="sheet"><div class="inner">
   <canvas id="invTitle" class="gtext"></canvas>
   <div id="invSquad"></div>
@@ -144,7 +158,7 @@
   <p><b>Mouse</b> look · <b>LMB</b> fire/use · <b>RMB</b> aim · <b>WASD</b> move ·
      <b>Ctrl</b> walk · <b>Shift</b> sprint · <b>R</b> reload · <b>C</b> crouch · <b>X</b> prone<br>
      <b>1–4</b> switch soldier · <b>Q</b>/wheel change weapon-item · <b>SPACE</b> inventory (mouse) ·
-     <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>T</b> new wave · <b>P</b> pause</p>
+     <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>T</b> new wave · <b>F1</b> objectives · <b>P</b> pause</p>
   <canvas id="deployBtn" class="gtext"></canvas>
   <div id="stats" style="font-size:12px;color:#cfe0b8;margin-top:8px">Loading…</div>
 </div></div>
@@ -157,6 +171,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=48"></script>
+<script type="module" src="play.js?v=49"></script>
 </body>
 </html>

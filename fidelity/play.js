@@ -7,6 +7,11 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 // PLAYABLE SLICE — Armstrong (real model/animations) + M16A2 with WEAPS.TXT
 // behaviour (mag 30, reload 1.5 s, 86 ms interval), original sounds.
 
+const MIS = (new URLSearchParams(location.search).get('m') || 'mission1').toLowerCase();
+const IS_M1 = MIS === 'mission1';
+const MISDIR = 'models/' + MIS + '/';
+let MISNAME = 'MISSION 1 — RESCUE';
+let worldBox = null;   // union of zone bounds, for clamps + briefing map
 const container = document.getElementById('view');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xc4ad82);
@@ -263,7 +268,9 @@ function routeFor(px, pz, inst) {
 function buildEnemies() {
   enemies = [];
   // exactly the Iraqi HLOI placements from Mission1.env — no invented guards
-  ENV.enemies.forEach((e, i) => {
+  // use the fullest placement list (later missions name more Iraqi unit types)
+  const list = (ENV.enemies && ENV.enemies.length >= (PROPS ? PROPS.enemiesHLOI.length : 0)) ? ENV.enemies : (PROPS ? PROPS.enemiesHLOI : []);
+  list.forEach((e, i) => {
     const p = new THREE.Vector3(e.pos[0], 0, e.pos[2]);
     enemies.push(makeEnemyState({ label: e.inst || 'INSURGENT', pos: p.clone(), home: p.clone(),
       yaw: e.yaw || 0, waypoints: routeFor(p.x, p.z, e.inst), texture: ENEMY_TEX_POOL[i % 4] }));
@@ -284,7 +291,7 @@ function enemySetAnim(E, name, once = false) {
 
 function resetEnemy(E) {
   E.hp = 70; E.alive = true; E.state = 'patrol'; E.wp = 0;
-  E.spotT = 0; E.lostT = 0; E.burstLeft = 0;
+  E.spotT = 0; E.lostT = 0; E.burstLeft = 0; E.invPos = null; E.invT = 0; E.pauseT = 0;
   E.pos.copy(E.home || E.waypoints[0]);
   if (E.obj) { E.obj.position.copy(E.pos); E.obj.visible = true; }
   Object.values(E.actions).forEach(a => a.stop());
@@ -437,6 +444,7 @@ let migObj = null, migPos = new THREE.Vector3(-146.8, 0, -495.6), objMarker = nu
 let prisonPos = new THREE.Vector3(-64, 0, -596), c4Pos = new THREE.Vector3(-232, 0, -458),
     bridgePos = new THREE.Vector3(-237.6, 0, -449.4);
 function computeMissionPoints() {
+  if (!IS_M1) return;
   const wp = ((ENV && ENV.waypoints) || []).filter(w => (w.name || '').includes('PRISON'));
   if (wp.length) prisonPos.set(wp.reduce((s, w) => s + w.pos[0], 0) / wp.length, 0,
                                wp.reduce((s, w) => s + w.pos[2], 0) / wp.length);
@@ -549,6 +557,7 @@ function boomNoise() {
   } catch (e) { /* audio unavailable */ }
 }
 function explode(pos, r, dmg) {
+  raiseAlert(pos, 48);
   boomNoise();
   flash.position.copy(pos); flash.position.y += 1; flash.intensity = 200; flashT = 0.14;
   impact.position.copy(pos); impact.visible = true; impactT = 0.3; impact.scale.setScalar(r);
@@ -646,18 +655,34 @@ function trigPos(name, fb) {
   const t = ENV && ENV.triggers.find(t => t.name === name);
   return t ? new THREE.Vector3(t.pos[0], 0, t.pos[2]) : fb;
 }
+let cloudLayers = [];
 function applySky() {
   const sky = (PROPS && PROPS.sky) || {};
   const fogC = sky.fog ? new THREE.Color(sky.fog[0], sky.fog[1], sky.fog[2]) : new THREE.Color(0xc4ad82);
   scene.fog = new THREE.Fog(fogC, 120, 1500); // full-map draw distance
-  const cv = document.createElement('canvas'); cv.width = 2; cv.height = 512;
+  const cv = document.createElement('canvas'); cv.width = 4; cv.height = 512;
   const g = cv.getContext('2d');
   const grad = g.createLinearGradient(0, 0, 0, 512);
-  grad.addColorStop(0, '#5f83b4'); grad.addColorStop(0.55, '#9db4c8');
-  grad.addColorStop(0.82, '#' + fogC.getHexString()); grad.addColorStop(1, '#' + fogC.getHexString());
-  g.fillStyle = grad; g.fillRect(0, 0, 2, 512);
+  grad.addColorStop(0, '#3d6396'); grad.addColorStop(0.45, '#7ba0c4');
+  grad.addColorStop(0.75, '#b9c9d4'); grad.addColorStop(0.92, '#' + fogC.getHexString()); grad.addColorStop(1, '#' + fogC.getHexString());
+  g.fillStyle = grad; g.fillRect(0, 0, 4, 512);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
-  scene.background = tex;
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(1420, 32, 16),
+    new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false, depthWrite: false }));
+  dome.name = 'SKYDOME';
+  scene.add(dome);
+  scene.background = null;
+  cloudLayers = [];
+  const tl = new THREE.TextureLoader();
+  [['textures/sky/cloud_soft.png', 5, 172, 0.5], ['textures/sky/cloud.png', 10, 158, 0.34]].forEach(([url, tile, h, op]) => {
+    tl.load(url, t => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(tile, tile); t.colorSpace = THREE.SRGBColorSpace;
+      const m = new THREE.Mesh(new THREE.CircleGeometry(1380, 40),
+        new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: op, depthWrite: false, fog: false }));
+      m.rotation.x = -Math.PI / 2; m.position.y = h;
+      scene.add(m); cloudLayers.push(m);
+    });
+  });
   if (sky.sunDif) sun.color.setRGB(sky.sunDif[0], sky.sunDif[1], sky.sunDif[2]);
   if (sky.sunAmb) scene.traverse(o => { if (o.isHemisphereLight) o.color.setRGB(sky.sunAmb[0], sky.sunAmb[1], sky.sunAmb[2]); });
 }
@@ -668,22 +693,37 @@ async function buildStaticWorld() {
   const cache = {};
   const models = [...new Set(PROPS.statics.map(s => s.m))];
   await Promise.all(models.map(async m => {
-    try { const sc = (await loader.loadAsync('models/mission1/props/' + m + '.glb')).scene; sc.updateMatrixWorld(true); cache[m] = sc; }
+    try { const sc = (await loader.loadAsync(MISDIR + 'props/' + m + '.glb')).scene; sc.updateMatrixWorld(true); cache[m] = sc; }
     catch (e) { console.warn('prop failed:', m); }
   }));
   const groups = new Map();
+  const info = {};   // per-model bounds -> collider size
+  for (const m of models) {
+    const sc = cache[m]; if (!sc) continue;
+    const bb = new THREE.Box3().setFromObject(sc);
+    const sz = new THREE.Vector3(), ce = new THREE.Vector3();
+    bb.getSize(sz); bb.getCenter(ce);
+    info[m] = { sz, ce };
+  }
+  const NO_COL = /^(MIS1_BIG_BRIDGE|M1_ZONE2_CHAIN|DOOR|GOAT|AK74_CLIP|DYN_CUP|MEDIKIT|COOLERKEYS|DETONATOR|EXPLOSIVE01|TABLE)/;
   const M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), EU = new THREE.Euler(), ONE = new THREE.Vector3(1, 1, 1), PV = new THREE.Vector3();
   for (const s of PROPS.statics) {
     const sc = cache[s.m]; if (!sc) continue;
     M4.compose(PV.set(s.p[0], s.y, s.p[1]), Q.setFromEuler(EU.set(0, s.yaw || 0, 0)), ONE);
     sc.traverse(o => {
       if (!o.isMesh) return;
+      o.material.side = THREE.DoubleSide;   // solid from every angle, no void
       const geo = o.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(M4, o.matrixWorld));
       for (const a of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv', 'color'].includes(a)) geo.deleteAttribute(a);
       const key = o.material.uuid + '|' + Object.keys(geo.attributes).sort().join(',');
       if (!groups.has(key)) groups.set(key, { mat: o.material, geos: [] });
       groups.get(key).geos.push(geo);
     });
+    const inf = info[s.m];
+    if (inf && !NO_COL.test(s.m)) {
+      const r = Math.min(Math.max(inf.sz.x, inf.sz.z) / 2 * 0.85, 2.8);
+      if (r >= 0.5) colliders.push({ x: s.p[0] + inf.ce.x, z: s.p[1] + inf.ce.z, r, top: s.y + inf.ce.y + inf.sz.y / 2 });
+    }
   }
   for (const grp of groups.values()) {
     let merged = null;
@@ -698,9 +738,9 @@ async function buildStaticWorld() {
   // building interiors (hut/garage/guardhouse scenes at their env roots)
   for (const it of (PROPS.interiors || [])) {
     try {
-      const g = await loader.loadAsync('models/mission1/props/' + it.m + '.glb');
+      const g = await loader.loadAsync(MISDIR + 'props/' + it.m + '.glb');
       g.scene.position.set(it.p[0], it.p[1], it.p[2]);
-      g.scene.traverse(o => { if (o.isMesh) { o.receiveShadow = !SET.lowGfx; o.frustumCulled = false; _groundMeshes.push(o); } });
+      g.scene.traverse(o => { if (o.isMesh) { o.receiveShadow = !SET.lowGfx; o.frustumCulled = false; o.material.side = THREE.DoubleSide; _groundMeshes.push(o); } });
       world.add(g.scene);
     } catch (e) { console.warn('interior failed:', it.m); }
   }
@@ -708,26 +748,41 @@ async function buildStaticWorld() {
   const hawk = PROPS.vehicles && PROPS.vehicles.hawk && PROPS.vehicles.hawk[0];
   if (hawk) {
     try {
-      const g = await loader.loadAsync('models/mission1/props/BLACKHAWK_UH60.glb');
+      const g = await loader.loadAsync(MISDIR + 'props/BLACKHAWK_UH60.glb');
       hawkObj = g.scene;
       const lzT = ENV && ENV.triggers ? ENV.triggers.find(t => t.name === 'PICKUP_BLACKHAWK_TRIGGER') : null;
       const hx = lzT ? lzT.pos[0] : hawk.pos[0], hz = lzT ? lzT.pos[2] : hawk.pos[2];
-      hawkObj.position.set(hx, groundY(hx, hz) + 0.05, hz);
       hawkObj.rotation.y = hawk.yaw || 0;
+      hawkObj.position.set(hx, 0, hz);
+      const hb = new THREE.Box3().setFromObject(hawkObj);
+      hawkObj.position.y = groundY(hx, hz) + 0.05 - hb.min.y;   // skids on the ground
       hawkObj.traverse(o => { if (o.isMesh) { o.castShadow = !SET.lowGfx; if (/rotor|blade/i.test(o.name) && !hawkRotor) hawkRotor = o; } });
       scene.add(hawkObj);
     } catch (e) { console.warn('hawk failed'); }
   }
-  try { a10Obj = (await loader.loadAsync('models/mission1/props/A10_SMALL.glb')).scene; a10Obj.visible = false; scene.add(a10Obj); } catch (e) { /* no jet */ }
+  try {
+    a10Obj = (await loader.loadAsync(MISDIR + 'props/A10_SMALL.glb')).scene;
+    a10Obj.visible = false;
+    a10Obj.scale.setScalar(1.7);
+    a10Obj.traverse(o => { if (o.isMesh) { o.frustumCulled = false; const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(mm => { mm.metalness = 0; mm.roughness = 0.85; if (!mm.map && mm.color) mm.color.set(0x9aa3a8); }); } });
+    scene.add(a10Obj);
+  } catch (e) { /* no jet */ }
 }
 
 function buildObjectives() {
   OBJ.length = 0;
   computeMissionPoints();
-  OBJ.push({ text: 'RESCUE ZIANI — HELD N.E. OF THE BRIDGE', pos: prisonPos, r: 6 });
-  OBJ.push({ text: 'RECOVER THE C4 EXPLOSIVES', pos: c4Pos, r: 6 });
-  OBJ.push({ text: 'PLANT THE C4 — DESTROY THE BRIDGE', pos: bridgePos, r: 9 });
-  OBJ.push({ text: 'EXTRACTION — RETURN TO THE LZ WITH ZIANI', pos: trigPos('PICKUP_BLACKHAWK_TRIGGER', new THREE.Vector3(-113.6, 0, -230.8)), r: 14 });
+  if (IS_M1) {
+    OBJ.push({ text: 'RESCUE ZIANI — HELD N.E. OF THE BRIDGE', pos: prisonPos, r: 6 });
+    OBJ.push({ text: 'RECOVER THE C4 EXPLOSIVES', pos: c4Pos, r: 6 });
+    OBJ.push({ text: 'PLANT THE C4 — DESTROY THE BRIDGE', pos: bridgePos, r: 9 });
+    OBJ.push({ text: 'EXTRACTION — RETURN TO THE LZ WITH ZIANI', pos: trigPos('PICKUP_BLACKHAWK_TRIGGER', new THREE.Vector3(-113.6, 0, -230.8)), r: 14 });
+  } else {
+    const lz = trigPos('PICKUP_BLACKHAWK_TRIGGER', null) || trigPos('EXTRACTION', null)
+      || new THREE.Vector3(player.pos.x, 0, player.pos.z);
+    OBJ.push({ text: 'ELIMINATE ALL HOSTILES', pos: null, r: 0, type: 'clear' });
+    OBJ.push({ text: 'EXTRACTION — REACH THE LZ', pos: lz, r: 16 });
+  }
   objMarker = new THREE.Sprite(new THREE.SpriteMaterial({
     map: new THREE.TextureLoader().load('textures/ui/gwint/IMAGE_OBJECTIVE.png'), transparent: true, depthTest: false }));
   objMarker.scale.setScalar(2.4);
@@ -742,6 +797,7 @@ function setCanvas(id, srcC) {
 }
 function setObjectiveText() {
   if (!window.GF || !OBJ[objIdx]) return;
+  if (f1Open) renderF1();
   setCanvas('objtext', GF.text(OBJ[objIdx].text, { size: 'S', color: '#ffe9a8', scale: 1.6 }));
   const sub = document.getElementById('objsub');
   if (sub) sub.textContent = 'OBJECTIVE ' + (objIdx + 1) + ' / ' + OBJ.length + ' — MISSION 1 · NORTHERN ALGERIA, 1994';
@@ -755,6 +811,14 @@ function showMsg(title, sub) {
   if (el) el.style.opacity = 1;
   msgT = 3.2;
 }
+function finishMission() {
+  missionDone = true; playing = false;
+  const st = document.getElementById('stats');
+  if (st) st.textContent = 'MISSION COMPLETE — ' + kills + ' hostiles down. Click to redeploy.';
+  setCanvas('deployBtn', GF.text('▶ REDEPLOY', { size: 'L', color: '#b7e39a', scale: 1.5 }));
+  startEl.style.display = 'flex';
+  document.exitPointerLock?.();
+}
 function completeMig() {
   if (objIdx !== 2) return;
   objIdx = 3;
@@ -766,7 +830,7 @@ function resetSquadToStart() {
   const sp = ENV && ENV.start ? ENV.start.pos : [-120, 0, -234];
   player.pos.set(sp[0], 0, sp[2]);
   player.pos.y = groundYCached(player.pos.x, player.pos.z);
-  { const Z = members[3]; if (Z) Z.prisoner = true; }
+  { const Z = members[3]; if (Z) Z.prisoner = true; if (IS_M1) { const c3 = document.getElementById('card3'); if (c3) c3.style.display = 'none'; } }
   members.forEach((M, i) => {
     if (M.absent) { M.alive = false; if (M.obj) M.obj.visible = false; return; }
     M.alive = true; M.hp = 100;
@@ -789,6 +853,25 @@ function buildItemBar() {
   bar.querySelectorAll('.slot').forEach(el => el.addEventListener('click', () => setHeld(+el.dataset.i)));
 }
 let invOpen = false;
+let f1Open = false;
+function renderF1() {
+  setCanvas('f1title', GF.text(MISNAME, { size: 'L', color: '#f0d9a0', scale: 1.5 }));
+  const box = document.getElementById('f1objs');
+  if (box) box.innerHTML = OBJ.map((O, i) => {
+    const st = i < objIdx ? ['done', 'COMPLETE'] : i === objIdx ? ['cur', 'CURRENT'] : ['todo', 'PENDING'];
+    return `<div class="f1row ${st[0]}"><span class="f1st">${st[1]}</span><span>${i + 1}. ${O.text}</span></div>`;
+  }).join('');
+  const st = document.getElementById('f1stats');
+  if (st) st.textContent = 'HOSTILES DOWN ' + kills + ' OF ' + enemies.length + '   ·   SQUAD: ' + members.map((M, i) =>
+    (M.absent ? M.name + ' — NOT ON THIS OP' : M.prisoner ? M.name + ' — CAPTIVE' : !M.alive ? M.name + ' — DOWN'
+     : M.name + ' ' + Math.ceil(i === activeIdx ? playerHP : M.hp) + '%')).join('  ·  ');
+}
+function toggleF1(force) {
+  f1Open = force !== undefined ? force : !f1Open;
+  const w = document.getElementById('f1win');
+  if (w) w.style.display = f1Open ? 'flex' : 'none';
+  if (f1Open) renderF1();
+}
 let giveSel = -1;   // inventory slot picked to hand to a squadmate
 function renderInv() {
   if (!invOpen) return;
@@ -809,7 +892,8 @@ function renderInv() {
   const sq = document.getElementById('invSquad');
   if (sq) {
     sq.innerHTML = members.map((Mt, i) => {
-      const state = Mt.absent ? 'NOT ON THIS OP' : Mt.prisoner ? 'CAPTIVE' : !Mt.alive ? 'DOWN' : Math.ceil(i === activeIdx ? playerHP : Mt.hp) + ' HP';
+      if (Mt.absent || Mt.prisoner) return '';   // not found yet / not on this op: not in your inventory either
+      const state = !Mt.alive ? 'DOWN' : Math.ceil(i === activeIdx ? playerHP : Mt.hp) + ' HP';
       const d = i === activeIdx ? 'YOU' : (Mt.absent || Mt.prisoner ? '—' : Math.round(Mt.pos.distanceTo(player.pos)) + ' M AWAY');
       return `<div class="mate${i === activeIdx ? ' self' : ''}" data-i="${i}"><img src="textures/portraits/sq${i + 1}.png?v=2"><div><b>${BD.NAMES[i]}</b><span>${state} · ${d}</span></div></div>`;
     }).join('');
@@ -825,12 +909,15 @@ function renderInv() {
 function toggleInv(force) {
   invOpen = force !== undefined ? force : !invOpen;
   document.getElementById('inv').style.display = invOpen ? 'flex' : 'none';
+  if (invOpen && !members.some((M, i) => i !== activeIdx && !M.absent && !M.prisoner))
+    invSay('SOLO FOR NOW — RESCUE ZIANI AND KIT SHARING UNLOCKS WITH THE SQUAD.');
   renderInv();
 }
 
 const _sv = new THREE.Vector3();
 let mateAlt = 0;
 function playMateShot(M) {
+  raiseAlert(M.pos, 26);
   const a = M.wpn.snd[M.wpn.alt++ % 2];
   a.volume = THREE.MathUtils.clamp(1.1 - M.pos.distanceTo(player.pos) / 38, 0.08, 0.55) * SET.vol;
   a.currentTime = 0;
@@ -916,6 +1003,12 @@ function updateMate(M, dt, now) {
     M.moving = true;
   } else {
     mateSetAnim(M, tgt ? ANIM.aim : ANIM.idle);
+  }
+  for (const c of colliders) {
+    if (c.top !== undefined && M.pos.y > c.top - 0.45) continue;
+    const dx = M.pos.x - c.x, dz = M.pos.z - c.z;
+    const d = Math.hypot(dx, dz), min = c.r + 0.35;
+    if (d > 0.001 && d < min) { M.pos.x = c.x + dx / d * min; M.pos.z = c.z + dz / d * min; }
   }
   M.pos.y += (groundYCached(M.pos.x, M.pos.z) - M.pos.y) * Math.min(1, dt * 9);
   M.obj.position.copy(M.pos);
@@ -1211,7 +1304,7 @@ startEl.addEventListener('click', () => {
   const h1 = startEl.querySelector('h1');
   if (h1) h1.textContent = '▶ CLICK TO PLAY';
   startEl.style.display = 'none';
-  if (window.__deployedOnce) { playing = true; }   // re-deploy / unpause: straight back in
+  if (window.__deployedOnce && MIS === 'mission1') { playing = true; }   // M1 re-deploy: straight back in
   else { window.__deployedOnce = true; startCutscene(); }
   updateHUD();
   renderer.domElement.requestPointerLock?.();
@@ -1254,6 +1347,8 @@ addEventListener('keydown', (e) => {
     const n = +e.code.slice(5);
     if (n >= 1 && n <= 4) switchTo(n - 1);
   }
+  if (e.code === 'F1') { e.preventDefault(); if (playing || f1Open) toggleF1(); }
+  if (e.code === 'Escape' && f1Open) toggleF1(false);
   if (e.code === 'KeyG' && playing) { squadFireFree = !squadFireFree; updateHUD(); }
   if (e.code === 'KeyF' && playing) {
     squadHold = !squadHold;
@@ -1317,6 +1412,7 @@ function doFire(now) {
   }
   if (player.reloading || now < player.nextShot) return;
   if (!settledFire) return; // guns need the aim raised + settled stance (original rules)
+  raiseAlert(player.pos, 30);
   player.nextShot = now + W.interval;
   if (player.ammo <= 0) { playClick(); player.nextShot = now + 0.3; return; }
   player.ammo--; slot.ammo = player.ammo;
@@ -1345,7 +1441,14 @@ function doFire(now) {
   updateHUD();
 }
 
+function raiseAlert(pos, radius) {
+  for (const E of enemies) {
+    if (!E.alive || E.state !== 'patrol') continue;
+    if (E.pos.distanceTo(pos) < (radius || 30)) { E.state = 'investigate'; E.invPos = pos.clone(); E.invT = 6; E.spotT = 0; }
+  }
+}
 function updateEnemy(E, dt, now) {
+  if (E.homeYaw === undefined) { E.homeYaw = E.yaw; E.homePos = E.pos.clone(); E.pauseT = 0; E.scanPh = Math.random() * 6.28; }
   if (E.obj) { const vis = player.pos.distanceToSquared(E.pos) < 22500; if (E.obj.visible !== vis) E.obj.visible = vis; }
   if (!E.obj || !E.mixer || !E.alive) return;
   // target = nearest living squad member (you or a mate)
@@ -1377,7 +1480,12 @@ function updateEnemy(E, dt, now) {
   const canSee = dist < 30 && (Math.cos(dyaw) > 0.25 || dist < 7) && !blocked;
 
   if (E.state === 'engage') {
-    enemySetAnim(E, E_ANIM.aim);
+    if (dist > 24) {   // too far: advance on the target (walk anim, speed-matched)
+      const step = toPlayer.clone(); step.y = 0; step.normalize();
+      E.pos.addScaledVector(step, 2.9 * dt);
+      enemySetAnim(E, E_ANIM.walk);
+      if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 2.9 / AUTH.walk;
+    } else enemySetAnim(E, E_ANIM.aim);
     E.yaw += dyaw * Math.min(1, dt * 5);
     if (canSee) E.lostT = 0;
     else {
@@ -1419,27 +1527,67 @@ function updateEnemy(E, dt, now) {
         updateHUD();
       }
     }
+  } else if (E.state === 'investigate') {
+    // heard something: move to the spot, look around, then return to post
+    if (canSee) {
+      E.spotT += dt;
+      if (E.spotT > 0.4) { E.state = 'engage'; E.nextShot = now + 0.35; }
+    } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
+    const tp = E.invPos || E.homePos;
+    const to = new THREE.Vector3().subVectors(tp, E.pos); to.y = 0;
+    if (to.length() < 1.3) {
+      enemySetAnim(E, E_ANIM.idle);
+      E.invT -= dt;
+      E.yaw += Math.sin(now * 0.7 + E.scanPh) * dt * 1.1;
+      if (E.invT <= 0) { E.state = 'patrol'; enemySetAnim(E, E_ANIM.walk); }
+    } else {
+      to.normalize();
+      E.pos.addScaledVector(to, 2.2 * dt);
+      E.yaw = Math.atan2(to.x, to.z);
+      enemySetAnim(E, E_ANIM.walk);
+      if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 2.2 / AUTH.walk;
+    }
   } else { // patrol between waypoints
     if (canSee) {
       E.spotT += dt;
       if (E.spotT > 0.55) { E.state = 'engage'; E.nextShot = now + 0.4; }
     } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
-    if (E.waypoints.length <= 1) enemySetAnim(E, E_ANIM.idle);
-    const wp = E.waypoints[E.wp];
-    const to = new THREE.Vector3().subVectors(wp, E.pos);
-    to.y = 0;
-    if (to.length() < 0.7) {
-      E.wp = (E.wp + 1) % E.waypoints.length;
+    if (E.waypoints.length <= 1) {
+      // sentry on his env post: stands and scans around his env heading
+      enemySetAnim(E, E_ANIM.idle);
+      E.yaw = E.homeYaw + Math.sin(now * 0.33 + E.scanPh) * 0.55;
+    } else if (E.pauseT > 0) {
+      // pause at the waypoint and look around (original guard behaviour)
+      E.pauseT -= dt;
+      enemySetAnim(E, E_ANIM.idle);
+      E.yaw += Math.sin(now * 0.55 + E.scanPh) * dt * 0.9;
     } else {
-      to.normalize();
-      E.pos.addScaledVector(to, 1.25 * dt);
-      const want = Math.atan2(to.x, to.z);
-      let d2 = want - E.yaw;
-      while (d2 > Math.PI) d2 -= Math.PI * 2;
-      while (d2 < -Math.PI) d2 += Math.PI * 2;
-      E.yaw += d2 * Math.min(1, dt * 4);
-      if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 1.25 / AUTH.walk;
+      const wp = E.waypoints[E.wp];
+      const to = new THREE.Vector3().subVectors(wp, E.pos);
+      to.y = 0;
+      if (to.length() < 0.7) {
+        E.wp = (E.wp + 1) % E.waypoints.length;
+        E.pauseT = 1.6 + Math.random() * 2.2;
+        enemySetAnim(E, E_ANIM.idle);
+      } else {
+        to.normalize();
+        E.pos.addScaledVector(to, 1.25 * dt);
+        const want = Math.atan2(to.x, to.z);
+        let d2 = want - E.yaw;
+        while (d2 > Math.PI) d2 -= Math.PI * 2;
+        while (d2 < -Math.PI) d2 += Math.PI * 2;
+        E.yaw += d2 * Math.min(1, dt * 4);
+        enemySetAnim(E, E_ANIM.walk);
+        if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 1.25 / AUTH.walk;
+      }
     }
+  }
+  // solid world: enemies do not walk through vehicles/crates either
+  for (const c of colliders) {
+    if (c.top !== undefined && E.pos.y > c.top - 0.45) continue;
+    const dx = E.pos.x - c.x, dz = E.pos.z - c.z;
+    const d = Math.hypot(dx, dz), min = c.r + 0.35;
+    if (d > 0.001 && d < min) { E.pos.x = c.x + dx / d * min; E.pos.z = c.z + dz / d * min; }
   }
   E.pos.y += (groundYCached(E.pos.x, E.pos.z) - E.pos.y) * Math.min(1, dt * 9);
   E.obj.position.copy(E.pos);
@@ -1507,14 +1655,19 @@ function updateHUD() {
 async function load() {
   const stats = document.getElementById('stats');
   try {
-    stats.textContent = 'Loading Mission 1 — the real base…';
-    ENV = await (await fetch('models/mission1/units.json')).json();
-    try { PROPS = await (await fetch('models/mission1/props.json')).json(); } catch (e) { PROPS = null; }
+    stats.textContent = 'Loading ' + MISNAME + ' — the real base…';
+    ENV = await (await fetch(MISDIR + 'units.json')).json();
+    try { PROPS = await (await fetch(MISDIR + 'props.json')).json(); } catch (e) { PROPS = null; }
+    try { const ml = await (await fetch('missions.json')).json(); const me = ml.find(e => e.id === MIS); if (me) MISNAME = me.name; } catch (e) { /* default name */ }
     applySky();
-    const zoneNames = ['Mis1_Zone1', 'Mis1_Zone1A', 'Mis1_Zone1_Bridge', 'Mis1_Zone2', 'Mis1_Zone2A', 'Mis1_Zone3', 'Mis1_Zone3A', 'Mis1_Zone4'];
+    const zoneList = (PROPS && PROPS.zones && PROPS.zones.length) ? PROPS.zones
+      : [{ f: 'Mis1_Zone1', m: 'MIS1_ZONE1' }, { f: 'Mis1_Zone1A', m: 'MIS1_ZONE1A' }, { f: 'Mis1_Zone1_Bridge', m: 'MIS1_ZONE1_BRIDGE' },
+         { f: 'Mis1_Zone2', m: 'MIS1_ZONE2' }, { f: 'Mis1_Zone2A', m: 'MIS1_ZONE2A' }, { f: 'Mis1_Zone3', m: 'MIS1_ZONE3' },
+         { f: 'Mis1_Zone3A', m: 'MIS1_ZONE3A' }, { f: 'Mis1_Zone4', m: 'MIS1_ZONE4' }];
     let zonesDone = 0;
-    await Promise.all(zoneNames.map(async z => {
-      const g = await loader.loadAsync('models/mission1/' + z + '.glb');
+    await Promise.all(zoneList.map(async zn => {
+      try {
+      const g = await loader.loadAsync(MISDIR + zn.f + '.glb');
       g.scene.updateMatrixWorld(true);
       const groups = new Map();
       g.scene.traverse(o => {
@@ -1525,6 +1678,7 @@ async function load() {
         if (!groups.has(key)) groups.set(key, { mat: o.material, geos: [] });
         groups.get(key).geos.push(geo);
       });
+      const tf = (PROPS && PROPS.scenes && PROPS.scenes[zn.m]) || null;
       for (const grp of groups.values()) {
         let merged = null;
         try { merged = grp.geos.length === 1 ? grp.geos[0] : mergeGeometries(grp.geos, false); } catch (e) { merged = null; }
@@ -1533,12 +1687,18 @@ async function load() {
           mesh.receiveShadow = !SET.lowGfx;
           mesh.frustumCulled = false;
           mesh.castShadow = false;   // zones never cast
+          if (tf) { mesh.position.set(tf.p[0], tf.p[1], tf.p[2]); mesh.rotation.y = tf.yaw; }
           world.add(mesh);
           _groundMeshes.push(mesh);  // static world for ground/LOS raycasts
+          mesh.updateMatrix();
+          pgeo.computeBoundingBox();
+          const bb = pgeo.boundingBox.clone().applyMatrix4(mesh.matrix);
+          worldBox = worldBox ? worldBox.union(bb) : bb;
         }
       }
+      } catch (e) { console.warn('zone failed:', zn.f); }
       zonesDone++;
-      stats.textContent = 'Loading Mission 1 \u2014 zones ' + zonesDone + '/' + zoneNames.length + '\u2026';
+      stats.textContent = 'Loading Mission 1 \u2014 zones ' + zonesDone + '/' + zoneList.length + '\u2026';
     }));
     stats.textContent = 'Placing the base — vehicles, bridge, buildings…';
     await buildStaticWorld();
@@ -1547,7 +1707,7 @@ async function load() {
     player.pos.y = groundY(player.pos.x, player.pos.z);
     buildEnemies();
     buildObjectives();
-    { // the captured MiG — Mission1.env PROXTRIG_MIG
+    if (IS_M1) { // the captured MiG — Mission1.env PROXTRIG_MIG
       const mig = await loader.loadAsync('models/mission1/MIG29.glb');
       migObj = mig.scene;
       migObj.position.copy(migPos);
@@ -1693,10 +1853,14 @@ async function load() {
     setHeldModel(members[0]);
     player.ammo = members[0].inv[0].ammo;
     for (const def of SQUAD_DEFS) await loadMate(def);
-    // Mission 1 is a SOLO rescue in the original: BENALI deploys alone,
-    // CHERIF/BOUDIAF are not on this op, ZIANI starts as the prisoner.
-    [1, 2].forEach(i => { const M = members[i]; if (M) { M.absent = true; M.alive = false; if (M.obj) M.obj.visible = false; const c = document.getElementById('card' + i); if (c) c.style.display = 'none'; } });
-    { const Z = members[3]; if (Z && Z.obj) { Z.prisoner = true; Z.pos.copy(prisonPos); Z.pos.y = groundY(prisonPos.x, prisonPos.z); Z.obj.position.copy(Z.pos); } }
+    if (IS_M1) {
+      // Mission 1 is a SOLO rescue in the original: BENALI deploys alone,
+      // CHERIF/BOUDIAF are not on this op, ZIANI is the prisoner — and he does
+      // not appear on the HUD until he is found and freed.
+      [1, 2].forEach(i => { const M = members[i]; if (M) { M.absent = true; M.alive = false; if (M.obj) M.obj.visible = false; const c = document.getElementById('card' + i); if (c) c.style.display = 'none'; } });
+      { const Z = members[3]; if (Z && Z.obj) { Z.prisoner = true; Z.pos.copy(prisonPos); Z.pos.y = groundY(prisonPos.x, prisonPos.z); Z.obj.position.copy(Z.pos); } }
+      { const c3 = document.getElementById('card3'); if (c3) c3.style.display = 'none'; }
+    }
 
     async function loadMate(def) {
       const glb = await loader.loadAsync(def.model);
@@ -1788,7 +1952,7 @@ async function load() {
       ' hostiles placed from Mission1.env). Full game inventory on TAB.';
     buildItemBar();
     GF.load().then(() => {
-      setCanvas('startTitle', GF.text('BLACK DECADE', { size: 'L', color: '#f0d9a0', scale: 2.6 }));
+      setCanvas('startTitle', GF.text(MISNAME, { size: 'L', color: '#f0d9a0', scale: 2.2 }));
       setCanvas('deployBtn', GF.text('▶ CLICK TO DEPLOY', { size: 'L', color: '#b7e39a', scale: 1.5 }));
       setObjectiveText();
       setCanvas('killsCv', GF.text('HOSTILES DOWN 0', { size: 'S', color: '#e8a09a', scale: 1.5 }));
@@ -1833,10 +1997,12 @@ function animate() {
     if (bi !== cutscene.idx) { cutscene.idx = bi; showMsg(b.title, b.sub); }
     const u = bt * bt * (3 - 2 * bt);
     camera.position.lerpVectors(b.from, b.to, u);
+    const cgy = groundYCached(camera.position.x, camera.position.z) + 1.5;
+    if (camera.position.y < cgy) camera.position.y = cgy;
     camera.lookAt(b.look);
     if (cutscene.t >= cutscene.dur) endCutscene();
   }
-  if (playing && heroObj) {
+  if (playing && heroObj && !f1Open) {
     nowSec = now;
     sun.position.set(player.pos.x + 10, 16, player.pos.z + 7);
     sun.target.position.copy(player.pos);
@@ -1875,9 +2041,17 @@ function animate() {
     if (pendingC4 > 0) { pendingC4 -= dt; if (pendingC4 <= 0) explode(bridgePos.clone(), 16, 500); }
     if (!missionDone && OBJ.length) {
       const O = OBJ[objIdx];
-      if (objIdx === 0 && dist2D(player.pos, O.pos) < O.r) {
+      if (O.type === 'clear') {
+        if (enemies.length && enemies.every(E => !E.alive)) {
+          objIdx++;
+          showMsg('AREA CLEAR', OBJ[objIdx] ? OBJ[objIdx].text : '');
+          setObjectiveText(); updateHUD();
+        }
+      } else if (!IS_M1 && objIdx === OBJ.length - 1 && O.pos && dist2D(player.pos, O.pos) < O.r) {
+        finishMission();
+      } else if (objIdx === 0 && dist2D(player.pos, O.pos) < O.r) {
         objIdx = 1;
-        { const Z = members[3]; if (Z && Z.prisoner) { Z.prisoner = false; showMsg('ZIANI', '\u201cGOOD TO SEE YOU. WHAT KEPT YOU?\u201d'); } else showMsg('OBJECTIVE COMPLETE', OBJ[1].text); }
+        { const Z = members[3]; if (Z && Z.prisoner) { Z.prisoner = false; const c3 = document.getElementById('card3'); if (c3) c3.style.display = ''; showMsg('ZIANI', '\u201cGOOD TO SEE YOU. WHAT KEPT YOU?\u201d'); } else showMsg('OBJECTIVE COMPLETE', OBJ[1].text); }
         setObjectiveText(); updateHUD();
       } else if (objIdx === 1 && dist2D(player.pos, O.pos) < O.r) {
         objIdx = 2;
@@ -1886,17 +2060,10 @@ function animate() {
         buildItemBar(); showMsg('C4 RECOVERED', OBJ[2].text); setObjectiveText(); updateHUD();
       } else if (objIdx === 3) {
         const allIn = members.every((M, i) => !M.alive || i === activeIdx || dist2D(M.pos, O.pos) < 30);
-        if (dist2D(player.pos, O.pos) < O.r && allIn) {
-          missionDone = true; playing = false;
-          const st = document.getElementById('stats');
-          if (st) st.textContent = 'MISSION COMPLETE — ' + kills + ' hostiles down. Click to redeploy.';
-          setCanvas('deployBtn', GF.text('▶ REDEPLOY', { size: 'L', color: '#b7e39a', scale: 1.5 }));
-          startEl.style.display = 'flex';
-          document.exitPointerLock?.();
-        }
+        if (dist2D(player.pos, O.pos) < O.r && allIn) finishMission();
       }
     }
-    if (objMarker && OBJ[objIdx]) {
+    if (objMarker && OBJ[objIdx] && OBJ[objIdx].pos) {
       const O = OBJ[objIdx];
       objMarker.position.set(O.pos.x, groundYCached(O.pos.x, O.pos.z) + 6 + Math.sin(now * 2) * 0.6, O.pos.z);
     }
@@ -1927,16 +2094,18 @@ function animate() {
       if ((aiming || firing) && player.stance === 'stand') speed = Math.min(speed, 1.1); // tactical aim-walk
       if (player.reloading && player.stance === 'stand') speed = Math.min(speed, 1.3); // no running mid-reload
       player.pos.addScaledVector(move, speed * dt);
-      player.pos.x = THREE.MathUtils.clamp(player.pos.x, -352, 24);
-      player.pos.z = THREE.MathUtils.clamp(player.pos.z, -700, -78);
-      colliders.forEach(c => {
+      const cb = worldBox;
+      player.pos.x = THREE.MathUtils.clamp(player.pos.x, cb ? cb.min.x + 1 : -352, cb ? cb.max.x - 1 : 24);
+      player.pos.z = THREE.MathUtils.clamp(player.pos.z, cb ? cb.min.z + 1 : -700, cb ? cb.max.z - 1 : -78);
+      for (const c of colliders) {
+        if (c.top !== undefined && player.pos.y > c.top - 0.45) continue;   // standing on it
         const dx = player.pos.x - c.x, dz = player.pos.z - c.z;
         const d = Math.hypot(dx, dz), min = c.r + 0.42;
         if (d > 0.001 && d < min) {
           player.pos.x = c.x + dx / d * min;
           player.pos.z = c.z + dz / d * min;
         }
-      });
+      }
     }
     // facing: aim/fire -> camera direction; otherwise movement direction
     const wantYaw = (aiming || firing)
@@ -2064,13 +2233,15 @@ function animate() {
   sun.target.updateMatrixWorld();
   if (flashT > 0) { flashT -= dt; if (flashT <= 0) flash.intensity = 0; }
   if (hawkRotor) hawkRotor.rotation.y += dt * 22;
+  cloudLayers.forEach((c, i) => { if (c.material.map) { c.material.map.offset.x += dt * (i ? 0.0016 : 0.0009); c.position.x = camera.position.x; c.position.z = camera.position.z; } });
+  const dome = scene.getObjectByName('SKYDOME'); if (dome) dome.position.copy(camera.position);
   if (a10Obj) { // A10 flyover (env A10_FLYOVER01): periodic low pass over the valley
     const T = 46, k = (now % T) / T;
     if (k < 0.32) {
       const u = k / 0.32;
       a10Obj.visible = true;
-      a10Obj.position.set(-390 + u * 470, 58 - Math.sin(u * Math.PI) * 14, -660 + u * 480);
-      a10Obj.rotation.set(0, Math.atan2(470, 480), Math.sin(u * Math.PI * 2) * 0.12);
+      a10Obj.position.set(-390 + u * 470, 46 - Math.sin(u * Math.PI) * 10, -660 + u * 480);
+      a10Obj.rotation.set(0, Math.atan2(470, 480) + Math.PI, Math.sin(u * Math.PI * 2) * 0.12);   // nose first
     } else a10Obj.visible = false;
   }
   if (impactT > 0) { impactT -= dt; impact.scale.setScalar(1 + (0.12 - impactT) * 8); if (impactT <= 0) impact.visible = false; }

@@ -1,0 +1,2084 @@
+{
+ "start": {
+  "name": "Bradley",
+  "model": "HERO01_ARMSTRONG",
+  "pos": [
+   28.5,
+   18.79,
+   -206.97
+  ],
+  "yaw": -4.625,
+  "weapons": [
+   "US_WPN_M16A2",
+   "US_WPN_SIGP228",
+   "US_WPN_GrenadeFrag",
+   "US_WPN_GrenadeSmoke"
+  ],
+  "gear": [],
+  "inst": "BRADLEY"
+ },
+ "enemies": [
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_11",
+   "pos": [
+    -7.85,
+    17.48,
+    137.02
+   ],
+   "yaw": -4.625,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01",
+   "hat": "IR_HELMET_FLAG"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_12",
+   "pos": [
+    -6.14,
+    17.55,
+    138.21
+   ],
+   "yaw": -4.625,
+   "weapon": "IR_WPN_PKGPMG",
+   "face": "IR_MOUSTACHE02",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_13",
+   "pos": [
+    -6.78,
+    17.38,
+    135.47
+   ],
+   "yaw": -4.189,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01_SUNGLASSES",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_2",
+   "pos": [
+    -8.69,
+    17.3,
+    133.64
+   ],
+   "yaw": -3.752,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE01",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_1",
+   "pos": [
+    -9.42,
+    17.37,
+    135.08
+   ],
+   "yaw": -4.014,
+   "weapon": "IR_WPN_PKGPMG",
+   "face": "IR_BEARD03",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_0",
+   "pos": [
+    -7.14,
+    17.26,
+    133.12
+   ],
+   "yaw": -4.189,
+   "weapon": "US_WPN_GrenadeFrag",
+   "face": "IR_BEARD03",
+   "hat": "US_BANDANA_SANDY"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "T62_1_GUNNER",
+   "pos": [
+    -52.4,
+    1.99,
+    -152.21
+   ],
+   "yaw": -5.847,
+   "weapon": "IR_WPN_AKSU",
+   "face": "IR_BEARD01_SUNGLASSES",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "T62_1_COMMANDER",
+   "pos": [
+    -56.21,
+    3.22,
+    -148.44
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD03",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "T62_2_COMMANDER",
+   "pos": [
+    -116.35,
+    1.86,
+    -78.14
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD02_SUNGLASSES",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "T62_2_GUNNER",
+   "pos": [
+    -116.71,
+    3.3,
+    -79.08
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE01",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "T62_3_COMMANDER",
+   "pos": [
+    -168.49,
+    1.1,
+    101.32
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01_SUNGLASSES",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "T62_3_GUNNER",
+   "pos": [
+    -170.04,
+    0.9,
+    98.23
+   ],
+   "yaw": -0.0,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD03",
+   "hat": "IR_TANKDRIVERHAT"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "CAMP_GUARD_2",
+   "pos": [
+    -78.88,
+    1.88,
+    -151.41
+   ],
+   "yaw": -2.967,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD03",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "CAMP_GUARD_1",
+   "pos": [
+    -87.54,
+    1.88,
+    -149.59
+   ],
+   "yaw": -5.061,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE01_SUNGLASSES",
+   "hat": "IR_HELMET_GREEN"
+  },
+  {
+   "unit": "Iraqi_Regular_Officer",
+   "inst": "CAMP_2_GUARD",
+   "pos": [
+    -112.01,
+    5.66,
+    120.25
+   ],
+   "yaw": -4.974,
+   "weapon": "IR_WPN_SVDDragunov",
+   "face": "IR_MOUSTACHE01_SUNGLASSES",
+   "hat": "IR_BERET_BLACK"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_8",
+   "pos": [
+    -129.35,
+    -1.48,
+    87.95
+   ],
+   "yaw": -1.571,
+   "weapon": "IR_WPN_RPK",
+   "face": "AN_SUNGLASSES",
+   "hat": "IR_SHEMAGH03_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_9",
+   "pos": [
+    -130.62,
+    -1.52,
+    88.15
+   ],
+   "yaw": -4.712,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01_SUNGLASSES",
+   "hat": "IR_HELMET_FLAG"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_10",
+   "pos": [
+    -127.32,
+    -1.38,
+    87.77
+   ],
+   "yaw": -1.571,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD03",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_3",
+   "pos": [
+    -132.17,
+    -1.52,
+    88.26
+   ],
+   "yaw": -4.8,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD03_SUNGLASSES",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_4",
+   "pos": [
+    -153.81,
+    0.05,
+    -4.32
+   ],
+   "yaw": -2.182,
+   "weapon": "US_WPN_GrenadeFrag",
+   "face": "IR_BEARD03",
+   "hat": "US_BANDANA_SANDY"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_5",
+   "pos": [
+    -151.16,
+    0.0,
+    -3.58
+   ],
+   "yaw": -2.443,
+   "weapon": "IR_WPN_PKGPMG",
+   "face": "IR_MOUSTACHE01_SUNGLASSES",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_6",
+   "pos": [
+    -151.89,
+    -0.05,
+    -2.01
+   ],
+   "yaw": -2.443,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_BEARD01",
+   "hat": "IR_HELMET_WEBBING"
+  },
+  {
+   "unit": "Iraqi_Conscript",
+   "inst": "SPAWN_7",
+   "pos": [
+    -149.65,
+    0.0,
+    -2.32
+   ],
+   "yaw": -2.443,
+   "weapon": "IR_WPN_AK47",
+   "face": "IR_MOUSTACHE02",
+   "hat": "UK_SHEMAGH04_BLACKWHITE"
+  }
+ ],
+ "waypoints": [
+  {
+   "id": 0,
+   "name": "HIND_GUNSHIP_PATROL_1_W0",
+   "pos": [
+    -76.62,
+    20.56,
+    -154.08
+   ],
+   "next": 1
+  },
+  {
+   "id": 1,
+   "name": "HIND_GUNSHIP_PATROL_1_W1",
+   "pos": [
+    -82.48,
+    22.33,
+    -184.01
+   ],
+   "next": 2
+  },
+  {
+   "id": 2,
+   "name": "HIND_GUNSHIP_PATROL_1_W2",
+   "pos": [
+    -117.01,
+    26.18,
+    -190.82
+   ],
+   "next": 3
+  },
+  {
+   "id": 3,
+   "name": "HIND_GUNSHIP_PATROL_1_W3",
+   "pos": [
+    -146.43,
+    28.77,
+    -192.06
+   ],
+   "next": 4
+  },
+  {
+   "id": 4,
+   "name": "HIND_GUNSHIP_PATROL_1_W4",
+   "pos": [
+    -175.02,
+    19.53,
+    -181.61
+   ],
+   "next": 5
+  },
+  {
+   "id": 5,
+   "name": "HIND_GUNSHIP_PATROL_1_W5",
+   "pos": [
+    -194.48,
+    16.14,
+    -160.32
+   ],
+   "next": -1
+  },
+  {
+   "id": 6,
+   "name": "HIND_GUNSHIP_PATROL_1_W6",
+   "pos": [
+    -170.39,
+    16.66,
+    -116.67
+   ],
+   "next": 7
+  },
+  {
+   "id": 7,
+   "name": "HIND_GUNSHIP_PATROL_1_W7",
+   "pos": [
+    -216.1,
+    28.94,
+    -56.43
+   ],
+   "next": 8
+  },
+  {
+   "id": 8,
+   "name": "HIND_GUNSHIP_PATROL_1_W8",
+   "pos": [
+    -207.06,
+    28.4,
+    -29.93
+   ],
+   "next": 9
+  },
+  {
+   "id": 9,
+   "name": "HIND_GUNSHIP_PATROL_1_W9",
+   "pos": [
+    -152.79,
+    17.55,
+    3.94
+   ],
+   "next": 10
+  },
+  {
+   "id": 10,
+   "name": "HIND_GUNSHIP_PATROL_1_W10",
+   "pos": [
+    -128.3,
+    24.43,
+    49.29
+   ],
+   "next": 11
+  },
+  {
+   "id": 11,
+   "name": "HIND_GUNSHIP_PATROL_1_W11",
+   "pos": [
+    -116.42,
+    12.84,
+    94.61
+   ],
+   "next": 12
+  },
+  {
+   "id": 12,
+   "name": "HIND_GUNSHIP_PATROL_1_W12",
+   "pos": [
+    -141.5,
+    16.27,
+    114.06
+   ],
+   "next": 13
+  },
+  {
+   "id": 13,
+   "name": "HIND_GUNSHIP_PATROL_1_W13",
+   "pos": [
+    -187.17,
+    22.96,
+    108.64
+   ],
+   "next": 14
+  },
+  {
+   "id": 14,
+   "name": "HIND_GUNSHIP_PATROL_1_W14",
+   "pos": [
+    -207.47,
+    18.02,
+    81.83
+   ],
+   "next": 15
+  },
+  {
+   "id": 15,
+   "name": "HIND_GUNSHIP_PATROL_1_W15",
+   "pos": [
+    -189.87,
+    22.58,
+    21.24
+   ],
+   "next": 16
+  },
+  {
+   "id": 16,
+   "name": "HIND_GUNSHIP_PATROL_1_W16",
+   "pos": [
+    -108.72,
+    15.7,
+    -33.41
+   ],
+   "next": 17
+  },
+  {
+   "id": 17,
+   "name": "HIND_GUNSHIP_PATROL_1_W17",
+   "pos": [
+    -116.59,
+    16.85,
+    -55.82
+   ],
+   "next": 18
+  },
+  {
+   "id": 18,
+   "name": "HIND_GUNSHIP_PATROL_1_W18",
+   "pos": [
+    -129.97,
+    15.78,
+    -91.75
+   ],
+   "next": 6
+  },
+  {
+   "id": 19,
+   "name": "HIND_GUNSHIP_PATROL_1_W19",
+   "pos": [
+    -127.72,
+    16.33,
+    -128.05
+   ],
+   "next": 0
+  },
+  {
+   "id": 20,
+   "name": "BLACKHAWK_PICKUP_W4",
+   "pos": [
+    -47.67,
+    36.08,
+    140.1
+   ],
+   "next": 165
+  },
+  {
+   "id": 21,
+   "name": "BLACKHAWK_PICKUP_W2",
+   "pos": [
+    -71.14,
+    36.13,
+    130.64
+   ],
+   "next": 20
+  },
+  {
+   "id": 22,
+   "name": "GUNSHIP_FLYBY_W_4",
+   "pos": [
+    -113.11,
+    52.02,
+    126.67
+   ],
+   "next": -1
+  },
+  {
+   "id": 23,
+   "name": "TELEPORT_1",
+   "pos": [
+    21.09,
+    18.26,
+    -210.86
+   ],
+   "next": -1
+  },
+  {
+   "id": 24,
+   "name": "TELEPORT_2",
+   "pos": [
+    -66.32,
+    1.92,
+    -148.14
+   ],
+   "next": -1
+  },
+  {
+   "id": 25,
+   "name": "TELEPORT_4",
+   "pos": [
+    -129.21,
+    7.87,
+    -71.44
+   ],
+   "next": -1
+  },
+  {
+   "id": 26,
+   "name": "TELEPORT_5",
+   "pos": [
+    -157.85,
+    0.0,
+    90.08
+   ],
+   "next": -1
+  },
+  {
+   "id": 27,
+   "name": "4",
+   "pos": [
+    -15.77,
+    4.06,
+    -181.47
+   ],
+   "next": -1
+  },
+  {
+   "id": 28,
+   "name": "9",
+   "pos": [
+    -81.97,
+    1.88,
+    -147.44
+   ],
+   "next": 29
+  },
+  {
+   "id": 29,
+   "name": "10",
+   "pos": [
+    -72.29,
+    1.92,
+    -147.81
+   ],
+   "next": 30
+  },
+  {
+   "id": 30,
+   "name": "11",
+   "pos": [
+    -70.84,
+    2.52,
+    -158.73
+   ],
+   "next": 31
+  },
+  {
+   "id": 31,
+   "name": "12",
+   "pos": [
+    -78.81,
+    1.88,
+    -160.41
+   ],
+   "next": 28
+  },
+  {
+   "id": 32,
+   "name": "13",
+   "pos": [
+    -89.95,
+    2.41,
+    -168.27
+   ],
+   "next": 33
+  },
+  {
+   "id": 33,
+   "name": "14",
+   "pos": [
+    -101.23,
+    1.96,
+    -149.2
+   ],
+   "next": 34
+  },
+  {
+   "id": 34,
+   "name": "15",
+   "pos": [
+    -87.93,
+    1.92,
+    -149.03
+   ],
+   "next": 35
+  },
+  {
+   "id": 35,
+   "name": "16",
+   "pos": [
+    -82.68,
+    1.89,
+    -157.14
+   ],
+   "next": 32
+  },
+  {
+   "id": 36,
+   "name": "TELEPORT_3",
+   "pos": [
+    -164.24,
+    1.77,
+    -149.78
+   ],
+   "next": -1
+  },
+  {
+   "id": 37,
+   "name": "SCUD_1_START",
+   "pos": [
+    -175.08,
+    0.51,
+    -147.91
+   ],
+   "next": 38
+  },
+  {
+   "id": 38,
+   "name": "18",
+   "pos": [
+    -181.65,
+    0.08,
+    -155.89
+   ],
+   "next": 39
+  },
+  {
+   "id": 39,
+   "name": "19",
+   "pos": [
+    -184.48,
+    1.36,
+    -167.2
+   ],
+   "next": -1
+  },
+  {
+   "id": 40,
+   "name": "T62_START",
+   "pos": [
+    -142.44,
+    2.03,
+    -104.86
+   ],
+   "next": 41
+  },
+  {
+   "id": 41,
+   "name": "21",
+   "pos": [
+    -170.05,
+    1.8,
+    -124.09
+   ],
+   "next": 42
+  },
+  {
+   "id": 42,
+   "name": "22",
+   "pos": [
+    -205.97,
+    8.9,
+    -118.55
+   ],
+   "next": 43
+  },
+  {
+   "id": 43,
+   "name": "23",
+   "pos": [
+    -170.21,
+    2.02,
+    -123.93
+   ],
+   "next": -1
+  },
+  {
+   "id": 44,
+   "name": "24",
+   "pos": [
+    -103.95,
+    6.65,
+    125.96
+   ],
+   "next": 45
+  },
+  {
+   "id": 45,
+   "name": "25",
+   "pos": [
+    -103.57,
+    7.63,
+    137.46
+   ],
+   "next": 46
+  },
+  {
+   "id": 46,
+   "name": "26",
+   "pos": [
+    -112.09,
+    7.53,
+    142.08
+   ],
+   "next": 47
+  },
+  {
+   "id": 47,
+   "name": "27",
+   "pos": [
+    -121.8,
+    7.1,
+    136.53
+   ],
+   "next": 44
+  },
+  {
+   "id": 48,
+   "name": "CS_S1_PATH_A01",
+   "pos": [
+    98.98,
+    18.77,
+    -207.93
+   ],
+   "next": 49
+  },
+  {
+   "id": 49,
+   "name": "CS_S1_PATH_A02",
+   "pos": [
+    85.35,
+    18.53,
+    -211.48
+   ],
+   "next": -1
+  },
+  {
+   "id": 50,
+   "name": "CS_S1_PATH_B01",
+   "pos": [
+    101.67,
+    18.83,
+    -204.71
+   ],
+   "next": 51
+  },
+  {
+   "id": 51,
+   "name": "CS_S1_PATH_B02",
+   "pos": [
+    85.49,
+    18.48,
+    -209.46
+   ],
+   "next": -1
+  },
+  {
+   "id": 52,
+   "name": "CS_S1_CAM_TRACK01",
+   "pos": [
+    88.45,
+    18.97,
+    -209.7
+   ],
+   "next": 53
+  },
+  {
+   "id": 53,
+   "name": "CS_S1_CAM_TRACK02",
+   "pos": [
+    88.45,
+    19.81,
+    -209.7
+   ],
+   "next": -1
+  },
+  {
+   "id": 54,
+   "name": "CS_S1_PATH_C01",
+   "pos": [
+    112.48,
+    18.83,
+    -205.28
+   ],
+   "next": 55
+  },
+  {
+   "id": 55,
+   "name": "CS_S1_PATH_C02",
+   "pos": [
+    86.43,
+    18.83,
+    -215.91
+   ],
+   "next": -1
+  },
+  {
+   "id": 56,
+   "name": "CS_S1_PATH_D01",
+   "pos": [
+    114.49,
+    18.83,
+    -194.78
+   ],
+   "next": 57
+  },
+  {
+   "id": 57,
+   "name": "CS_S1_PATH_D02",
+   "pos": [
+    87.2,
+    18.83,
+    -206.69
+   ],
+   "next": -1
+  },
+  {
+   "id": 58,
+   "name": "PODIUM_POSITION_1",
+   "pos": [
+    26.43,
+    18.83,
+    -219.0
+   ],
+   "next": -1
+  },
+  {
+   "id": 59,
+   "name": "PODIUM_POSITION_2",
+   "pos": [
+    -26.77,
+    16.6,
+    140.91
+   ],
+   "next": -1
+  },
+  {
+   "id": 60,
+   "name": "PODIUM_POSITION_3",
+   "pos": [
+    -211.74,
+    9.03,
+    -127.02
+   ],
+   "next": -1
+  },
+  {
+   "id": 61,
+   "name": "PODIUM_POSITION_4",
+   "pos": [
+    -40.25,
+    19.04,
+    -189.52
+   ],
+   "next": -1
+  },
+  {
+   "id": 62,
+   "name": "SPAWN_7_1",
+   "pos": [
+    -137.57,
+    0.07,
+    6.41
+   ],
+   "next": 63
+  },
+  {
+   "id": 63,
+   "name": "SPAWN_7_2",
+   "pos": [
+    -125.95,
+    -0.86,
+    3.95
+   ],
+   "next": 64
+  },
+  {
+   "id": 64,
+   "name": "SPAWN_7_3",
+   "pos": [
+    -107.09,
+    1.92,
+    -17.88
+   ],
+   "next": 65
+  },
+  {
+   "id": 65,
+   "name": "SPAWN_7_4",
+   "pos": [
+    -107.01,
+    1.86,
+    -53.04
+   ],
+   "next": 66
+  },
+  {
+   "id": 66,
+   "name": "SPAWN_7_5",
+   "pos": [
+    -114.2,
+    1.97,
+    -69.3
+   ],
+   "next": 67
+  },
+  {
+   "id": 67,
+   "name": "SPAWN_7_6",
+   "pos": [
+    -142.1,
+    2.08,
+    -98.22
+   ],
+   "next": 68
+  },
+  {
+   "id": 68,
+   "name": "SPAWN_7_7",
+   "pos": [
+    -152.82,
+    3.23,
+    -137.77
+   ],
+   "next": 69
+  },
+  {
+   "id": 69,
+   "name": "SPAWN_7_8",
+   "pos": [
+    -158.56,
+    5.79,
+    -179.6
+   ],
+   "next": 70
+  },
+  {
+   "id": 70,
+   "name": "SPAWN_7_9",
+   "pos": [
+    -153.96,
+    6.13,
+    -184.76
+   ],
+   "next": 71
+  },
+  {
+   "id": 71,
+   "name": "SPAWN_7_10",
+   "pos": [
+    -151.75,
+    6.38,
+    -185.4
+   ],
+   "next": -1
+  },
+  {
+   "id": 72,
+   "name": "SPAWN_6_1",
+   "pos": [
+    -137.95,
+    0.11,
+    8.26
+   ],
+   "next": 73
+  },
+  {
+   "id": 73,
+   "name": "SPAWN_6_2",
+   "pos": [
+    -125.27,
+    -1.13,
+    5.88
+   ],
+   "next": 74
+  },
+  {
+   "id": 74,
+   "name": "SPAWN_6_3",
+   "pos": [
+    -105.18,
+    1.91,
+    -17.5
+   ],
+   "next": 75
+  },
+  {
+   "id": 75,
+   "name": "SPAWN_6_4",
+   "pos": [
+    -103.96,
+    1.86,
+    -53.11
+   ],
+   "next": 76
+  },
+  {
+   "id": 76,
+   "name": "SPAWN_6_5",
+   "pos": [
+    -104.03,
+    1.86,
+    -73.37
+   ],
+   "next": 77
+  },
+  {
+   "id": 77,
+   "name": "SPAWN_6_6",
+   "pos": [
+    -114.82,
+    1.77,
+    -82.07
+   ],
+   "next": 78
+  },
+  {
+   "id": 78,
+   "name": "SPAWN_6_7",
+   "pos": [
+    -117.2,
+    1.47,
+    -87.21
+   ],
+   "next": 79
+  },
+  {
+   "id": 79,
+   "name": "SPAWN_6_8",
+   "pos": [
+    -115.77,
+    1.29,
+    -93.18
+   ],
+   "next": 80
+  },
+  {
+   "id": 80,
+   "name": "SPAWN_6_9",
+   "pos": [
+    -109.67,
+    2.34,
+    -100.77
+   ],
+   "next": 81
+  },
+  {
+   "id": 81,
+   "name": "SPAWN_6_10",
+   "pos": [
+    -83.32,
+    1.88,
+    -127.18
+   ],
+   "next": 82
+  },
+  {
+   "id": 82,
+   "name": "SPAWN_6_11",
+   "pos": [
+    -74.05,
+    1.88,
+    -148.42
+   ],
+   "next": -1
+  },
+  {
+   "id": 83,
+   "name": "SPAWN_5_1",
+   "pos": [
+    -141.39,
+    0.29,
+    8.08
+   ],
+   "next": 84
+  },
+  {
+   "id": 84,
+   "name": "SPAWN_5_2",
+   "pos": [
+    -125.66,
+    -0.98,
+    4.99
+   ],
+   "next": 85
+  },
+  {
+   "id": 85,
+   "name": "SPAWN_5_3",
+   "pos": [
+    -106.08,
+    1.92,
+    -17.69
+   ],
+   "next": 86
+  },
+  {
+   "id": 86,
+   "name": "SPAWN_5_4",
+   "pos": [
+    -105.0,
+    1.86,
+    -53.24
+   ],
+   "next": 87
+  },
+  {
+   "id": 87,
+   "name": "SPAWN_5_5",
+   "pos": [
+    -104.88,
+    1.9,
+    -72.42
+   ],
+   "next": 88
+  },
+  {
+   "id": 88,
+   "name": "SPAWN_5_6",
+   "pos": [
+    -115.23,
+    1.72,
+    -82.56
+   ],
+   "next": 89
+  },
+  {
+   "id": 89,
+   "name": "SPAWN_5_7",
+   "pos": [
+    -118.45,
+    1.54,
+    -89.0
+   ],
+   "next": 90
+  },
+  {
+   "id": 90,
+   "name": "SPAWN_5_8",
+   "pos": [
+    -120.22,
+    1.81,
+    -97.16
+   ],
+   "next": 91
+  },
+  {
+   "id": 91,
+   "name": "SPAWN_5_9",
+   "pos": [
+    -114.4,
+    1.9,
+    -104.84
+   ],
+   "next": 92
+  },
+  {
+   "id": 92,
+   "name": "SPAWN_5_10",
+   "pos": [
+    -87.6,
+    1.88,
+    -131.35
+   ],
+   "next": 93
+  },
+  {
+   "id": 93,
+   "name": "SPAWN_5_11",
+   "pos": [
+    -90.0,
+    1.9,
+    -139.5
+   ],
+   "next": 94
+  },
+  {
+   "id": 94,
+   "name": "SPAWN_5_12",
+   "pos": [
+    -90.63,
+    1.88,
+    -144.15
+   ],
+   "next": -1
+  },
+  {
+   "id": 95,
+   "name": "SPAWN_4_1",
+   "pos": [
+    -140.16,
+    0.07,
+    6.58
+   ],
+   "next": 96
+  },
+  {
+   "id": 96,
+   "name": "SPAWN_4_2",
+   "pos": [
+    -131.35,
+    0.69,
+    -1.19
+   ],
+   "next": 97
+  },
+  {
+   "id": 97,
+   "name": "SPAWN_4_3",
+   "pos": [
+    -109.77,
+    2.43,
+    -24.96
+   ],
+   "next": 98
+  },
+  {
+   "id": 98,
+   "name": "SPAWN_4_4",
+   "pos": [
+    -107.52,
+    1.86,
+    -38.02
+   ],
+   "next": 99
+  },
+  {
+   "id": 99,
+   "name": "SPAWN_4_5",
+   "pos": [
+    -108.49,
+    2.1,
+    -53.44
+   ],
+   "next": 100
+  },
+  {
+   "id": 100,
+   "name": "SPAWN_4_6",
+   "pos": [
+    -115.02,
+    1.97,
+    -68.9
+   ],
+   "next": 101
+  },
+  {
+   "id": 101,
+   "name": "SPAWN_4_7",
+   "pos": [
+    -142.97,
+    2.07,
+    -97.81
+   ],
+   "next": 102
+  },
+  {
+   "id": 102,
+   "name": "SPAWN_4_8",
+   "pos": [
+    -154.14,
+    2.69,
+    -138.05
+   ],
+   "next": 103
+  },
+  {
+   "id": 103,
+   "name": "SPAWN_4_9",
+   "pos": [
+    -160.37,
+    5.86,
+    -180.96
+   ],
+   "next": 104
+  },
+  {
+   "id": 104,
+   "name": "SPAWN_4_10",
+   "pos": [
+    -173.62,
+    6.08,
+    -192.91
+   ],
+   "next": 105
+  },
+  {
+   "id": 105,
+   "name": "SPAWN_4_11",
+   "pos": [
+    -173.89,
+    5.98,
+    -200.38
+   ],
+   "next": 106
+  },
+  {
+   "id": 106,
+   "name": "SPAWN_4_12",
+   "pos": [
+    -167.31,
+    8.46,
+    -210.03
+   ],
+   "next": 107
+  },
+  {
+   "id": 107,
+   "name": "SPAWN_4_13",
+   "pos": [
+    -163.63,
+    9.37,
+    -199.17
+   ],
+   "next": 108
+  },
+  {
+   "id": 108,
+   "name": "SPAWN_4_14",
+   "pos": [
+    -155.96,
+    10.06,
+    -195.87
+   ],
+   "next": -1
+  },
+  {
+   "id": 109,
+   "name": "SPAWN_8_1",
+   "pos": [
+    -124.02,
+    1.82,
+    75.99
+   ],
+   "next": 110
+  },
+  {
+   "id": 110,
+   "name": "SPAWN_8_2",
+   "pos": [
+    -116.02,
+    1.74,
+    75.99
+   ],
+   "next": 111
+  },
+  {
+   "id": 111,
+   "name": "SPAWN_8_3",
+   "pos": [
+    -112.19,
+    0.0,
+    44.22
+   ],
+   "next": 112
+  },
+  {
+   "id": 112,
+   "name": "SPAWN_8_4",
+   "pos": [
+    -120.88,
+    -0.55,
+    27.97
+   ],
+   "next": 113
+  },
+  {
+   "id": 113,
+   "name": "SPAWN_8_5",
+   "pos": [
+    -135.08,
+    -0.59,
+    15.46
+   ],
+   "next": -1
+  },
+  {
+   "id": 114,
+   "name": "SPAWN_10_1",
+   "pos": [
+    -113.51,
+    -1.52,
+    88.93
+   ],
+   "next": 115
+  },
+  {
+   "id": 115,
+   "name": "SPAWN_10_2",
+   "pos": [
+    -108.55,
+    -1.52,
+    82.58
+   ],
+   "next": 116
+  },
+  {
+   "id": 116,
+   "name": "SPAWN_10_3",
+   "pos": [
+    -107.85,
+    -1.55,
+    44.94
+   ],
+   "next": 117
+  },
+  {
+   "id": 117,
+   "name": "SPAWN_10_4",
+   "pos": [
+    -110.48,
+    -0.95,
+    38.64
+   ],
+   "next": -1
+  },
+  {
+   "id": 118,
+   "name": "SPAWN_9_1",
+   "pos": [
+    -144.14,
+    1.12,
+    76.21
+   ],
+   "next": 119
+  },
+  {
+   "id": 119,
+   "name": "SPAWN_9_2",
+   "pos": [
+    -161.82,
+    1.02,
+    68.31
+   ],
+   "next": 120
+  },
+  {
+   "id": 120,
+   "name": "SPAWN_9_3",
+   "pos": [
+    -163.99,
+    -0.76,
+    60.77
+   ],
+   "next": 121
+  },
+  {
+   "id": 121,
+   "name": "SPAWN_9_4",
+   "pos": [
+    -172.02,
+    -1.25,
+    57.54
+   ],
+   "next": 122
+  },
+  {
+   "id": 122,
+   "name": "SPAWN_9_5",
+   "pos": [
+    -162.69,
+    -0.53,
+    29.97
+   ],
+   "next": 123
+  },
+  {
+   "id": 123,
+   "name": "SPAWN_9_6",
+   "pos": [
+    -163.6,
+    1.19,
+    20.72
+   ],
+   "next": -1
+  },
+  {
+   "id": 124,
+   "name": "SPAWN_3_1",
+   "pos": [
+    -148.0,
+    0.89,
+    79.98
+   ],
+   "next": 125
+  },
+  {
+   "id": 125,
+   "name": "SPAWN_3_2",
+   "pos": [
+    -161.07,
+    0.31,
+    78.69
+   ],
+   "next": 126
+  },
+  {
+   "id": 126,
+   "name": "SPAWN_3_3",
+   "pos": [
+    -177.57,
+    1.2,
+    64.18
+   ],
+   "next": 127
+  },
+  {
+   "id": 127,
+   "name": "SPAWN_3_4",
+   "pos": [
+    -189.31,
+    6.13,
+    44.26
+   ],
+   "next": 128
+  },
+  {
+   "id": 128,
+   "name": "SPAWN_3_5",
+   "pos": [
+    -184.59,
+    10.15,
+    31.77
+   ],
+   "next": 129
+  },
+  {
+   "id": 129,
+   "name": "SPAWN_3_6",
+   "pos": [
+    -178.12,
+    8.43,
+    23.82
+   ],
+   "next": -1
+  },
+  {
+   "id": 130,
+   "name": "SPAWN_1_1",
+   "pos": [
+    -46.45,
+    16.89,
+    136.65
+   ],
+   "next": 131
+  },
+  {
+   "id": 131,
+   "name": "SPAWN_1_2",
+   "pos": [
+    -61.2,
+    14.61,
+    136.28
+   ],
+   "next": 132
+  },
+  {
+   "id": 132,
+   "name": "SPAWN_1_3",
+   "pos": [
+    -78.44,
+    6.04,
+    123.52
+   ],
+   "next": 133
+  },
+  {
+   "id": 133,
+   "name": "SPAWN_1_4",
+   "pos": [
+    -90.04,
+    5.59,
+    124.14
+   ],
+   "next": -1
+  },
+  {
+   "id": 134,
+   "name": "SPAWN_2_1",
+   "pos": [
+    -46.37,
+    16.88,
+    136.2
+   ],
+   "next": 135
+  },
+  {
+   "id": 135,
+   "name": "SPAWN_2_2",
+   "pos": [
+    -60.75,
+    14.56,
+    135.55
+   ],
+   "next": 136
+  },
+  {
+   "id": 136,
+   "name": "SPAWN_2_3",
+   "pos": [
+    -76.11,
+    4.16,
+    110.64
+   ],
+   "next": -1
+  },
+  {
+   "id": 137,
+   "name": "SPAWN_13_1",
+   "pos": [
+    -54.95,
+    15.31,
+    119.93
+   ],
+   "next": 138
+  },
+  {
+   "id": 138,
+   "name": "SPAWN_13_2",
+   "pos": [
+    -60.69,
+    15.43,
+    117.76
+   ],
+   "next": -1
+  },
+  {
+   "id": 139,
+   "name": "SPAWN_12_1",
+   "pos": [
+    -66.66,
+    16.05,
+    149.02
+   ],
+   "next": 140
+  },
+  {
+   "id": 140,
+   "name": "SPAWN_12_2",
+   "pos": [
+    -81.13,
+    15.48,
+    140.81
+   ],
+   "next": -1
+  },
+  {
+   "id": 141,
+   "name": "SPAWN_11_1",
+   "pos": [
+    -66.95,
+    16.08,
+    150.54
+   ],
+   "next": 142
+  },
+  {
+   "id": 142,
+   "name": "SPAWN_11_2",
+   "pos": [
+    -82.49,
+    15.46,
+    148.03
+   ],
+   "next": -1
+  },
+  {
+   "id": 143,
+   "name": "T62_3_1",
+   "pos": [
+    -151.09,
+    0.02,
+    95.11
+   ],
+   "next": 144
+  },
+  {
+   "id": 144,
+   "name": "T62_3_2",
+   "pos": [
+    -144.58,
+    -1.27,
+    91.73
+   ],
+   "next": 145
+  },
+  {
+   "id": 145,
+   "name": "T62_3_3",
+   "pos": [
+    -113.21,
+    -1.52,
+    92.42
+   ],
+   "next": 146
+  },
+  {
+   "id": 146,
+   "name": "T62_3_4",
+   "pos": [
+    -102.91,
+    -1.44,
+    80.97
+   ],
+   "next": 147
+  },
+  {
+   "id": 147,
+   "name": "T62_3_5",
+   "pos": [
+    -104.23,
+    -1.56,
+    42.1
+   ],
+   "next": 148
+  },
+  {
+   "id": 148,
+   "name": "T62_3_6",
+   "pos": [
+    -109.3,
+    -0.88,
+    30.69
+   ],
+   "next": 149
+  },
+  {
+   "id": 149,
+   "name": "T62_3_7",
+   "pos": [
+    -112.17,
+    -3.06,
+    16.23
+   ],
+   "next": 160
+  },
+  {
+   "id": 150,
+   "name": "T62_3_8",
+   "pos": [
+    -123.16,
+    -2.46,
+    12.31
+   ],
+   "next": 151
+  },
+  {
+   "id": 151,
+   "name": "T62_3_9",
+   "pos": [
+    -131.82,
+    -0.15,
+    8.45
+   ],
+   "next": 152
+  },
+  {
+   "id": 152,
+   "name": "T62_3_10",
+   "pos": [
+    -144.04,
+    0.11,
+    10.35
+   ],
+   "next": 153
+  },
+  {
+   "id": 153,
+   "name": "T62_3_11",
+   "pos": [
+    -149.58,
+    -0.48,
+    13.78
+   ],
+   "next": 154
+  },
+  {
+   "id": 154,
+   "name": "T62_3_12",
+   "pos": [
+    -157.84,
+    -1.12,
+    26.49
+   ],
+   "next": 155
+  },
+  {
+   "id": 155,
+   "name": "T62_3_13",
+   "pos": [
+    -163.12,
+    -1.33,
+    44.64
+   ],
+   "next": 156
+  },
+  {
+   "id": 156,
+   "name": "T62_3_14",
+   "pos": [
+    -180.03,
+    1.41,
+    51.66
+   ],
+   "next": 157
+  },
+  {
+   "id": 157,
+   "name": "T62_3_15",
+   "pos": [
+    -190.35,
+    1.87,
+    64.98
+   ],
+   "next": 158
+  },
+  {
+   "id": 158,
+   "name": "T62_3_16",
+   "pos": [
+    -177.77,
+    0.9,
+    77.54
+   ],
+   "next": 159
+  },
+  {
+   "id": 159,
+   "name": "T62_3_17",
+   "pos": [
+    -158.99,
+    0.91,
+    84.16
+   ],
+   "next": 143
+  },
+  {
+   "id": 160,
+   "name": "T62_3_7b",
+   "pos": [
+    -112.44,
+    -2.42,
+    12.31
+   ],
+   "next": 150
+  },
+  {
+   "id": 161,
+   "name": "BRF_OBJ1A_PATH1",
+   "pos": [
+    -148.73,
+    16.94,
+    101.05
+   ],
+   "next": 162
+  },
+  {
+   "id": 162,
+   "name": "BRF_OBJ1A_PATH2",
+   "pos": [
+    -148.73,
+    9.87,
+    101.05
+   ],
+   "next": -1
+  },
+  {
+   "id": 163,
+   "name": "BRF_OBJ2A_TARGET1",
+   "pos": [
+    -39.37,
+    19.42,
+    131.16
+   ],
+   "next": 164
+  },
+  {
+   "id": 164,
+   "name": "BRF_OBJ2A_TARGET2",
+   "pos": [
+    -43.12,
+    20.66,
+    141.15
+   ],
+   "next": -1
+  },
+  {
+   "id": 165,
+   "name": "BLACKHAWK_PICKUP_W5",
+   "pos": [
+    -47.06,
+    17.11,
+    141.73
+   ],
+   "next": -1
+  }
+ ],
+ "triggers": [
+  {
+   "name": "AREA_2_ENTERED",
+   "pos": [
+    -120.23,
+    3.32,
+    -168.69
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "AREA_3_ENTERED",
+   "pos": [
+    -153.47,
+    10.0,
+    -26.51
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "SPAWN_0_TO_2_OFF",
+   "pos": [
+    -45.12,
+    19.12,
+    154.98
+   ],
+   "r": 40.0
+  },
+  {
+   "name": "AREA_4_ENTERED",
+   "pos": [
+    -136.09,
+    8.14,
+    48.6
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "T62_3_TRIGGER03",
+   "pos": [
+    -107.8,
+    -1.04,
+    34.78
+   ],
+   "r": 14.0
+  },
+  {
+   "name": "T62_3_TRIGGER02",
+   "pos": [
+    -162.91,
+    -0.54,
+    39.61
+   ],
+   "r": 10.0
+  },
+  {
+   "name": "T62_3_TRIGGER01",
+   "pos": [
+    -208.96,
+    5.67,
+    16.91
+   ],
+   "r": 10.0
+  },
+  {
+   "name": "BIRD01",
+   "pos": [
+    -83.38,
+    37.71,
+    -158.24
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "BIRD02",
+   "pos": [
+    -133.63,
+    34.27,
+    91.22
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "BIRD03",
+   "pos": [
+    -170.91,
+    40.06,
+    -4.66
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "HIND_TRIGGER",
+   "pos": [
+    -148.28,
+    21.64,
+    -67.89
+   ],
+   "r": 0.0
+  }
+ ]
+}

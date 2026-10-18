@@ -9,6 +9,7 @@ Usage: parse_props.py <Mission1.env> <Mid_Day_Sunny.sky> <out.json>
 Coords: three.js (x/100, y/100, -z/100), yaw = -rotY.
 """
 import json
+import math
 import re
 import sys
 
@@ -64,12 +65,46 @@ for ln in env:
             interiors.append({'m': m.group(1), 'p': e2j(float(m.group(2)), float(m.group(3)), float(m.group(4)))})
 
 
+# ENVI scene-graph world transforms: zone scenes are authored LOCALLY and
+# placed by their scene node (e.g. MIS1_ZONE1_BRIDGE sits at (-172,-342),
+# it is not baked at the origin). Compose each node's transform up its
+# parent chain so the web build can place every scene where the game does.
+ENVI_RE = re.compile(r'^ENVI\s+\d+\s+\d+\s+"([^"]+)"\s+"([^"]*)"\s+\d+\s+"([^"]+)"\s+"NOTEXTURE"\s+'
+                     r'(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)')
+nodes = {}
+for ln in env:
+    m = ENVI_RE.match(ln)
+    if m:
+        nodes[m.group(1)] = {'parent': m.group(2), 'model': m.group(3),
+                             'pos': [float(m.group(4)), float(m.group(5)), float(m.group(6))],
+                             'ry': float(m.group(8))}
+
+def world_tf(inst, seen=()):
+    n = nodes.get(inst)
+    if not n or inst in seen:
+        return [0.0, 0.0, 0.0], 0.0
+    lp = [n['pos'][0] / 100, n['pos'][1] / 100, -n['pos'][2] / 100]
+    lyaw = -n['ry'] * 3.14159265 / 180
+    if n['parent'] and n['parent'] != 'Root' and n['parent'] in nodes:
+        pp, py = world_tf(n['parent'], seen + (inst,))
+        c, s = math.cos(py), math.sin(py)
+        return [pp[0] + lp[0] * c + lp[2] * s, pp[1] + lp[1], pp[2] - lp[0] * s + lp[2] * c], py + lyaw
+    return lp, lyaw
+
+scenes = {}
+for inst, n in nodes.items():
+    if n['model'] in scenes:
+        continue
+    p, yaw = world_tf(inst)
+    scenes[n['model']] = {'p': [round(v, 2) for v in p], 'yaw': round(yaw, 3)}
+
 def skycol(tag, idx):
     rows = re.findall(tag + r'\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)', sky_txt)
     return [round(float(v), 3) for v in rows[idx]] if len(rows) > idx else None
 
 
 out = {
+    'scenes': scenes,
     'statics': statics,
     'vehicles': vehicles,
     'interiors': interiors,
