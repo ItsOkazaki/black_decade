@@ -235,7 +235,7 @@ function wavs(bank) {
 const WEAPONS = [BD.WEAPONS.M16A2, BD.WEAPONS.SAW, BD.WEAPONS.M16A2, BD.WEAPONS.BARRETT];
 Object.values(BD.WEAPONS).forEach(w => { if (w.bank) w.snd = wavs(w.bank); w.alt = 0; });
 GF.load();
-setTimeout(() => { const fp = document.getElementById('forcePlay'); if (fp && !window.__playLoaded) { fp.dataset.armed = '1'; fp.style.display = 'block'; fp.onclick = (e) => { e.stopPropagation(); window.__playLoaded = true; window.__forcePlay = true; startEl.style.display = 'none'; playing = true; updateHUD(); }; } }, 90000);
+setTimeout(() => { const fp = document.getElementById('forcePlay'); if (fp && !window.__playLoaded) { fp.dataset.armed = '1'; fp.style.display = 'block'; fp.onclick = (e) => { e.stopPropagation(); window.__playLoaded = true; window.__forcePlay = true; startEl.style.display = 'none'; playing = true; updateHUD(); }; } }, 45000);
 let WPN = WEAPONS[0];
 let prevStance = 'stand', transitionFade = 0.18; // stance changes blend slower (see setAnim)
 // Stance ladder: stand(0) -> crouch(1) -> prone(2). Going prone or standing

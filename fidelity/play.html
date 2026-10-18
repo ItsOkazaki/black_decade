@@ -71,15 +71,15 @@
   #invHint{margin-top:10px;font-size:11px;letter-spacing:.1em;color:#ffe9a8;min-height:14px;text-align:left}
   #invGear{font-size:11.5px;line-height:1.65;color:#e6ecd8;letter-spacing:.06em}
   /* ---- deploy overlay ---- */
-  #start{position:fixed;inset:0;z-index:10;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-family:Consolas,'Lucida Console',monospace}
+  #start{position:fixed;inset:0;z-index:10;background:#000;overflow-y:auto;cursor:pointer;color:#fff;font-family:Consolas,'Lucida Console',monospace}
   #gpswrap{display:flex;gap:14px;text-align:left;margin:12px 0 4px}
-  #gpsmap{position:relative;flex:none;width:272px;border:1.5px solid rgba(178,202,150,.8);border-radius:8px;overflow:hidden;background:#0c0f08}
+  #gpsmap{position:relative;flex:none;width:218px;border:1.5px solid rgba(178,202,150,.8);border-radius:8px;overflow:hidden;background:#0c0f08}
   #gpsmap img{width:100%;display:block}
   #gpsmap svg{position:absolute;inset:0;width:100%;height:100%}
   .gpsdot{position:absolute;transform:translate(-50%,-50%);font-size:8.5px;font-weight:700;color:#ffe14d;text-shadow:1px 1px 2px #000;letter-spacing:.05em;text-align:center;white-space:nowrap}
   .gpsdot i{display:block;width:8px;height:8px;margin:0 auto 1px;border-radius:50%;background:#ffe14d;box-shadow:0 0 0 0 rgba(255,225,77,.7);animation:gpspulse 1.6s infinite}
   @keyframes gpspulse{70%{box-shadow:0 0 0 9px rgba(255,225,77,0)}100%{box-shadow:0 0 0 0 rgba(255,225,77,0)}}
-  #start .shade{background:#000;padding:26px 34px;max-width:800px;width:min(800px,94vw);text-align:center;border:none;box-shadow:none;color:#fff}
+  #start .shade{background:#000;padding:14px 20px 30px;max-width:780px;width:min(780px,94vw);margin:0 auto;text-align:center;border:none;box-shadow:none;color:#fff}
   #start p{color:#fff;font-size:13.5px;line-height:1.65}
   #start b{color:#fff}
   #deployBtn{margin-top:10px;cursor:pointer;display:inline-block}
@@ -142,6 +142,11 @@
   <div style="text-align:left;margin-bottom:8px"><a class="menulink" href="index.html" onclick="event.stopPropagation()">⟵ BACK</a></div>
   <canvas id="startTitle" class="gtext" style="margin:0 auto"></canvas>
   <p id="misBriefLine" style="letter-spacing:.25em;color:#cfe0b8;font-size:11px;margin:6px 0 2px">MISSION 1 — RESCUE</p>
+  <div id="loadbar" style="margin:12px auto 0;width:min(430px,80%);height:12px;background:rgba(8,10,6,.9);border:1px solid #888;overflow:hidden"><div id="loadfill" style="height:100%;width:0%;background:#ddd;transition:width .25s"></div></div>
+  <div id="loadpct" style="font-size:12px;font-weight:700;letter-spacing:.18em;color:#ffe9a8;margin-top:5px">0%</div>
+  <div id="stats" style="font-size:12px;color:#cfe0b8;margin-top:8px">Loading…</div>
+  <button id="deployGo" style="display:none;margin:14px auto 0;padding:12px 44px;background:#000;color:#fff;border:2px solid #fff;font:700 15px Consolas,monospace;letter-spacing:.25em;cursor:pointer">▶ DEPLOY</button>
+  <button id="forcePlay" style="display:none;margin:10px auto 0;padding:8px 22px;background:#000;color:#888;border:1px solid #555;font:11px Consolas,monospace;letter-spacing:.15em;cursor:pointer">STUCK? CLICK HERE TO ENTER THE GAME ANYWAY</button>
   <div id="gpswrap">
     <div id="gpsmap">
       <img src="textures/ui/mission1map.png" alt="Mission map — GWMission10">
@@ -179,6 +184,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=56"></script>
+<script type="module" src="play.js?v=57"></script>
 </body>
 </html>
