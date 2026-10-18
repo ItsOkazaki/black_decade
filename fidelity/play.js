@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
 // PLAYABLE SLICE — Armstrong (real model/animations) + M16A2 with WEAPS.TXT
 // behaviour (mag 30, reload 1.5 s, 86 ms interval), original sounds.
@@ -354,8 +355,8 @@ function resetEnemies(advance = false) {
 // ---- the squad: 4 Algerian soldiers, switchable (1-4), follow/hold (F) ----
 const SQUAD_DEFS = [
   { name: 'CONNORS', model: 'models/play/Hero02_Ramirez.glb', tex: 'textures/Hero02_DZ_01.png?v=9', slot: [-1.3, -1.6] },
-  { name: 'JONES', model: 'models/play/Hero03_Jones.glb', tex: 'textures/Hero03_DZ_01.png?v=2', slot: [1.3, -1.6] },
-  { name: 'Foley', model: 'models/play/Hero04_Foley.glb', tex: 'textures/Hero04_DZ_01.png?v=2', slot: [0, -3.2] },
+  { name: 'JONES', model: 'models/play/Hero03_Jones.glb', tex: 'textures/Hero03_DZ_01.png?v=3', slot: [1.3, -1.6] },
+  { name: 'Foley', model: 'models/play/Hero04_Foley.glb', tex: 'textures/Hero04_DZ_01.png?v=3', slot: [0, -3.2] },
 ];
 const members = [];   // [0] = Armstrong (starts controlled); 1-3 = mates
 let activeIdx = 0;
@@ -462,13 +463,16 @@ function setHeld(i) {
 }
 
 // worn kit on the game's own connectors (ConnObjs.txt SAS rows)
+const CONN_NAMES = { SPINE1: 'BIP01_SPINE1_CONNECTOR', SPINE2: 'BIP01_SPINE2_CONNECTOR',
+  SPINE2L: 'BIP01_SPINE2L_CONNECTOR', SPINE2R: 'BIP01_SPINE2R_CONNECTOR',
+  HAT: 'BIP01_HAT_CONNECTOR', FACE: 'BIP01_FACE_CONNECTOR',
+  HIPL: 'BIP01_HIPL_CONNECTOR', HIPR: 'BIP01_HIPR_CONNECTOR' };
 function attachGear(obj, memberIdx) {
   const conns = {};
   obj.traverse(o => {
-    const nm = (o.name || '').toUpperCase();
-    if (!nm.includes('CONNECTOR')) return;
-    for (const tok of ['SPINE2L', 'SPINE2R', 'SPINE1', 'SPINE2', 'HAT', 'FACE', 'HIPL', 'HIPR'])
-      if (nm.includes(tok)) { conns[tok] = o; break; }
+    const nm = (o.name || '').toUpperCase().replace(/ /g, '_');
+    for (const tok of Object.keys(CONN_NAMES))
+      if (nm === CONN_NAMES[tok]) conns[tok] = o;
   });
   for (const [tok, file] of BD.GEAR[memberIdx]) {
     const conn = conns[tok], tpl = gearCache[file];
@@ -1268,12 +1272,14 @@ function updateHUD() {
 async function load() {
   const stats = document.getElementById('stats');
   try {
+    stats.textContent = 'Loading Mission 1 — the real base…';
     ENV = await (await fetch('models/mission1/units.json')).json();
-    for (const z of ['Mis1_Zone1', 'Mis1_Zone1A', 'Mis1_Zone1_Bridge', 'Mis1_Zone2', 'Mis1_Zone2A', 'Mis1_Zone3', 'Mis1_Zone3A', 'Mis1_Zone4']) {
+    await Promise.all(['Mis1_Zone1', 'Mis1_Zone1A', 'Mis1_Zone1_Bridge', 'Mis1_Zone2', 'Mis1_Zone2A', 'Mis1_Zone3', 'Mis1_Zone3A', 'Mis1_Zone4'].map(async z => {
       const g = await loader.loadAsync('models/mission1/' + z + '.glb');
       g.scene.traverse(o => { if (o.isMesh) o.receiveShadow = true; });
       world.add(g.scene);
-    }
+    }));
+    stats.textContent = 'Base loaded — kitting out the squad…';
     if (ENV.start) player.pos.set(ENV.start.pos[0], 0, ENV.start.pos[2]);
     player.pos.y = groundY(player.pos.x, player.pos.z);
     buildEnemies();
@@ -1405,7 +1411,12 @@ async function load() {
     for (const name of [...new Set(ROSTER.flatMap(t => [t.beard, t.hat].filter(Boolean)))]) {
       propCache[name] = (await loader.loadAsync('models/props/' + PROP_FILES[name])).scene;
     }
-    for (const E of enemies) await loadEnemy(E);
+    const foeTemplate = await loader.loadAsync('models/enemy/IraqInfantry01_Sandy.glb');
+    const akTemplate = (await loader.loadAsync('models/enemy/Rifle05_AK47.glb')).scene;
+    const texByUrl = {};
+    Object.entries(FACE_TEX).forEach(([k, u]) => { texByUrl[u] = faceTexCache[k]; });
+    stats.textContent = 'Deploying ' + enemies.length + ' hostiles…';
+    enemies.forEach(E => loadEnemy(E));
 
     // ---- the squad ----
     members.push({ name: 'Bradley', wpn: WEAPONS[0], ammo: WEAPONS[0].mag, obj: heroObj, mixer, actions, rifle: rifleObj,
@@ -1459,40 +1470,36 @@ async function load() {
       members.push(M);
     }
 
-    async function loadEnemy(E) {
-    const foe = await loader.loadAsync('models/enemy/IraqInfantry01_Sandy.glb');
-    E.obj = foe.scene;
+    function loadEnemy(E) {
+    E.obj = skeletonClone(foeTemplate.scene);
     E.obj.position.copy(E.pos);
     E.obj.traverse(o => {
       if (o.isMesh) {
-        if (o.name === 'NEWSKIN') { o.castShadow = true; o.receiveShadow = true; }
-        else {
+        if (o.name === 'NEWSKIN') {
+          o.castShadow = true; o.receiveShadow = true;
+          o.material = Array.isArray(o.material) ? o.material.map(m => m.clone()) : o.material.clone();
+        } else {
           const mats = Array.isArray(o.material) ? o.material : [o.material];
           mats.forEach(m => { const c = m.clone(); c.visible = false; o.material = c; });
         }
       }
     });
-    try {
-      const insTex = await new THREE.TextureLoader().loadAsync(E.texture);
-      insTex.flipY = false;
-      insTex.colorSpace = THREE.SRGBColorSpace;
-      insTex.anisotropy = MAX_ANISO;
-      E.obj.traverse(o => {
-        if (o.isMesh && o.name === 'NEWSKIN') {
-          const ms = Array.isArray(o.material) ? o.material : [o.material];
-          ms.forEach(m => { if (m.map) { m.map = insTex; m.needsUpdate = true; } });
-        }
-      });
-    } catch (e) { /* original sandy uniform fallback */ }
+    const insTex = texByUrl[E.texture];
+    if (insTex) E.obj.traverse(o => {
+      if (o.isMesh && o.name === 'NEWSKIN') {
+        const ms = Array.isArray(o.material) ? o.material : [o.material];
+        ms.forEach(m => { if (m.map) { m.map = insTex; m.needsUpdate = true; } });
+      }
+    });
     scene.add(E.obj);
     E.mixer = new THREE.AnimationMixer(E.obj);
-    (foe.animations || []).forEach(c => E.actions[c.name] = E.mixer.clipAction(c));
-    const ak = await loader.loadAsync('models/enemy/Rifle05_AK47.glb');
+    (foeTemplate.animations || []).forEach(c => E.actions[c.name] = E.mixer.clipAction(c));
+    const ak = akTemplate.clone(true);
     let eConn = null;
     E.obj.traverse(o => { if (o.name && o.name.toUpperCase().includes('GUNR')) eConn = o; });
     if (eConn) {
-      eConn.add(ak.scene);
-      ak.scene.traverse(o => { if (o.isMesh) o.castShadow = true; });
+      eConn.add(ak);
+      ak.traverse(o => { if (o.isMesh) o.castShadow = true; });
     }
     E.obj.traverse(o => {
       const nm = (o.name || '').toUpperCase();
@@ -1520,6 +1527,8 @@ async function load() {
     updateHUD();
   } catch (err) {
     document.getElementById('err').textContent = '⚠ Load failed: ' + err.message;
+    if (stats) stats.textContent = '⚠ Load failed: ' + err.message;
+    console.error(err);
   }
 }
 load();

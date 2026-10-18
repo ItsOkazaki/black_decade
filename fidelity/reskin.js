@@ -387,12 +387,15 @@ const gearCacheR = {};
 async function attachGearR(obj, memberIdx) {
   for (const file of [...new Set(BD.GEAR[memberIdx].map(g => g[1]))])
     if (!gearCacheR[file]) gearCacheR[file] = (await loader.loadAsync('models/gear/' + file + '.glb')).scene;
+  const CONN_NAMES = { SPINE1: 'BIP01_SPINE1_CONNECTOR', SPINE2: 'BIP01_SPINE2_CONNECTOR',
+    SPINE2L: 'BIP01_SPINE2L_CONNECTOR', SPINE2R: 'BIP01_SPINE2R_CONNECTOR',
+    HAT: 'BIP01_HAT_CONNECTOR', FACE: 'BIP01_FACE_CONNECTOR',
+    HIPL: 'BIP01_HIPL_CONNECTOR', HIPR: 'BIP01_HIPR_CONNECTOR' };
   const conns = {};
   obj.traverse(o => {
-    const nm = (o.name || '').toUpperCase();
-    if (!nm.includes('CONNECTOR')) return;
-    for (const tok of ['SPINE2L', 'SPINE2R', 'SPINE1', 'SPINE2', 'HAT', 'FACE', 'HIPL', 'HIPR'])
-      if (nm.includes(tok)) { conns[tok] = o; break; }
+    const nm = (o.name || '').toUpperCase().replace(/ /g, '_');
+    for (const tok of Object.keys(CONN_NAMES))
+      if (nm === CONN_NAMES[tok]) conns[tok] = o;
   });
   for (const [tok, file] of BD.GEAR[memberIdx]) {
     const conn = conns[tok], tpl = gearCacheR[file];
@@ -445,8 +448,8 @@ async function load() {
     await buildSoldier(-7, false);
     await buildSoldier(-5, true);
     await buildHero2(-3, 'models/play/Hero02_Ramirez.glb', 'textures/Hero02_DZ_01.png?v=9', 1);
-    await buildHero2(-1, 'models/play/Hero03_Jones.glb', 'textures/Hero03_DZ_01.png?v=2', 2);
-    await buildHero2(1, 'models/play/Hero04_Foley.glb', 'textures/Hero04_DZ_01.png?v=2', 3);
+    await buildHero2(-1, 'models/play/Hero03_Jones.glb', 'textures/Hero03_DZ_01.png?v=3', 2);
+    await buildHero2(1, 'models/play/Hero04_Foley.glb', 'textures/Hero04_DZ_01.png?v=3', 3);
     await buildEnemy(3, 'textures/Insurgent_F1.png?v=1', null, [['IR_Moustache01.glb', 'FACE']]);
     await buildEnemy(5, 'textures/Insurgent_Officer.png?v=1', null, [['IR_Beard01.glb', 'FACE'], ['IR_Beret_Black.glb', 'HAT']]);
     await buildEnemy(7, 'textures/Insurgent_Mechanic.png?v=1', null, [['IR_Beard02.glb', 'FACE'], ['IR_Shemagh04_Sandy.glb', 'HAT']]);

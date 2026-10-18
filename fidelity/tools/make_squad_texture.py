@@ -6,6 +6,7 @@ import struct, json, sys
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
 GLB, SRC, DST = sys.argv[1], sys.argv[2], sys.argv[3]
+PATCH_DY = int(sys.argv[4]) if len(sys.argv) > 4 else 0  # + moves patches DOWN the sleeve
 S = 1024
 
 d = open(GLB, 'rb').read()
@@ -60,7 +61,7 @@ for m in g['meshes']:
 def centre(pts): return (sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts))
 LX, LY = centre(shL); RX, RY = centre(shR)
 print('sleeve centres L', (round(LX), round(LY)), 'R', (round(RX), round(RY)))
-PLY, PRY = LY - 60, RY - 60  # patches sit a bit higher than the zone centre
+PLY, PRY = LY - 60 + PATCH_DY, RY - 60 + PATCH_DY  # patches sit a bit higher than the zone centre
 
 base = Image.open(SRC).convert('RGB').resize((S, S), Image.LANCZOS)
 out = base.copy()
