@@ -161,8 +161,9 @@
   <p><b>Mouse</b> look · <b>LMB</b> fire/use · <b>RMB</b> aim · <b>WASD</b> move ·
      <b>Ctrl</b> walk · <b>Shift</b> sprint · <b>R</b> reload · <b>C</b> crouch · <b>X</b> prone<br>
      <b>1–4</b> switch soldier · <b>Q</b>/wheel change weapon-item · <b>SPACE</b> inventory (mouse) ·
-     <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>T</b> new wave · <b>F1</b> objectives · <b>P</b> pause</p>
+     <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>F1</b> objectives · <b>P</b> pause</p>
   <canvas id="deployBtn" class="gtext"></canvas>
+  <button id="forcePlay" style="display:none;margin:10px auto 0;padding:8px 22px;background:#000;color:#888;border:1px solid #555;font:11px Consolas,monospace;letter-spacing:.15em;cursor:pointer">STUCK? CLICK HERE TO ENTER THE GAME ANYWAY</button>
   <button id="deployGo" style="display:none;margin:16px auto 0;padding:12px 44px;background:#000;color:#fff;border:2px solid #fff;font:700 15px Consolas,monospace;letter-spacing:.25em;cursor:pointer">▶ DEPLOY</button>
   <div id="loadbar" style="margin:14px auto 0;width:min(430px,80%);height:12px;background:rgba(8,10,6,.9);border:1px solid #888;overflow:hidden"><div id="loadfill" style="height:100%;width:0%;background:#ddd;transition:width .25s"></div></div>
   <div id="loadpct" style="font-size:12px;font-weight:700;letter-spacing:.18em;color:#ffe9a8;margin-top:5px">0%</div>
@@ -178,6 +179,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=55"></script>
+<script type="module" src="play.js?v=56"></script>
 </body>
 </html>

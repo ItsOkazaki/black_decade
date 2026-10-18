@@ -235,6 +235,7 @@ function wavs(bank) {
 const WEAPONS = [BD.WEAPONS.M16A2, BD.WEAPONS.SAW, BD.WEAPONS.M16A2, BD.WEAPONS.BARRETT];
 Object.values(BD.WEAPONS).forEach(w => { if (w.bank) w.snd = wavs(w.bank); w.alt = 0; });
 GF.load();
+setTimeout(() => { const fp = document.getElementById('forcePlay'); if (fp && !window.__playLoaded) { fp.dataset.armed = '1'; fp.style.display = 'block'; fp.onclick = (e) => { e.stopPropagation(); window.__playLoaded = true; window.__forcePlay = true; startEl.style.display = 'none'; playing = true; updateHUD(); }; } }, 90000);
 let WPN = WEAPONS[0];
 let prevStance = 'stand', transitionFade = 0.18; // stance changes blend slower (see setAnim)
 // Stance ladder: stand(0) -> crouch(1) -> prone(2). Going prone or standing
@@ -1395,7 +1396,12 @@ function safeStartCutscene() { try { startCutscene(); if (!cutscene) endCutscene
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', () => {
   uiClick();
-  if (!window.__playLoaded) { const st = document.getElementById('stats'); const pc = document.getElementById('loadpct'); if (st) st.textContent = 'STILL LOADING' + (pc ? ' — ' + pc.textContent : '') + ' — ONE MOMENT…'; return; }
+  if (!window.__playLoaded) {
+    // if loading truly died (an asset hung with no error), the world may
+    // still be playable enough: offer the emergency door after 90s
+    const fp = document.getElementById('forcePlay');
+    if (fp && fp.dataset.armed) { fp.style.display = 'block'; }
+  } { const st = document.getElementById('stats'); const pc = document.getElementById('loadpct'); if (st) st.textContent = 'STILL LOADING' + (pc ? ' — ' + pc.textContent : '') + ' — ONE MOMENT…'; return; }
   if (playerHP <= 0 || missionDone) {
     playerHP = 100; missionDone = false; objIdx = 0; kills = 0;
     resetEnemies(true); resetSquadToStart(); setObjectiveText();
@@ -1442,7 +1448,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'KeyC' && playing) targetStanceIdx = targetStanceIdx === 1 ? 0 : 1;
   if (e.code === 'KeyX' && playing) targetStanceIdx = targetStanceIdx === 2 ? 0 : 2;
   if (e.code === 'KeyR' && playing) startReload();
-  if (e.code === 'KeyT' && playing) { resetEnemies(true); playerHP = 100; updateHUD(); }
+
   if (e.code.startsWith('Digit') && playing) {
     const n = +e.code.slice(5);
     if (n >= 1 && n <= 4) switchTo(n - 1);

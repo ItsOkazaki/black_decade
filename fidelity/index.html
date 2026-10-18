@@ -7,7 +7,7 @@
 <style>
   html,body{margin:0;padding:0;min-height:100%;background:#070804;font-family:'Segoe UI',Arial,sans-serif;color:#e8e4d8}
   /* the game's own DefLoad screen art (Catalog/0115) as the menu backdrop */
-  #bg{position:fixed;inset:0;background:url(textures/ui/defload.png) center/cover no-repeat;filter:saturate(.85) brightness(.92)}
+  #bg{position:fixed;inset:0;background:url(textures/ui/menu_bg.png) center/cover no-repeat;background-color:#0c0e08}
   #shade{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%, rgba(5,7,4,.12) 30%, rgba(5,7,4,.55) 100%)}
   .gtext{display:block;image-rendering:auto}
   /* ---- frontend windows: one screen at a time, like the original ---- */
@@ -16,9 +16,9 @@
   .window{background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.35);padding:22px 26px;max-width:880px;width:min(880px,94vw);max-height:92vh;overflow:auto;text-align:center}
   .window .ptitle{margin:0 auto}
   /* main menu: translucent olive panel + green pill buttons, no title art */
-  #menupanel{width:min(430px,92vw);background:none;border:none;padding:16px 18px 14px}
-  .mbtn{display:block;width:100%;margin:7px 0;padding:6px 10px;background:none;border:none;cursor:pointer;text-decoration:none;color:#ffe14d;font-family:inherit;text-align:left}
-  .mbtn:hover{filter:brightness(1.35)}
+  #menupanel{width:min(430px,92vw);background:rgba(74,88,44,.45);border:2px solid rgba(190,205,160,.45);border-radius:22px;padding:22px 26px 18px;box-shadow:0 8px 32px rgba(0,0,0,.45)}
+  .mbtn{display:block;width:100%;margin:7px 0;padding:9px 10px 7px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat,linear-gradient(180deg,#3d6120,#2a4712);border:1.5px solid #a8bf8d;border-radius:999px;cursor:pointer;text-decoration:none;color:#ffe14d;font-family:inherit;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(0,0,0,.4)}
+  .mbtn:hover{filter:brightness(1.3);border-color:#ffe14d}
   .mbtn canvas{margin:0 auto}
   .backbtn{max-width:230px;margin:20px auto 0}
   /* ---- SELECT FORCE cards ---- */
@@ -58,7 +58,6 @@
 <!-- MAIN MENU -->
 <div class="screen open" id="scr-main">
   <div id="menupanel">
-    <img src="textures/ui/defload.png" alt="Black Decade" style="width:100%;height:150px;object-fit:cover;object-position:center 30%;display:block;border-radius:12px;border:1px solid rgba(178,202,150,.55);margin-bottom:12px">
     <button class="mbtn" id="btnSingle"><canvas class="gtext mtxt" data-t="SINGLE PLAYER" data-c="#ffe14d"></canvas></button>
     <a class="mbtn" href="reskin.html"><canvas class="gtext mtxt" data-t="SQUAD" data-c="#ffe14d"></canvas></a>
     <button class="mbtn" id="btnOptions"><canvas class="gtext mtxt" data-t="OPTIONS" data-c="#ffe14d"></canvas></button>
