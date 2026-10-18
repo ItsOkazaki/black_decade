@@ -1267,6 +1267,13 @@ function updateHUD() {
     const pb = document.getElementById('pb' + i);
     pb.style.width = hpv + '%';
     pb.className = hpv <= 30 ? 'low' : '';
+    const pi = document.getElementById('pi' + i);
+    if (pi) {
+      const ic = !M.alive ? 'IMAGE_DOGTAGSINGLE' : i === activeIdx ? 'IMAGE_ORDER_RADIO'
+        : squadHold ? 'IMAGE_HOLD' : (!squadFireFree ? 'IMAGE_HOLDFIRE' : 'IMAGE_FOLLOW');
+      const p = 'textures/ui/gwint/' + ic + '.png';
+      if (pi.dataset.s !== p) { pi.dataset.s = p; pi.src = p; }
+    }
     document.getElementById('ps' + i).textContent = !M.alive ? 'DOWN' :
       i === activeIdx ? '▶ YOU · ' + player.stance.toUpperCase() : (M.moving ? 'ON THE MOVE' : (squadHold ? 'HOLDING' : 'READY'));
   });
@@ -1281,7 +1288,7 @@ function updateHUD() {
     (i === activeIdx ? '▶' : '') + M.name + ' ' + (!M.alive ? 'DOWN' : Math.max(0, Math.ceil(i === activeIdx ? playerHP : M.hp)))).join(' · ') + (squadHold ? ' · HOLDING' : '');
   const foeEl = document.getElementById('foe');
   if (foeEl) foeEl.textContent = 'HOSTILES ' + enemies.filter(E => E.alive).length + '/' + enemies.length;
-  document.getElementById('cross').style.display = aiming ? 'block' : 'none';
+  document.getElementById('cross').style.display = 'block';
 }
 
 async function load() {
