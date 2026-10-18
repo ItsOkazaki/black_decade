@@ -20,7 +20,7 @@ scene.fog = new THREE.Fog(0xc4ad82, 90, 780);
 const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 1600);
 camera.position.set(4, 2.6, 8);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -319,6 +319,13 @@ function resetEnemy(E) {
   enemySetAnim(E, E_ANIM.walk);
 }
 let enemyFactory = null;   // set inside load(): builds a materialised enemy
+let LOADP = null;          // loading progress callback (set by load())
+function loadStep(pct, label) {
+  const f = document.getElementById('loadfill'), p = document.getElementById('loadpct');
+  if (f) f.style.width = pct + '%';
+  if (p) p.textContent = Math.round(pct) + '%';
+  if (label) { const st = document.getElementById('stats'); if (st) st.textContent = label; }
+}
 const ENEMY_ACTIVATE_DIST = 160;
 function updateEnemyActivation() {
   if (!enemyFactory) return;
@@ -721,9 +728,12 @@ async function buildStaticWorld() {
   if (!PROPS) return;
   const cache = {};
   const models = [...new Set(PROPS.statics.map(s => s.m))];
+  let propsDone = 0;
   await Promise.all(models.map(async m => {
     try { const sc = (await loader.loadAsync(MISDIR + 'props/' + m + '.glb')).scene; sc.updateMatrixWorld(true); cache[m] = sc; }
     catch (e) { console.warn('prop failed:', m); }
+    propsDone++;
+    if (LOADP) LOADP(72 + 10 * propsDone / Math.max(1, models.length), 'Placing the base — ' + m + '…');
   }));
   const groups = new Map();
   const info = {};   // per-model bounds -> collider size
@@ -1690,7 +1700,9 @@ async function load() {
     ENV = await (await fetch(MISDIR + 'units.json')).json();
     try { PROPS = await (await fetch(MISDIR + 'props.json')).json(); } catch (e) { PROPS = null; }
     try { const ml = await (await fetch('missions.json')).json(); const me = ml.find(e => e.id === MIS); if (me) MISNAME = me.name; } catch (e) { /* default name */ }
+    { const mb = document.getElementById('misBriefLine'); if (mb) mb.textContent = MISNAME; }
     applySky();
+    loadStep(4, 'Loading ' + MISNAME + ' — mission data…');
     const zoneList = (PROPS && PROPS.zones && PROPS.zones.length) ? PROPS.zones
       : [{ f: 'Mis1_Zone1', m: 'MIS1_ZONE1' }, { f: 'Mis1_Zone1A', m: 'MIS1_ZONE1A' }, { f: 'Mis1_Zone1_Bridge', m: 'MIS1_ZONE1_BRIDGE' },
          { f: 'Mis1_Zone2', m: 'MIS1_ZONE2' }, { f: 'Mis1_Zone2A', m: 'MIS1_ZONE2A' }, { f: 'Mis1_Zone3', m: 'MIS1_ZONE3' },
@@ -1729,11 +1741,12 @@ async function load() {
       }
       } catch (e) { console.warn('zone failed:', zn.f); }
       zonesDone++;
-      stats.textContent = 'Loading Mission 1 \u2014 zones ' + zonesDone + '/' + zoneList.length + '\u2026';
+      loadStep(4 + 66 * zonesDone / zoneList.length, 'World ' + zonesDone + '/' + zoneList.length + ' — ' + zn.f + '…');
     }));
-    stats.textContent = 'Placing the base — vehicles, bridge, buildings…';
+    LOADP = loadStep;
+    loadStep(72, 'Placing the base — vehicles, bridge, buildings…');
     await buildStaticWorld();
-    stats.textContent = 'Base loaded — kitting out the squad…';
+    loadStep(84, 'Base loaded — kitting out the squad…');
     if (ENV.start) player.pos.set(ENV.start.pos[0], 0, ENV.start.pos[2]);
     player.pos.y = groundY(player.pos.x, player.pos.z);
     buildEnemies();
@@ -1867,6 +1880,7 @@ async function load() {
     for (const name of [...new Set(ROSTER.flatMap(t => [t.beard, t.hat].filter(Boolean)))]) {
       propCache[name] = (await loader.loadAsync('models/props/' + PROP_FILES[name])).scene;
     }
+    loadStep(94, 'Deploying hostiles…');
     const foeTemplate = await loader.loadAsync('models/enemy/IraqInfantry01_Sandy.glb');
     const akTemplate = (await loader.loadAsync('models/enemy/Rifle05_AK47.glb')).scene;
     const texByUrl = {};
@@ -1983,8 +1997,9 @@ async function load() {
 
     setAnim(ANIM.idle);
     window.__playLoaded = true;
-    stats.innerHTML = '✔ Loaded — Mission 1: the real base (' + enemies.length +
-      ' hostiles placed from Mission1.env). Full game inventory on TAB.';
+    loadStep(100, 'Loaded — ' + enemies.length + ' hostiles placed from the mission data.');
+    stats.innerHTML = '✔ Loaded — ' + MISNAME + ' (' + enemies.length +
+      ' hostiles placed from the mission .env). Full game inventory on TAB.';
     buildItemBar();
     GF.load().then(() => {
       setCanvas('startTitle', GF.text(MISNAME, { size: 'L', color: '#f0d9a0', scale: 2.2 }));
@@ -1994,8 +2009,10 @@ async function load() {
     });
     updateHUD();
   } catch (err) {
+    const p = document.getElementById('loadpct');
+    if (p) p.textContent = 'STUCK';
     document.getElementById('err').textContent = '⚠ Load failed: ' + err.message;
-    if (stats) stats.textContent = '⚠ Load failed: ' + err.message;
+    if (stats) stats.textContent = '⚠ Load failed: ' + err.message + ' — refresh the page to retry.';
     console.error(err);
   }
 }
@@ -2014,7 +2031,11 @@ function animate() {
     if (_fpsT > 2) {
       const avg = _fpsAcc / Math.max(1, _fpsN);
       _fpsAcc = 0; _fpsN = 0; _fpsT = 0;
-      if (avg > 0.034 && renderer.getPixelRatio() > 0.85) renderer.setPixelRatio(Math.max(0.85, renderer.getPixelRatio() - 0.25));
+      if (avg > 0.034) {
+        // GPU-bound: shed pixels first, then the shadow pass entirely
+        if (renderer.getPixelRatio() > 0.85) renderer.setPixelRatio(Math.max(0.85, renderer.getPixelRatio() - 0.25));
+        else if (sun.castShadow) { sun.castShadow = false; console.info('adaptive quality: shadows off'); }
+      }
       else if (avg < 0.015 && renderer.getPixelRatio() < 1.5 && !SET.lowGfx) renderer.setPixelRatio(Math.min(1.5, renderer.getPixelRatio() + 0.15));
     }
   }
