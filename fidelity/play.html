@@ -160,6 +160,8 @@
      <b>1–4</b> switch soldier · <b>Q</b>/wheel change weapon-item · <b>SPACE</b> inventory (mouse) ·
      <b>H</b> medi kit · <b>E</b> plant C4 · <b>F</b> follow/hold · <b>G</b> fire order · <b>T</b> new wave · <b>F1</b> objectives · <b>P</b> pause</p>
   <canvas id="deployBtn" class="gtext"></canvas>
+  <div id="loadbar" style="margin:14px auto 0;width:min(430px,80%);height:12px;background:rgba(8,10,6,.9);border:1.5px solid rgba(178,202,150,.8);border-radius:6px;overflow:hidden"><div id="loadfill" style="height:100%;width:0%;background:linear-gradient(180deg,#d6ecab,#79ab4c 55%,#5d8a38);transition:width .25s"></div></div>
+  <div id="loadpct" style="font-size:12px;font-weight:700;letter-spacing:.18em;color:#ffe9a8;margin-top:5px">0%</div>
   <div id="stats" style="font-size:12px;color:#cfe0b8;margin-top:8px">Loading…</div>
 </div></div>
 <script>
@@ -171,6 +173,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=51"></script>
+<script type="module" src="play.js?v=52"></script>
 </body>
 </html>

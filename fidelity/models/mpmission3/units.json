@@ -1,0 +1,538 @@
+{
+ "start": {
+  "name": "Bradley",
+  "model": "HERO01_ARMSTRONG",
+  "pos": [
+   -91.02,
+   9.94,
+   -2.77
+  ],
+  "yaw": 0.0,
+  "weapons": [
+   "US_WPN_M16"
+  ],
+  "gear": [],
+  "inst": "MP_SPAWN"
+ },
+ "enemies": [],
+ "waypoints": [
+  {
+   "id": 0,
+   "name": "Team0_Spawnpnt7",
+   "pos": [
+    -91.02,
+    9.94,
+    -2.77
+   ],
+   "next": 1
+  },
+  {
+   "id": 1,
+   "name": "Team0_Spawnpnt1",
+   "pos": [
+    -104.21,
+    6.07,
+    5.69
+   ],
+   "next": 2
+  },
+  {
+   "id": 2,
+   "name": "Team0_Spawnpnt0",
+   "pos": [
+    -109.03,
+    6.27,
+    -8.95
+   ],
+   "next": 3
+  },
+  {
+   "id": 3,
+   "name": "Team0_Spawnpnt6",
+   "pos": [
+    -110.84,
+    10.27,
+    -39.16
+   ],
+   "next": 4
+  },
+  {
+   "id": 4,
+   "name": "Team0_Spawnpnt5",
+   "pos": [
+    -96.32,
+    10.33,
+    -23.4
+   ],
+   "next": 5
+  },
+  {
+   "id": 5,
+   "name": "Team0_Spawnpnt4",
+   "pos": [
+    -112.27,
+    6.2,
+    -21.08
+   ],
+   "next": 6
+  },
+  {
+   "id": 6,
+   "name": "Team0_Spawnpnt3",
+   "pos": [
+    -105.08,
+    6.25,
+    -30.23
+   ],
+   "next": 7
+  },
+  {
+   "id": 7,
+   "name": "Team0_Spawnpnt2",
+   "pos": [
+    -104.59,
+    6.2,
+    0.36
+   ],
+   "next": -1
+  },
+  {
+   "id": 8,
+   "name": "Team1_Spawnpnt1",
+   "pos": [
+    93.0,
+    6.18,
+    11.16
+   ],
+   "next": -1
+  },
+  {
+   "id": 9,
+   "name": "Team1_Spawnpnt2",
+   "pos": [
+    98.83,
+    6.19,
+    4.63
+   ],
+   "next": -1
+  },
+  {
+   "id": 10,
+   "name": "Team1_Spawnpnt4",
+   "pos": [
+    76.81,
+    11.95,
+    -11.51
+   ],
+   "next": -1
+  },
+  {
+   "id": 11,
+   "name": "Team1_Spawnpnt7",
+   "pos": [
+    77.05,
+    11.95,
+    7.95
+   ],
+   "next": -1
+  },
+  {
+   "id": 12,
+   "name": "Team1_Spawnpnt5",
+   "pos": [
+    107.9,
+    6.17,
+    -6.69
+   ],
+   "next": -1
+  },
+  {
+   "id": 13,
+   "name": "Team1_Spawnpnt6",
+   "pos": [
+    103.42,
+    6.12,
+    -8.07
+   ],
+   "next": -1
+  },
+  {
+   "id": 14,
+   "name": "Team1_Spawnpnt0",
+   "pos": [
+    104.64,
+    10.29,
+    15.96
+   ],
+   "next": -1
+  },
+  {
+   "id": 15,
+   "name": "Team1_Spawnpnt3",
+   "pos": [
+    95.52,
+    6.21,
+    -21.49
+   ],
+   "next": -1
+  },
+  {
+   "id": 16,
+   "name": "VIP_OBJECTIVE_W0",
+   "pos": [
+    102.28,
+    33.32,
+    5.48
+   ],
+   "next": 17
+  },
+  {
+   "id": 17,
+   "name": "VIP_OBJECTIVE_W1",
+   "pos": [
+    177.6,
+    43.18,
+    4.86
+   ],
+   "next": 24
+  },
+  {
+   "id": 18,
+   "name": "WEAPONSPAWN_POINT0",
+   "pos": [
+    24.19,
+    6.46,
+    -34.62
+   ],
+   "next": -1
+  },
+  {
+   "id": 19,
+   "name": "WEAPONSPAWN_POINT1",
+   "pos": [
+    -21.14,
+    1.19,
+    44.09
+   ],
+   "next": -1
+  },
+  {
+   "id": 20,
+   "name": "WEAPONSPAWN_POINT2",
+   "pos": [
+    68.19,
+    12.22,
+    -4.56
+   ],
+   "next": -1
+  },
+  {
+   "id": 21,
+   "name": "WEAPONSPAWN_POINT3",
+   "pos": [
+    -86.03,
+    10.46,
+    -9.54
+   ],
+   "next": -1
+  },
+  {
+   "id": 22,
+   "name": "WEAPONSPAWN_POINT4",
+   "pos": [
+    -11.58,
+    6.69,
+    -4.51
+   ],
+   "next": -1
+  },
+  {
+   "id": 23,
+   "name": "RECOVERY_OBJECTIVE_POS",
+   "pos": [
+    -15.02,
+    6.87,
+    -5.61
+   ],
+   "next": -1
+  },
+  {
+   "id": 24,
+   "name": "HELI_COMES_IN",
+   "pos": [
+    118.39,
+    40.66,
+    -5.01
+   ],
+   "next": 25
+  },
+  {
+   "id": 25,
+   "name": "HELI_WAIT_POINT",
+   "pos": [
+    97.69,
+    16.06,
+    -5.2
+   ],
+   "next": -1
+  },
+  {
+   "id": 26,
+   "name": "C4_SPAWN_0",
+   "pos": [
+    97.01,
+    6.21,
+    -4.61
+   ],
+   "next": 27
+  },
+  {
+   "id": 27,
+   "name": "C4_SPAWN_1",
+   "pos": [
+    -88.64,
+    10.32,
+    -17.97
+   ],
+   "next": -1
+  },
+  {
+   "id": 28,
+   "name": "LW_SPAWN_0",
+   "pos": [
+    -68.26,
+    5.91,
+    0.72
+   ],
+   "next": 29
+  },
+  {
+   "id": 29,
+   "name": "LW_SPAWN_1",
+   "pos": [
+    -102.51,
+    15.49,
+    36.19
+   ],
+   "next": 30
+  },
+  {
+   "id": 30,
+   "name": "LW_SPAWN_2",
+   "pos": [
+    -47.65,
+    5.39,
+    27.85
+   ],
+   "next": 31
+  },
+  {
+   "id": 31,
+   "name": "LW_SPAWN_3",
+   "pos": [
+    -68.35,
+    6.03,
+    -21.27
+   ],
+   "next": 32
+  },
+  {
+   "id": 32,
+   "name": "LW_SPAWN_4",
+   "pos": [
+    -89.23,
+    10.32,
+    -27.31
+   ],
+   "next": 33
+  },
+  {
+   "id": 33,
+   "name": "LW_SPAWN_5",
+   "pos": [
+    -116.01,
+    9.77,
+    -30.84
+   ],
+   "next": -1
+  },
+  {
+   "id": 34,
+   "name": "WEAPONSPAWN_POINT5",
+   "pos": [
+    -9.63,
+    7.0,
+    -2.44
+   ],
+   "next": -1
+  },
+  {
+   "id": 35,
+   "name": "WEAPONSPAWN_POINT6",
+   "pos": [
+    -26.19,
+    1.43,
+    -5.71
+   ],
+   "next": -1
+  },
+  {
+   "id": 36,
+   "name": "ROCKET_1_SPAWN",
+   "pos": [
+    97.02,
+    6.35,
+    -5.82
+   ],
+   "next": -1
+  },
+  {
+   "id": 37,
+   "name": "WAITING_ROOM",
+   "pos": [
+    -5.76,
+    -12.0,
+    -12.58
+   ],
+   "next": -1
+  },
+  {
+   "id": 38,
+   "name": "DM_Spawn_1",
+   "pos": [
+    117.16,
+    17.28,
+    -47.57
+   ],
+   "next": -1
+  },
+  {
+   "id": 39,
+   "name": "DM_Spawn_2",
+   "pos": [
+    107.83,
+    6.16,
+    -7.79
+   ],
+   "next": -1
+  },
+  {
+   "id": 40,
+   "name": "DM_Spawn_3",
+   "pos": [
+    104.51,
+    10.3,
+    17.9
+   ],
+   "next": -1
+  },
+  {
+   "id": 41,
+   "name": "DM_Spawn_4",
+   "pos": [
+    41.27,
+    6.19,
+    43.8
+   ],
+   "next": -1
+  },
+  {
+   "id": 42,
+   "name": "DM_Spawn_5",
+   "pos": [
+    44.08,
+    6.42,
+    -55.18
+   ],
+   "next": -1
+  },
+  {
+   "id": 43,
+   "name": "DM_Spawn_6",
+   "pos": [
+    -103.06,
+    15.49,
+    36.04
+   ],
+   "next": -1
+  },
+  {
+   "id": 44,
+   "name": "DM_Spawn_7",
+   "pos": [
+    -105.37,
+    6.01,
+    10.13
+   ],
+   "next": -1
+  },
+  {
+   "id": 45,
+   "name": "DM_Spawn_8",
+   "pos": [
+    -74.05,
+    6.27,
+    -42.24
+   ],
+   "next": -1
+  },
+  {
+   "id": 46,
+   "name": "DM_Spawn_9",
+   "pos": [
+    -15.91,
+    0.24,
+    -53.76
+   ],
+   "next": -1
+  },
+  {
+   "id": 47,
+   "name": "DM_Spawn_10",
+   "pos": [
+    -13.21,
+    0.08,
+    42.62
+   ],
+   "next": -1
+  }
+ ],
+ "triggers": [
+  {
+   "name": "ALPHA_TEAM_START",
+   "pos": [
+    104.68,
+    6.18,
+    -1.6
+   ],
+   "r": 4.0
+  },
+  {
+   "name": "TEAM0_AMMO_RESUPPLY_POINT",
+   "pos": [
+    97.41,
+    6.17,
+    -5.19
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "BETA_TEAM_START",
+   "pos": [
+    -107.05,
+    6.25,
+    -7.29
+   ],
+   "r": 4.0
+  },
+  {
+   "name": "TEAM1_AMMO_RESUPPLY_POINT",
+   "pos": [
+    -88.51,
+    10.32,
+    -17.98
+   ],
+   "r": 0.0
+  }
+ ]
+}

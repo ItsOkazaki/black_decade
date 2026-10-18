@@ -1,0 +1,677 @@
+{
+ "start": {
+  "name": "Bradley",
+  "model": "HERO01_ARMSTRONG",
+  "pos": [
+   19.3,
+   2.99,
+   6.77
+  ],
+  "yaw": 0.0,
+  "weapons": [
+   "US_WPN_M16"
+  ],
+  "gear": [],
+  "inst": "MP_SPAWN"
+ },
+ "enemies": [],
+ "waypoints": [
+  {
+   "id": 0,
+   "name": "US_Guard_HQ_Patrol_WP01",
+   "pos": [
+    19.3,
+    2.99,
+    6.77
+   ],
+   "next": 1
+  },
+  {
+   "id": 1,
+   "name": "US_Guard_HQ_Patrol_WP02",
+   "pos": [
+    19.95,
+    2.99,
+    22.27
+   ],
+   "next": 0
+  },
+  {
+   "id": 2,
+   "name": "A10_Tankbuster2_WP01",
+   "pos": [
+    268.63,
+    4.79,
+    -75.59
+   ],
+   "next": 3
+  },
+  {
+   "id": 3,
+   "name": "A10_Tankbuster2_WP02",
+   "pos": [
+    376.73,
+    24.62,
+    -147.98
+   ],
+   "next": -1
+  },
+  {
+   "id": 4,
+   "name": "A10_Tankbuster1_WP01",
+   "pos": [
+    314.31,
+    11.84,
+    -143.86
+   ],
+   "next": 5
+  },
+  {
+   "id": 5,
+   "name": "A10_Tankbuster1_WP02",
+   "pos": [
+    294.31,
+    8.79,
+    -127.9
+   ],
+   "next": 6
+  },
+  {
+   "id": 6,
+   "name": "A10_Tankbuster1_WP03",
+   "pos": [
+    228.9,
+    26.66,
+    117.99
+   ],
+   "next": -1
+  },
+  {
+   "id": 7,
+   "name": "M1_Abrams_drone2_WP01",
+   "pos": [
+    287.21,
+    -9.45,
+    -63.04
+   ],
+   "next": 8
+  },
+  {
+   "id": 8,
+   "name": "M1_Abrams_drone2_WP02",
+   "pos": [
+    283.72,
+    -12.35,
+    -84.89
+   ],
+   "next": 32
+  },
+  {
+   "id": 9,
+   "name": "M1_Abrams_drone1_WP01",
+   "pos": [
+    108.85,
+    -2.01,
+    -3.94
+   ],
+   "next": -1
+  },
+  {
+   "id": 10,
+   "name": "Blackhawk_WP01",
+   "pos": [
+    95.5,
+    18.9,
+    -110.4
+   ],
+   "next": 12
+  },
+  {
+   "id": 11,
+   "name": "Blackhawk_WP03",
+   "pos": [
+    221.03,
+    14.5,
+    -20.93
+   ],
+   "next": -1
+  },
+  {
+   "id": 12,
+   "name": "Blackhawk_WP02",
+   "pos": [
+    197.0,
+    14.5,
+    -97.5
+   ],
+   "next": 11
+  },
+  {
+   "id": 13,
+   "name": "US_Guard_Marching1_WP01",
+   "pos": [
+    40.97,
+    -0.01,
+    18.78
+   ],
+   "next": 14
+  },
+  {
+   "id": 14,
+   "name": "US_Guards_Marching_WP02",
+   "pos": [
+    27.94,
+    -0.01,
+    20.73
+   ],
+   "next": 15
+  },
+  {
+   "id": 15,
+   "name": "US_Guards_Marching_WP03",
+   "pos": [
+    27.72,
+    -0.0,
+    32.61
+   ],
+   "next": 16
+  },
+  {
+   "id": 16,
+   "name": "US_Guards_Marching_WP04",
+   "pos": [
+    57.08,
+    -0.0,
+    32.67
+   ],
+   "next": -1
+  },
+  {
+   "id": 17,
+   "name": "M1_Abrams_drone3_WP01",
+   "pos": [
+    283.5,
+    -9.25,
+    -61.71
+   ],
+   "next": 18
+  },
+  {
+   "id": 18,
+   "name": "M1_Abrams_drone3_WP02",
+   "pos": [
+    287.72,
+    -13.53,
+    -85.82
+   ],
+   "next": 19
+  },
+  {
+   "id": 19,
+   "name": "M1_Abrams_drone3_WP03",
+   "pos": [
+    287.65,
+    -13.53,
+    -101.19
+   ],
+   "next": -1
+  },
+  {
+   "id": 20,
+   "name": "US_Guard_Marching2_WP04",
+   "pos": [
+    55.83,
+    -0.0,
+    30.85
+   ],
+   "next": -1
+  },
+  {
+   "id": 21,
+   "name": "US_Guard_Marching4_WP04",
+   "pos": [
+    54.04,
+    -0.0,
+    29.55
+   ],
+   "next": -1
+  },
+  {
+   "id": 22,
+   "name": "US_Guard_Marching3_WP04",
+   "pos": [
+    55.45,
+    -0.0,
+    32.63
+   ],
+   "next": -1
+  },
+  {
+   "id": 23,
+   "name": "US_Guard_Marching2_WP01",
+   "pos": [
+    43.49,
+    -0.01,
+    18.66
+   ],
+   "next": 26
+  },
+  {
+   "id": 24,
+   "name": "US_Guard_Marching3_WP01",
+   "pos": [
+    40.97,
+    -0.01,
+    16.33
+   ],
+   "next": 28
+  },
+  {
+   "id": 25,
+   "name": "US_Guard_Marching4_WP01",
+   "pos": [
+    43.38,
+    -0.01,
+    16.27
+   ],
+   "next": 27
+  },
+  {
+   "id": 26,
+   "name": "US_Guard_Marching2_WP02",
+   "pos": [
+    30.02,
+    -0.01,
+    20.7
+   ],
+   "next": 30
+  },
+  {
+   "id": 27,
+   "name": "US_Guard_Marching4_WP02",
+   "pos": [
+    29.85,
+    -0.01,
+    18.45
+   ],
+   "next": 31
+  },
+  {
+   "id": 28,
+   "name": "US_Guard_Marching3_WP02",
+   "pos": [
+    27.86,
+    -0.01,
+    19.0
+   ],
+   "next": 29
+  },
+  {
+   "id": 29,
+   "name": "US_Guard_Marching3_WP03",
+   "pos": [
+    27.71,
+    -0.0,
+    30.78
+   ],
+   "next": 22
+  },
+  {
+   "id": 30,
+   "name": "US_Guard_Marching2_WP03",
+   "pos": [
+    29.26,
+    -0.0,
+    32.45
+   ],
+   "next": 20
+  },
+  {
+   "id": 31,
+   "name": "US_Guard_Marching4_WP03",
+   "pos": [
+    29.36,
+    -0.0,
+    30.77
+   ],
+   "next": 21
+  },
+  {
+   "id": 32,
+   "name": "M1_Abrams_drone2_WP03",
+   "pos": [
+    282.95,
+    -14.24,
+    -110.61
+   ],
+   "next": -1
+  },
+  {
+   "id": 33,
+   "name": "M1_Abrams_drone1_WP02",
+   "pos": [
+    119.46,
+    -2.01,
+    -3.94
+   ],
+   "next": -1
+  },
+  {
+   "id": 34,
+   "name": "TELEPORT_AIRSTRIKE",
+   "pos": [
+    238.47,
+    -4.5,
+    -99.81
+   ],
+   "next": -1
+  },
+  {
+   "id": 35,
+   "name": "MS_BOOTH",
+   "pos": [
+    76.28,
+    -0.01,
+    -12.37
+   ],
+   "next": 36
+  },
+  {
+   "id": 36,
+   "name": "1",
+   "pos": [
+    75.89,
+    -0.01,
+    -17.92
+   ],
+   "next": 37
+  },
+  {
+   "id": 37,
+   "name": "2",
+   "pos": [
+    78.51,
+    -0.01,
+    -20.28
+   ],
+   "next": -1
+  },
+  {
+   "id": 38,
+   "name": "TELEPORT_HUMVEE",
+   "pos": [
+    76.53,
+    -0.01,
+    -44.2
+   ],
+   "next": -1
+  },
+  {
+   "id": 39,
+   "name": "MS_JOHNSON_1",
+   "pos": [
+    17.01,
+    -0.01,
+    -7.65
+   ],
+   "next": 40
+  },
+  {
+   "id": 40,
+   "name": "MS_JOHNSON_MOUNTLADDER",
+   "pos": [
+    13.96,
+    -0.03,
+    -10.53
+   ],
+   "next": -1
+  },
+  {
+   "id": 41,
+   "name": "HUMVEE_SLOW_1",
+   "pos": [
+    176.48,
+    -5.61,
+    -102.2
+   ],
+   "next": 42
+  },
+  {
+   "id": 42,
+   "name": "HUMVEE_SLOW_2",
+   "pos": [
+    188.26,
+    -4.48,
+    -102.0
+   ],
+   "next": 43
+  },
+  {
+   "id": 43,
+   "name": "HUMVEE_SLOW_STOP",
+   "pos": [
+    202.76,
+    -4.47,
+    -102.15
+   ],
+   "next": -1
+  },
+  {
+   "id": 44,
+   "name": "3",
+   "pos": [
+    29.96,
+    -0.01,
+    26.1
+   ],
+   "next": 45
+  },
+  {
+   "id": 45,
+   "name": "4",
+   "pos": [
+    30.02,
+    -0.01,
+    12.33
+   ],
+   "next": 44
+  },
+  {
+   "id": 46,
+   "name": "5",
+   "pos": [
+    57.06,
+    -0.01,
+    3.84
+   ],
+   "next": 47
+  },
+  {
+   "id": 47,
+   "name": "6",
+   "pos": [
+    63.61,
+    -0.01,
+    4.57
+   ],
+   "next": 48
+  },
+  {
+   "id": 48,
+   "name": "7",
+   "pos": [
+    66.73,
+    -0.01,
+    3.26
+   ],
+   "next": 49
+  },
+  {
+   "id": 49,
+   "name": "8",
+   "pos": [
+    63.39,
+    -0.01,
+    4.58
+   ],
+   "next": 50
+  },
+  {
+   "id": 50,
+   "name": "9",
+   "pos": [
+    57.2,
+    -0.01,
+    3.86
+   ],
+   "next": 51
+  },
+  {
+   "id": 51,
+   "name": "10",
+   "pos": [
+    53.37,
+    -0.01,
+    1.23
+   ],
+   "next": 46
+  }
+ ],
+ "triggers": [
+  {
+   "name": "TRIGGER2",
+   "pos": [
+    28.0,
+    0.9,
+    -12.0
+   ],
+   "r": 2.0
+  },
+  {
+   "name": "TRIGGER6",
+   "pos": [
+    164.56,
+    -2.04,
+    -83.81
+   ],
+   "r": 20.0
+  },
+  {
+   "name": "VEHICLE_02_TRIGGER",
+   "pos": [
+    200.77,
+    -4.47,
+    -102.23
+   ],
+   "r": 15.0
+  },
+  {
+   "name": "TRIGGER9",
+   "pos": [
+    239.6,
+    -4.5,
+    -102.21
+   ],
+   "r": 8.0
+  },
+  {
+   "name": "MS_BOOTH",
+   "pos": [
+    75.85,
+    -0.01,
+    -22.95
+   ],
+   "r": 2.0
+  },
+  {
+   "name": "VEHICLE_01_TRIGGER",
+   "pos": [
+    89.16,
+    -1.98,
+    -73.03
+   ],
+   "r": 10.0
+  },
+  {
+   "name": "TAKE_THE_LAW",
+   "pos": [
+    75.56,
+    0.78,
+    -16.87
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "TRIGGER3",
+   "pos": [
+    75.83,
+    -0.01,
+    -8.35
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "TRIGGER0",
+   "pos": [
+    28.29,
+    0.09,
+    -9.26
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "MS_BOOTH_DISMISSED",
+   "pos": [
+    75.76,
+    -0.75,
+    -18.13
+   ],
+   "r": 2.0
+  },
+  {
+   "name": "VIEWPORT",
+   "pos": [
+    240.72,
+    -4.5,
+    -101.9
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "HUMVEE_SLOW_TRIGGER",
+   "pos": [
+    202.9,
+    -5.38,
+    -102.21
+   ],
+   "r": 0.0
+  },
+  {
+   "name": "OPEN_DOORS",
+   "pos": [
+    47.92,
+    -0.01,
+    -4.01
+   ],
+   "r": 5.0
+  },
+  {
+   "name": "OPEN_DOORS2",
+   "pos": [
+    71.15,
+    -0.01,
+    -3.88
+   ],
+   "r": 5.0
+  },
+  {
+   "name": "FIRST_DOOR",
+   "pos": [
+    27.99,
+    -0.01,
+    -1.11
+   ],
+   "r": 5.0
+  }
+ ]
+}

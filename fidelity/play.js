@@ -320,11 +320,23 @@ function resetEnemy(E) {
 }
 let enemyFactory = null;   // set inside load(): builds a materialised enemy
 let LOADP = null;          // loading progress callback (set by load())
+let _loadBeat = null;
+function startLoadHeartbeat() {
+  const t0 = performance.now();
+  const beat = () => {
+    const st = document.getElementById('stats');
+    if (!st) return;
+    st.dataset.base = st.dataset.base || st.textContent;
+    st.textContent = st.dataset.base + '  ·  ' + Math.round((performance.now() - t0) / 1000) + 's';
+  };
+  _loadBeat = setInterval(beat, 500);
+}
+function loadNote(label) { const st = document.getElementById('stats'); if (st) { st.dataset.base = label; st.textContent = label; } }
 function loadStep(pct, label) {
   const f = document.getElementById('loadfill'), p = document.getElementById('loadpct');
   if (f) f.style.width = pct + '%';
   if (p) p.textContent = Math.round(pct) + '%';
-  if (label) { const st = document.getElementById('stats'); if (st) st.textContent = label; }
+  if (label) loadNote(label);
 }
 const ENEMY_ACTIVATE_DIST = 160;
 function updateEnemyActivation() {
@@ -1335,7 +1347,7 @@ function startCutscene() {
 function endCutscene() { if (!cutscene) return; cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); }
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', () => {
-  if (!window.__playLoaded) { const st = document.getElementById('stats'); if (st) st.textContent = 'STILL LOADING — ONE MOMENT…'; return; }
+  if (!window.__playLoaded) { const st = document.getElementById('stats'); const pc = document.getElementById('loadpct'); if (st) st.textContent = 'STILL LOADING' + (pc ? ' — ' + pc.textContent : '') + ' — ONE MOMENT…'; return; }
   if (playerHP <= 0 || missionDone) {
     playerHP = 100; missionDone = false; objIdx = 0; kills = 0;
     resetEnemies(true); resetSquadToStart(); setObjectiveText();
@@ -1696,7 +1708,8 @@ function updateHUD() {
 async function load() {
   const stats = document.getElementById('stats');
   try {
-    stats.textContent = 'Loading ' + MISNAME + ' — the real base…';
+    startLoadHeartbeat();
+    loadNote('Loading ' + MISNAME + ' — the real base…');
     ENV = await (await fetch(MISDIR + 'units.json')).json();
     try { PROPS = await (await fetch(MISDIR + 'props.json')).json(); } catch (e) { PROPS = null; }
     try { const ml = await (await fetch('missions.json')).json(); const me = ml.find(e => e.id === MIS); if (me) MISNAME = me.name; } catch (e) { /* default name */ }
@@ -1997,6 +2010,7 @@ async function load() {
 
     setAnim(ANIM.idle);
     window.__playLoaded = true;
+    if (_loadBeat) { clearInterval(_loadBeat); _loadBeat = null; }
     loadStep(100, 'Loaded — ' + enemies.length + ' hostiles placed from the mission data.');
     stats.innerHTML = '✔ Loaded — ' + MISNAME + ' (' + enemies.length +
       ' hostiles placed from the mission .env). Full game inventory on TAB.';
@@ -2009,6 +2023,7 @@ async function load() {
     });
     updateHUD();
   } catch (err) {
+    if (_loadBeat) { clearInterval(_loadBeat); _loadBeat = null; }
     const p = document.getElementById('loadpct');
     if (p) p.textContent = 'STUCK';
     document.getElementById('err').textContent = '⚠ Load failed: ' + err.message;

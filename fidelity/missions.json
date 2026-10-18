@@ -58,5 +58,33 @@
  {
   "id": "mission12b",
   "name": "MISSION 12B \u2014 Lights Out"
+ },
+ {
+  "id": "mpmission2",
+  "name": "MP MISSION 2 \u2014 BUNKER"
+ },
+ {
+  "id": "mpmission3",
+  "name": "MP MISSION 3"
+ },
+ {
+  "id": "mpmission4",
+  "name": "MP MISSION 4 \u2014 HOUSE"
+ },
+ {
+  "id": "mpmission5",
+  "name": "MP MISSION 5 \u2014 OFFICE"
+ },
+ {
+  "id": "mpmission6",
+  "name": "MP MISSION 6"
+ },
+ {
+  "id": "training2",
+  "name": "TRAINING 2"
+ },
+ {
+  "id": "training3",
+  "name": "TRAINING 3"
  }
 ]
