@@ -38,6 +38,8 @@ sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.camera.left = -30; sun.shadow.camera.right = 30;
 sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30;
 sun.shadow.camera.far = 120;
+sun.shadow.bias = -0.0004;
+sun.shadow.normalBias = 0.03;   // shadows sit on their own floor (DesertStormFix notes the OG bleed-through)
 scene.add(sun);
 scene.add(sun.target);
 const fill = new THREE.DirectionalLight(0xbcd2ff, 0.35);
@@ -1806,6 +1808,7 @@ addEventListener('keydown', (e) => {
   keys.add(e.code);
   if (e.code === 'KeyC' && playing) targetStanceIdx = targetStanceIdx === 1 ? 0 : 1;
   if (e.code === 'KeyX' && playing) targetStanceIdx = targetStanceIdx === 2 ? 0 : 2;
+  if (e.code === 'F11') { e.preventDefault(); const el = document.getElementById('perf'); if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
   if (e.code === 'KeyR' && playing) startReload();
 
   if (e.code.startsWith('Digit') && playing) {
@@ -2149,8 +2152,8 @@ function updateHUD() {
     const s = M && M.inv ? M.inv[M.held] : null;
     const def = s ? (s.kind === 'gun' ? BD.WEAPONS[s.key] : BD.ITEMS[s.key]) : WPN;
     mt.textContent = (def.label || '') + (s && (s.key === 'M16A2' || s.key === 'SAW') ? ' · ' + player.fireMode : '')
-      + (s && s.kind === 'gun' && !BD.WEAPONS[s.key].rocket ? ' · RES ' + (s.reserve || 0) : '')
-      + (s && s.key === 'RPG7' ? ' · RCK ' + (s.reserve || 0) : '')
+      + (s && s.kind === 'gun' && !BD.WEAPONS[s.key].rocket ? ' · ' + Math.floor((s.reserve || 0) / Math.max(1, def.mag || 1)) + ' SPARE MAG' + (Math.floor((s.reserve || 0) / Math.max(1, def.mag || 1)) === 1 ? '' : 'S') : '')
+      + (s && s.key === 'RPG7' ? ' · ' + (s.reserve || 0) + ' RCK' : '')
       + (player.reloading ? ' · RELOADING' : '');
     const wi = document.querySelector('#wpnbox .wicon');
     if (wi) { const srcI = BD.ICON(def.icon); if (wi.dataset.s !== srcI) { wi.dataset.s = srcI; wi.src = srcI; } }
@@ -2537,8 +2540,18 @@ load();
 // ---- main loop ----
 const clock = new THREE.Clock();
 let _fpsAcc = 0, _fpsN = 0, _fpsT = 0;
+const _perf = { n: 0, last: 0, worst: 0 };
 function animate() {
   requestAnimationFrame(animate);
+  { const el = document.getElementById('perf');
+    if (el && el.style.display !== 'none') {
+      _perf.n++;
+      const nowMs = performance.now();
+      if (_perf.last && nowMs - _perf.last >= 500) {
+        el.textContent = 'FPS ' + Math.round(_perf.n * 1000 / (nowMs - _perf.last)) + ' · ' + (1000 / Math.max(1, _perf.n)).toFixed(1) + ' MS/FRAME (WALL)';
+        _perf.n = 0; _perf.last = nowMs;
+      } else if (!_perf.last) _perf.last = nowMs;
+    } }
   const rawDt = clock.getDelta();
   const dt = Math.min(rawDt, 0.05);
   { // adaptive quality: shed pixels before shedding frames
