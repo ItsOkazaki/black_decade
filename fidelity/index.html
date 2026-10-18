@@ -232,5 +232,7 @@
     draw($('loadoutTitle'), 'SQUAD LOADOUT', '#ffe14d', 1.5);
   });
 </script>
+<audio id="menumusic" src="sounds/music/menu.wav" loop preload="auto"></audio>
+<script>(function(){var a=document.getElementById("menumusic");if(!a)return;a.volume=.5;function kick(){a.play().catch(function(){});removeEventListener("pointerdown",kick);removeEventListener("keydown",kick);}addEventListener("pointerdown",kick);addEventListener("keydown",kick);})();</script>
 </body>
 </html>

@@ -134,6 +134,9 @@
 </div></div></div>
 <div id="hud" style="display:none"><div id="ammo"></div><div id="stance"></div><div id="hp"></div><div id="foe"></div><div id="squad"></div></div>
 <div id="err"></div>
+<div id="barTop" style="position:fixed;left:0;right:0;top:0;height:9vh;background:#000;z-index:30;display:none"></div>
+<div id="barBot" style="position:fixed;left:0;right:0;bottom:0;height:9vh;background:#000;z-index:30;display:none"></div>
+<div id="csub" style="position:fixed;left:50%;transform:translateX(-50%);bottom:11vh;z-index:31;max-width:72%;text-align:center;font:600 17px/1.5 'Segoe UI',Arial,sans-serif;color:#fff;text-shadow:0 2px 6px #000;display:none"></div>
 <a class="menulink" href="index.html" style="position:fixed;top:10px;left:10px;z-index:9">⟵ BACK</a>
 <div id="start"><div class="shade">
   <div style="text-align:left;margin-bottom:8px"><a class="menulink" href="index.html" onclick="event.stopPropagation()">⟵ BACK</a></div>
@@ -173,6 +176,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=52"></script>
+<script type="module" src="play.js?v=53"></script>
 </body>
 </html>

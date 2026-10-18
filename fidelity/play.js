@@ -1329,22 +1329,61 @@ let aimT = 0; // time spent raising into the aim pose; first shot waits for it
 
 const startEl = document.getElementById('start');
 let cutscene = null;
-function startCutscene() {
-  // mission-brief cutscene: fly the four objectives in order (game briefing style)
-  const V = (v, dx, dy, dz) => new THREE.Vector3(v.x + dx, groundYCached(v.x + dx, v.z + dz) + dy, v.z + dz);
-  const L = (v, dy) => new THREE.Vector3(v.x, groundYCached(v.x, v.z) + dy, v.z);
-  const lz = OBJ[3] ? OBJ[3].pos : player.pos;
-  const B = (from, to, look, title, sub, dur) => ({ from, to, look, title, sub, dur });
-  const beats = [
-    B(V(player.pos, 30, 22, 30), V(player.pos, 13, 8, 13), L(player.pos, 1.2), 'MISSION 1 — RESCUE', 'NORTHERN ALGERIA · 1994 — YOUR ORDERS, IN ORDER', 4),
-    B(V(prisonPos, 16, 8, 12), V(prisonPos, 8, 3.5, 6), L(prisonPos, 1.5), '1. RESCUE ZIANI', 'HELD IN THE HUT N.E. OF THE BRIDGE — GET HIM OUT ALIVE', 4.2),
-    B(V(c4Pos, 12, 7, 10), V(c4Pos, 6, 3, 5), L(c4Pos, 1.2), '2. RECOVER THE C4', 'THE GUARDS TOOK THE EXPLOSIVES — TAKE THEM BACK', 3.8),
-    B(V(bridgePos, 34, 18, 30), V(bridgePos, 18, 10, 14), L(bridgePos, 4), '3. DESTROY THE BRIDGE', 'PLANT THE C4 ON THE CENTRAL STRUTS (E AT THE BRIDGE)', 4.2),
-    B(V(lz, 24, 14, 24), V(player.pos, 6, 3, 6), L(player.pos, 1.2), '4. EXTRACTION', 'BRING ZIANI BACK TO THE LZ — GOOD HUNTING', 3.8),
-  ];
-  cutscene = { t: 0, beats, idx: -1, dur: beats.reduce((s, b) => s + b.dur, 0) };
+const M1_SUBS = [
+  'Get that C4 rigged, quick. If they see us we\'re dead.',
+  'I\'m on it, just another few seconds.',
+  'Fire at will!!',
+  'Roger that Voodoo-3. See you later. Over.',
+  'Good to see you. What kept you?',
+];
+function cutLook(c) {
+  if (c.kind === 'POS' && c.look) return new THREE.Vector3(c.look[0], c.look[1], c.look[2]);
+  if (c.kind === 'OBJ') {
+    const t = (c.targ || '').toUpperCase();
+    if (t.includes('Foley')) return new THREE.Vector3(prisonPos.x, prisonPos.y + 1.5, prisonPos.z);
+    if (t.includes('IRAQ')) { const E = enemies.find(e => e.pos); return E ? new THREE.Vector3(E.pos.x, E.pos.y + 1.5, E.pos.z) : new THREE.Vector3(player.pos.x, player.pos.y + 1.5, player.pos.z); }
+    return new THREE.Vector3(player.pos.x, player.pos.y + 1.5, player.pos.z);
+  }
+  const p = ((c.look || [0, 0])[0]) * Math.PI / 180, y = ((c.look || [0, 0])[1]) * Math.PI / 180;
+  return new THREE.Vector3(c.pos[0] + Math.sin(y) * 12, c.pos[1] + Math.tan(p) * 12 + 1.5, c.pos[2] + Math.cos(y) * 12);
 }
-function endCutscene() { if (!cutscene) return; cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); }
+function startCutscene() {
+  // real cutscenes: the game's own CAMFREE/CAMTARGPOS/CAMTARGOBJ records
+  // (props.cutscenes), played as slow push-ins with letterbox + subtitles.
+  const cams = (PROPS && PROPS.cutscenes) || [];
+  const B = (from, to, look, title, sub, dur) => ({ from, to, look, title, sub, dur });
+  let beats = null;
+  if (cams.length) {
+    const intro = cams.filter(c => /INTRO|S00|SC00|S03/.test(c.name) && c.name !== 'PLAYERVIEW');
+    const use = (intro.length >= 3 ? intro : cams.filter(c => c.name !== 'PLAYERVIEW' && !/DEBUG|TEST/.test(c.name))).slice(0, 6);
+    if (use.length) {
+      beats = use.map((c, i) => {
+        const p = new THREE.Vector3(c.pos[0], c.pos[1], c.pos[2]);
+        const lk = cutLook(c);
+        const dir = lk.clone().sub(p).normalize();
+        return B(p, p.clone().addScaledVector(dir, Math.min(2.5, p.distanceTo(lk) * 0.15)), lk, i === 0 ? MISNAME : '', MIS === 'mission1' ? (M1_SUBS[i] || '') : '', 5);
+      });
+    }
+  }
+  if (!beats) {
+    // fallback: authored objective fly-through
+    const V = (v, dx, dy, dz) => new THREE.Vector3(v.x + dx, groundYCached(v.x + dx, v.z + dz) + dy, v.z + dz);
+    const L = (v, dy) => new THREE.Vector3(v.x, groundYCached(v.x, v.z) + dy, v.z);
+    const lz = OBJ[3] ? OBJ[3].pos : player.pos;
+    beats = [
+      B(V(player.pos, 30, 22, 30), V(player.pos, 13, 8, 13), L(player.pos, 1.2), MISNAME, 'NORTHERN ALGERIA \u00b7 1994 \u2014 YOUR ORDERS, IN ORDER', 4),
+      B(V(prisonPos, 16, 8, 12), V(prisonPos, 8, 3.5, 6), L(prisonPos, 1.5), '1. RESCUE ZIANI', 'HELD IN THE HUT N.E. OF THE BRIDGE \u2014 GET HIM OUT ALIVE', 4.2),
+      B(V(c4Pos, 12, 7, 10), V(c4Pos, 6, 3, 5), L(c4Pos, 1.2), '2. RECOVER THE C4', 'THE GUARDS TOOK THE EXPLOSIVES \u2014 TAKE THEM BACK', 3.8),
+      B(V(bridgePos, 34, 18, 30), V(bridgePos, 18, 10, 14), L(bridgePos, 4), '3. DESTROY THE BRIDGE', 'PLANT THE C4 ON THE CENTRAL STRUTS (E AT THE BRIDGE)', 4.2),
+      B(V(lz, 24, 14, 24), V(player.pos, 6, 3, 6), L(player.pos, 1.2), '4. EXTRACTION', 'BRING ZIANI BACK TO THE LZ \u2014 GOOD HUNTING', 3.8),
+    ];
+  }
+  cutscene = { t: 0, beats, idx: -1, dur: beats.reduce((s, b) => s + b.dur, 0) };
+  const bt = document.getElementById('barTop'), bb = document.getElementById('barBot');
+  if (bt) bt.style.display = 'block';
+  if (bb) bb.style.display = 'block';
+}
+function endCutscene() { if (!cutscene) return; cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', () => {
   if (!window.__playLoaded) { const st = document.getElementById('stats'); const pc = document.getElementById('loadpct'); if (st) st.textContent = 'STILL LOADING' + (pc ? ' — ' + pc.textContent : '') + ' — ONE MOMENT…'; return; }
@@ -2065,7 +2104,7 @@ function animate() {
       if (cutscene.t < acc + B2.dur) { b = B2; bi = i; bt = (cutscene.t - acc) / B2.dur; break; }
       acc += B2.dur;
     }
-    if (bi !== cutscene.idx) { cutscene.idx = bi; showMsg(b.title, b.sub); }
+    if (bi !== cutscene.idx) { cutscene.idx = bi; showMsg(b.title, b.sub); const cs = document.getElementById('csub'); if (cs) { cs.textContent = b.sub || ''; cs.style.display = b.sub ? 'block' : 'none'; } }
     const u = bt * bt * (3 - 2 * bt);
     camera.position.lerpVectors(b.from, b.to, u);
     const cgy = groundYCached(camera.position.x, camera.position.z) + 1.5;
