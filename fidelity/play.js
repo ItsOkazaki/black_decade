@@ -97,12 +97,13 @@ async function addModel(path, x, z, rotY = 0, colR = 0) {
 // aim pitch: rotate the spine bones so the character (and his rifle) really
 // points up/down at the target, on top of the authored aim animation
 function findAimBones(root) {
-  const out = { spine: null, spine2: null, spine3: null };
+  const out = { spine: null, spine2: null, spine3: null, head: null };
   root.traverse(o => {
     const nm = (o.name || '').toUpperCase();
     if (nm === 'BIP01 SPINE1') out.spine = o;
     else if (nm === 'BIP01 SPINE2') out.spine2 = o;
     else if (nm === 'BIP01 SPINE3') out.spine3 = o;
+    else if (nm === 'BIP01 HEAD') out.head = o;
   });
   return out;
 }
@@ -120,6 +121,7 @@ function applyAimPitch(bones, pitchUp) {
   _pitchBone(bones.spine, -p * 0.38);
   _pitchBone(bones.spine2, -p * 0.34);
   _pitchBone(bones.spine3, -p * 0.22);
+  _pitchBone(bones.head, -p * 0.30);   // his head looks up/down the aim too
 }
 const ANIM = {
   idle: 'IDLE_LOOK_AROUND_WITH_GUN', aim: 'UPRIGHT_AIM_RIFLE',
@@ -267,7 +269,42 @@ function playVoice(name, vol = 0.55) {
   try { a.volume = vol * (SET.vol || 1); a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
 }
 // footsteps: short movement samples from the game's shared bank, cycled by distance
-const stepAudio = [1, 2, 3].map(i => { const a = new Audio('sounds/steps/step' + i + '.wav'); a.preload = 'auto'; return a; });
+let _actx = null, _noiseBuf = null;
+function ensureAudio() {
+  if (_actx) { if (_actx.state === 'suspended') _actx.resume().catch(() => {}); return _actx; }
+  try {
+    _actx = new (window.AudioContext || window.webkitAudioContext)();
+    const len = Math.floor(_actx.sampleRate * 0.5);
+    _noiseBuf = _actx.createBuffer(1, len, _actx.sampleRate);
+    const d = _noiseBuf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  } catch (e) { _actx = null; }
+  return _actx;
+}
+function synthStep(speed, stance) {
+  const ctx = ensureAudio(); if (!ctx || !_noiseBuf) return;
+  const t = ctx.currentTime;
+  const vol = Math.min(0.26, 0.045 + speed * 0.04) * (SET.vol || 1);
+  // gravel scuff: short band-passed noise burst, pitch wanders like real steps
+  const src = ctx.createBufferSource(); src.buffer = _noiseBuf;
+  src.playbackRate.value = stance === 'prone' ? 0.5 : 0.85 + Math.random() * 0.3;
+  const bp = ctx.createBiquadFilter(); bp.type = 'bandpass';
+  bp.frequency.value = stance === 'prone' ? 300 : 400 + Math.random() * 280; bp.Q.value = 0.8;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0011, vol), t + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + (stance === 'prone' ? 0.17 : 0.115));
+  src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+  src.start(t, Math.random() * 0.3, 0.22); src.stop(t + 0.22);
+  // heel thump underneath
+  const o = ctx.createOscillator(); o.type = 'sine';
+  o.frequency.setValueAtTime(105, t);
+  o.frequency.exponentialRampToValueAtTime(48, t + 0.09);
+  const og = ctx.createGain();
+  og.gain.setValueAtTime(vol * 0.5, t);
+  og.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+  o.connect(og); og.connect(ctx.destination); o.start(t); o.stop(t + 0.11);
+}
 let _stepAlt = 0, _stepAcc = 0;
 function updateFootsteps(dt, speed) {
   if (!speed || speed <= 0.1) { _stepAcc = 0; return; }
@@ -275,21 +312,21 @@ function updateFootsteps(dt, speed) {
   const stride = player.stance === 'prone' ? 0.85 : player.stance === 'crouch' ? 1.35 : speed > 3 ? 2.6 : 2.0;
   if (_stepAcc < stride) return;
   _stepAcc = 0;
-  const a = stepAudio[_stepAlt++ % stepAudio.length];
-  try { a.volume = Math.min(0.34, 0.09 + speed * 0.05) * (SET.vol || 1); a.playbackRate = 0.92 + Math.random() * 0.16; a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
+  _stepAlt++;
+  synthStep(speed, player.stance);
 }
 // desert ambience: looped filtered wind, started on deploy (user gesture)
 let _ambOn = false;
 function startAmbience() {
   if (_ambOn) return; _ambOn = true;
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = ensureAudio(); if (!ctx) return;
     const len = ctx.sampleRate * 3, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
     let last = 0;
     for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2; }
     const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
     const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420;
-    const g = ctx.createGain(); g.gain.value = 0.05 * (SET.vol || 1);
+    const g = ctx.createGain(); g.gain.value = 0.085 * (SET.vol || 1);
     const lfo = ctx.createOscillator(); lfo.frequency.value = 0.09;
     const lg = ctx.createGain(); lg.gain.value = 0.02;
     lfo.connect(lg); lg.connect(g.gain);
@@ -1467,43 +1504,43 @@ function cutLook(c) {
   return new THREE.Vector3(c.pos[0] + Math.sin(y) * 12, c.pos[1] + Math.tan(p) * 12 + 1.5, c.pos[2] + Math.cos(y) * 12);
 }
 function startCutscene() {
-  // real cutscenes: the game's own CAMFREE/CAMTARGPOS/CAMTARGOBJ records
-  // (props.cutscenes), played as slow push-ins with letterbox + subtitles.
-  const cams = (PROPS && PROPS.cutscenes) || [];
+  // Directed mission-brief cinema, the way the original does it: an
+  // establishing shot on the squad, then each objective IN ORDER with its
+  // title, then back over the squad leader's shoulder. No random cameras.
   const B = (from, to, look, title, sub, dur) => ({ from, to, look, title, sub, dur });
-  let beats = null;
-  if (cams.length) {
-    const intro = cams.filter(c => /INTRO|S00|SC00|S03/.test(c.name) && c.name !== 'PLAYERVIEW');
-    const use = (intro.length >= 3 ? intro : cams.filter(c => c.name !== 'PLAYERVIEW' && !/DEBUG|TEST/.test(c.name))).slice(0, 6);
-    if (use.length) {
-      beats = use.map((c, i) => {
-        const p = new THREE.Vector3(c.pos[0], c.pos[1], c.pos[2]);
-        const lk = cutLook(c);
-        const dir = lk.clone().sub(p).normalize();
-        return B(p, p.clone().addScaledVector(dir, Math.min(2.5, p.distanceTo(lk) * 0.15)), lk, i === 0 ? MISNAME : '', MIS === 'mission1' ? (M1_SUBS[i] || '') : '', 5);
-      });
-    }
+  const V = (v, dx, dy, dz) => { const x = v.x + dx, z = v.z + dz; return new THREE.Vector3(x, Math.max(groundYCached(x, z) + dy, (v.y || 0) + dy), z); };
+  const L = (v, dy) => new THREE.Vector3(v.x, (v.y || groundYCached(v.x, v.z)) + dy, v.z);
+  const beats = [
+    B(V(player.pos, 16, 8, 16), V(player.pos, 8, 3.4, 8), L(player.pos, 1.3), MISNAME,
+      IS_M1 ? 'NORTHERN ALGERIA \u00b7 1994 \u2014 23:00. THEY ARE HOLDING ZIANI PAST THE BRIDGE.' : 'NORTHERN ALGERIA \u00b7 1994', 4.5),
+  ];
+  const objs = OBJ.filter(o => o.pos);
+  objs.forEach((o, i) => {
+    const short = o.text.split('\u2014')[0].trim();
+    beats.push(B(V(o.pos, 14, 7, 14), V(o.pos, 7.5, 3.2, 7.5), L(o.pos, 1.4),
+      (i + 1) + '. ' + short, o.text, 4));
+  });
+  if (!objs.length && enemies.length) {
+    const E = enemies[0];
+    beats.push(B(V(E.pos, 12, 6, 12), V(E.pos, 7, 3, 7), L(E.pos, 1.4), '1. ELIMINATE ALL HOSTILES', 'CLEAR THE THEATRE, THEN REACH THE LZ', 4));
   }
-  if (!beats) {
-    // fallback: authored objective fly-through
-    const V = (v, dx, dy, dz) => new THREE.Vector3(v.x + dx, groundYCached(v.x + dx, v.z + dz) + dy, v.z + dz);
-    const L = (v, dy) => new THREE.Vector3(v.x, groundYCached(v.x, v.z) + dy, v.z);
-    const lz = OBJ[3] ? OBJ[3].pos : player.pos;
-    beats = [
-      B(V(player.pos, 30, 22, 30), V(player.pos, 13, 8, 13), L(player.pos, 1.2), MISNAME, 'NORTHERN ALGERIA \u00b7 1994 \u2014 YOUR ORDERS, IN ORDER', 4),
-      B(V(prisonPos, 16, 8, 12), V(prisonPos, 8, 3.5, 6), L(prisonPos, 1.5), '1. RESCUE ZIANI', 'HELD IN THE HUT N.E. OF THE BRIDGE \u2014 GET HIM OUT ALIVE', 4.2),
-      B(V(c4Pos, 12, 7, 10), V(c4Pos, 6, 3, 5), L(c4Pos, 1.2), '2. RECOVER THE C4', 'THE GUARDS TOOK THE EXPLOSIVES \u2014 TAKE THEM BACK', 3.8),
-      B(V(bridgePos, 34, 18, 30), V(bridgePos, 18, 10, 14), L(bridgePos, 4), '3. DESTROY THE BRIDGE', 'PLANT THE C4 ON THE CENTRAL STRUTS (E AT THE BRIDGE)', 4.2),
-      B(V(lz, 24, 14, 24), V(player.pos, 6, 3, 6), L(player.pos, 1.2), '4. EXTRACTION', 'BRING ZIANI BACK TO THE LZ \u2014 GOOD HUNTING', 3.8),
-    ];
-  }
-  cutscene = { t: 0, beats, idx: -1, dur: beats.reduce((s, b) => s + b.dur, 0) };
+  beats.push(B(V(player.pos, 6, 3, 6), V(player.pos, 3, 1.9, 3), L(player.pos, 1.35), '',
+    'YOUR ORDERS ARE IN \u2014 F1 ANY TIME. GOOD HUNTING.', 3.2));
+  cutscene = { t: 0, beats, idx: -1, dur: beats.reduce((s2, b) => s2 + b.dur, 0) };
+  document.body.classList.add('inCut');   // clean letterbox: HUD hidden until you own the squad
   const bt = document.getElementById('barTop'), bb = document.getElementById('barBot');
   if (bt) bt.style.display = 'block';
   if (bb) bb.style.display = 'block';
+  startGameAudio();
 }
-function endCutscene() { startAmbience(); if (!cutscene) { playing = true; return; } cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
-function safeStartCutscene() { try { startCutscene(); if (!cutscene) endCutscene(); } catch (e) { console.warn('cutscene failed:', e); cutscene = null; playing = true; for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } } }
+function startGameAudio() {
+  try {
+    const gm = document.getElementById('gamemusic');
+    if (gm && gm.paused) { gm.volume = 0.16 * (SET.vol || 1); gm.play().catch(() => {}); }
+  } catch (e) { /* audio unavailable */ }
+}
+function endCutscene() { document.body.classList.remove('inCut'); const _m = document.getElementById('msg'); if (_m) _m.style.opacity = 0; msgT = 0; startGameAudio(); startAmbience(); if (!cutscene) { playing = true; return; } cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } }
+function safeStartCutscene() { try { startCutscene(); if (!cutscene) endCutscene(); } catch (e) { console.warn('cutscene failed:', e); document.body.classList.remove('inCut'); cutscene = null; playing = true; for (const id of ['barTop', 'barBot', 'csub']) { const el = document.getElementById(id); if (el) el.style.display = 'none'; } } }
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', (e) => {
   uiClick();
@@ -1538,7 +1575,10 @@ document.addEventListener('mousemove', (e) => {
   lastMX = e.clientX; lastMY = e.clientY;
   const sens = (aiming || firing) ? 0.55 : 1.0; // finer control while aiming (original had this backwards)
   camYaw -= dx * 0.0026 * sens * SET.sens;
-  camPitch = THREE.MathUtils.clamp(camPitch + (SET.inv ? -dy : dy) * 0.0022 * sens * SET.sens, -1.05, 1.15);
+  { // normal look keeps the original tight range; aiming unlocks full up/down
+    const lim = (aiming || firing) ? [-1.02, 1.12] : [-0.15, 1.0];
+    camPitch = THREE.MathUtils.clamp(camPitch + (SET.inv ? -dy : dy) * 0.0022 * sens * SET.sens, lim[0], lim[1]);
+  }
 });
 renderer.domElement.addEventListener('mousedown', (e) => {
   if (!playing) return;
@@ -1780,7 +1820,7 @@ function updateEnemy(E, dt, now) {
         } else {
           playerHP -= 8 + Math.random() * 6;
           dmgT = 0.45;
-          if (Math.random() < 0.13) playVoice('im_hit', 0.5);   // occasional pain reaction, not every hit
+          if (Math.random() < 0.08) playVoice('im_hit', 0.42);   // rare pain reaction, not a scream track
           if (playerHP <= 0) {
             playerHP = 0;
             playing = false;
@@ -2240,7 +2280,7 @@ async function load() {
     if (_loadBeat) { clearInterval(_loadBeat); _loadBeat = null; }
     loadStep(100, 'Loaded — ' + enemies.length + ' hostiles placed from the mission data.');
     { const dg = document.getElementById('deployGo'); if (dg) dg.style.display = 'block'; }
-    stats.innerHTML = '✔ LOADED — CLICK THE BRIEFING TO DEPLOY (' + enemies.length +
+    stats.innerHTML = '✔ LOADED — CLICK DEPLOY TO BEGIN (' + enemies.length +
       ' hostiles placed from the mission .env). Full game inventory on TAB.';
     buildItemBar();
     GF.load().then(() => {
@@ -2293,7 +2333,7 @@ function animate() {
       if (cutscene.t < acc + B2.dur) { b = B2; bi = i; bt = (cutscene.t - acc) / B2.dur; break; }
       acc += B2.dur;
     }
-    if (bi !== cutscene.idx) { cutscene.idx = bi; showMsg(b.title, b.sub); const cs = document.getElementById('csub'); if (cs) { cs.textContent = b.sub || ''; cs.style.display = b.sub ? 'block' : 'none'; } }
+    if (bi !== cutscene.idx) { cutscene.idx = bi; if (b.title) showMsg(b.title, ''); const cs = document.getElementById('csub'); if (cs) { cs.textContent = b.sub || ''; cs.style.display = b.sub ? 'block' : 'none'; } }   // one subtitle only (bottom), title only (top)
     const u = bt * bt * (3 - 2 * bt);
     camera.position.lerpVectors(b.from, b.to, u);
     const cgy = groundYCached(camera.position.x, camera.position.z) + 1.5;
@@ -2500,7 +2540,7 @@ function animate() {
   // aim pitch: your spine follows the camera pitch; AI spines track their target
   if (heroObj) {
     if (!heroObj.userData.aimBones) heroObj.userData.aimBones = findAimBones(heroObj);
-    applyAimPitch(heroObj.userData.aimBones, -camPitch * (aiming || firing ? 1.0 : 0.55));   // torso pitches with your view ALWAYS, hardest while aiming
+    if (aiming || firing || current === ANIM.aim) applyAimPitch(heroObj.userData.aimBones, -camPitch * 0.95);   // aim pitch shows while AIMING (spine + head), like the original
   }
   enemies.forEach(E => { if (E.mixer) { E.mixer.update(dt); if (E.alive && (E.state === 'engage' || E.aimPitch)) applyAimPitch(E.aimBones, E.aimPitch || 0); } positionHeadGear(E); });
   members.forEach((M, i) => { if (i !== activeIdx && M.mixer) { M.mixer.update(dt); if (M.aimPitch) applyAimPitch(M.aimBones, M.aimPitch); } });
@@ -2540,12 +2580,15 @@ function animate() {
     let cy = player.pos.y + 1.55 + Math.sin(camPitch) * dist;
     cy = Math.max(cy, groundYCached(cx, cz) + 0.45);   // looking up must not bury the camera
     camera.position.lerp(new THREE.Vector3(cx, cy, cz), 1 - Math.pow(0.0001, dt));
-    { // the camera looks where YOU look (pitch included), not at a fixed head height
+    if (aimNow) { // aiming: the camera pitches with your aim so uphill/downhill targets sit under the crosshair
       const fx = -Math.sin(camYaw), fz = -Math.cos(camYaw);
-      const ey = player.pos.y + (aimNow ? 1.42 : 1.38);
-      camera.lookAt(player.pos.x + fx * 12 + rgt.x * (aimNow ? 0.4 : 0),
-                    ey - Math.sin(camPitch) * 12,
-                    player.pos.z + fz * 12 + rgt.z * (aimNow ? 0.4 : 0));
+      camera.lookAt(player.pos.x + fx * 12 + rgt.x * 0.4,
+                    player.pos.y + 1.42 - Math.sin(camPitch) * 12,
+                    player.pos.z + fz * 12 + rgt.z * 0.4);
+    } else {        // normal play: the original camera (fixed head-height look)
+      camera.lookAt(player.pos.x + rgt.x * 0,
+                    player.pos.y + 1.35,
+                    player.pos.z + rgt.z * 0);
     }
   }
 
@@ -2556,14 +2599,18 @@ function animate() {
   if (hawkRotor) hawkRotor.rotation.y += dt * 22;
   cloudLayers.forEach((c, i) => { if (c.material.map) { c.material.map.offset.x += dt * (i ? 0.0016 : 0.0009); c.position.x = camera.position.x; c.position.z = camera.position.z; } });
   const dome = scene.getObjectByName('SKYDOME'); if (dome) dome.position.copy(camera.position);
-  if (a10Obj) { // A-10 flyover (env A10_FLYOVER01): a fast low pass across the valley, then away
-    const T = 26, k = (now % T) / T;
-    if (k < 0.40) {
-      const u = k / 0.40;
-      const ax = -430 + u * 560, az = -730 + u * 560;
+  if (a10Obj) { // A-10 flyover: a single LEVEL pass every ~85 s (fixed altitude, no bobbing)
+    if (a10Obj.userData.alt === undefined) {
+      let mx = 0;
+      for (let i = 0; i <= 20; i++) mx = Math.max(mx, groundYCached(-430 + i * 28, -730 + i * 28));
+      a10Obj.userData.alt = mx + 46;
+    }
+    const T = 85, PASS = 11, k = now % T;
+    if (k < PASS) {
+      const u = k / PASS;
       a10Obj.visible = true;
-      a10Obj.position.set(ax, groundYCached(ax, az) + 42 + Math.sin(u * Math.PI) * 7, az);
-      a10Obj.rotation.set(0, Math.atan2(560, 560) + Math.PI, Math.sin(u * Math.PI * 2) * 0.10);   // nose first, slight bank
+      a10Obj.position.set(-430 + u * 560, a10Obj.userData.alt, -730 + u * 560);
+      a10Obj.rotation.set(0, Math.atan2(560, 560) + Math.PI, 0.06);
     } else a10Obj.visible = false;
   }
   if (impactT > 0) { impactT -= dt; impact.scale.setScalar(1 + (0.12 - impactT) * 8); if (impactT <= 0) impact.visible = false; }
