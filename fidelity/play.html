@@ -60,6 +60,15 @@
   #invSlots .slot img{max-width:100px;max-height:38px}
   #invSlots .slot .nm{position:absolute;left:6px;bottom:3px;font-size:9px;letter-spacing:.08em;color:#e8e4d8;text-shadow:1px 1px 2px #000}
   #invSlots .slot.hov{outline:2px solid #ffe14d;outline-offset:-2px;filter:brightness(1.4)}
+  #invSlots .slot.sel{outline:2.5px solid #ffe14d;outline-offset:-2px;filter:brightness(1.5)}
+  #invSquad{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  #invSquad .mate{display:flex;gap:8px;align-items:center;background:rgba(10,13,7,.55);border:1.5px solid rgba(178,202,150,.55);border-radius:9px;padding:5px 9px 5px 5px;cursor:pointer;min-width:150px}
+  #invSquad .mate:hover{border-color:#ffe14d;filter:brightness(1.25)}
+  #invSquad .mate.self{opacity:.55;cursor:default}
+  #invSquad .mate img{width:34px;height:40px;object-fit:cover;border-radius:3px;border:1px solid #222}
+  #invSquad .mate b{display:block;font-size:11px;letter-spacing:.1em;color:#f0ead8}
+  #invSquad .mate span{font-size:9.5px;letter-spacing:.08em;color:#9db38a}
+  #invHint{margin-top:10px;font-size:11px;letter-spacing:.1em;color:#ffe9a8;min-height:14px;text-align:left}
   #invGear{font-size:11.5px;line-height:1.65;color:#e6ecd8;letter-spacing:.06em}
   /* ---- deploy overlay ---- */
   #start{position:fixed;inset:0;z-index:10;background:#0a0c07 url(textures/ui/defload.png) center/cover no-repeat;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -92,25 +101,28 @@
 <div id="objbox"><img src="textures/ui/gwint/IMAGE_OBJECTIVE.png"><div><canvas id="objtext" class="gtext"></canvas><div id="objsub">MISSION 1 — NORTHERN ALGERIA, 1994</div></div></div>
 <div id="kills"><canvas id="killsCv" class="gtext"></canvas></div>
 <div id="squadbar">
-  <div class="card" id="card0"><div class="ctop"><img class="face" src="textures/portraits/sq1.png"><img class="sticon" id="pi0" src="textures/ui/gwint/IMAGE_ORDER_RADIO.png"></div><div class="cname">BENALI</div><div class="cbar"><div id="pb0" style="width:100%"></div></div><div class="cstate" id="ps0">READY</div></div>
-  <div class="card" id="card1"><div class="ctop"><img class="face" src="textures/portraits/sq2.png"><img class="sticon" id="pi1" src="textures/ui/gwint/IMAGE_FOLLOW.png"></div><div class="cname">CHERIF</div><div class="cbar"><div id="pb1" style="width:100%"></div></div><div class="cstate" id="ps1">READY</div></div>
-  <div class="card" id="card2"><div class="ctop"><img class="face" src="textures/portraits/sq3.png"><img class="sticon" id="pi2" src="textures/ui/gwint/IMAGE_FOLLOW.png"></div><div class="cname">BOUDIAF</div><div class="cbar"><div id="pb2" style="width:100%"></div></div><div class="cstate" id="ps2">READY</div></div>
-  <div class="card" id="card3"><div class="ctop"><img class="face" src="textures/portraits/sq4.png"><img class="sticon" id="pi3" src="textures/ui/gwint/IMAGE_FOLLOW.png"></div><div class="cname">ZIANI</div><div class="cbar"><div id="pb3" style="width:100%"></div></div><div class="cstate" id="ps3">READY</div></div>
+  <div class="card" id="card0"><div class="ctop"><img class="face" src="textures/portraits/sq1.png?v=2"><img class="sticon" id="pi0" src="textures/ui/gwint/IMAGE_ORDER_RADIO.png"></div><div class="cname">BENALI</div><div class="cbar"><div id="pb0" style="width:100%"></div></div><div class="cstate" id="ps0">READY</div></div>
+  <div class="card" id="card1"><div class="ctop"><img class="face" src="textures/portraits/sq2.png?v=2"><img class="sticon" id="pi1" src="textures/ui/gwint/IMAGE_FOLLOW.png"></div><div class="cname">CHERIF</div><div class="cbar"><div id="pb1" style="width:100%"></div></div><div class="cstate" id="ps1">READY</div></div>
+  <div class="card" id="card2"><div class="ctop"><img class="face" src="textures/portraits/sq3.png?v=2"><img class="sticon" id="pi2" src="textures/ui/gwint/IMAGE_FOLLOW.png"></div><div class="cname">BOUDIAF</div><div class="cbar"><div id="pb2" style="width:100%"></div></div><div class="cstate" id="ps2">READY</div></div>
+  <div class="card" id="card3"><div class="ctop"><img class="face" src="textures/portraits/sq4.png?v=2"><img class="sticon" id="pi3" src="textures/ui/gwint/IMAGE_FOLLOW.png"></div><div class="cname">ZIANI</div><div class="cbar"><div id="pb3" style="width:100%"></div></div><div class="cstate" id="ps3">READY</div></div>
 </div>
 <div id="wpnbox"><img class="wicon" src="textures/ui/gwint/IMAGE_WEAPON_M16M203.png"><div id="ammoRow"><span id="magline">M16A2 · <span id="magtext">30</span></span><span id="ammoDigits"></span></div><div id="stars"><img src="textures/ui/gwint/IMAGE_STAR.png"><img src="textures/ui/gwint/IMAGE_STAR.png"><img src="textures/ui/gwint/IMAGE_STAR.png"></div></div>
 <div id="itembar"></div>
 <div id="msg"><canvas id="msgtext" class="gtext"></canvas><div id="msgsub" style="margin-top:6px"></div></div>
 <div id="inv"><div class="sheet"><div class="inner">
   <canvas id="invTitle" class="gtext"></canvas>
+  <div id="invSquad"></div>
   <div id="invSlots"></div>
+  <div id="invHint">CLICK A SLOT, THEN CLICK A SOLDIER ABOVE TO HAND IT OVER · DOUBLE-CLICK A SLOT TO CARRY IT</div>
   <canvas id="invGearTitle" class="gtext"></canvas>
   <div id="invGear"></div>
-  <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.08em;margin:12px 0 0">HOVER + CLICK A SLOT TO SELECT · SPACE OR TAB CLOSES · H = MEDI KIT · E = PLANT C4 AT THE BRIDGE</p>
+  <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.08em;margin:12px 0 0">SPACE OR TAB CLOSES · H = MEDI KIT (NEAREST WOUNDED MAN — REVIVES THE DOWNED) · E = PLANT C4</p>
 </div></div></div>
 <div id="hud" style="display:none"><div id="ammo"></div><div id="stance"></div><div id="hp"></div><div id="foe"></div><div id="squad"></div></div>
 <div id="err"></div>
-<a class="menulink" href="index.html" style="position:fixed;top:10px;left:10px;z-index:9">◀ MAIN MENU</a>
+<a class="menulink" href="index.html" style="position:fixed;top:10px;left:10px;z-index:9">⟵ BACK</a>
 <div id="start"><div class="shade">
+  <div style="text-align:left;margin-bottom:8px"><a class="menulink" href="index.html" onclick="event.stopPropagation()">⟵ BACK</a></div>
   <canvas id="startTitle" class="gtext" style="margin:0 auto"></canvas>
   <p style="letter-spacing:.25em;color:#cfe0b8;font-size:11px;margin:6px 0 2px">MISSION 1 — RESCUE</p>
   <div id="gpswrap">
@@ -145,6 +157,6 @@ window.addEventListener('error', function(e){
 </script>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=47"></script>
+<script type="module" src="play.js?v=48"></script>
 </body>
 </html>

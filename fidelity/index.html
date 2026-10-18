@@ -9,31 +9,38 @@
   /* the game's own DefLoad screen art (Catalog/0115) as the menu backdrop */
   #bg{position:fixed;inset:0;background:url(textures/ui/defload.png) center/cover no-repeat;filter:saturate(.85) brightness(.92)}
   #shade{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%, rgba(5,7,4,.12) 30%, rgba(5,7,4,.55) 100%)}
-  #wrap{position:relative;max-width:880px;margin:0 auto;padding:34px 20px 60px;text-align:center}
   .gtext{display:block;image-rendering:auto}
-  #titleCv{margin:0 auto;filter:drop-shadow(3px 3px 0 rgba(20,30,12,.9))}
-  #subCv{margin:10px auto 0}
-  /* ---- original frontend: translucent olive panel + green pill buttons ---- */
-  #menupanel{margin:26px auto 0;width:min(430px,92vw);background:rgba(88,104,58,.42);border:2px solid rgba(200,215,170,.5);border-radius:20px;padding:16px 18px 14px;box-shadow:0 10px 44px rgba(0,0,0,.5);backdrop-filter:blur(1.5px)}
-  .mbtn{display:block;width:100%;margin:7px 0;padding:8px 0 6px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat,linear-gradient(180deg,#33581a,#203a0e);border:1.5px solid #a8bf8d;border-radius:999px;cursor:pointer;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(0,0,0,.4)}
+  /* ---- frontend windows: one screen at a time, like the original ---- */
+  .screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:3;padding:18px}
+  .screen.open{display:flex}
+  .window{background:rgba(38,54,22,.94);border:2px solid rgba(178,202,150,.8);border-radius:16px;padding:22px 26px;box-shadow:0 10px 44px rgba(0,0,0,.55);max-width:880px;width:min(880px,94vw);max-height:92vh;overflow:auto;text-align:center}
+  .window .ptitle{margin:0 auto}
+  /* main menu: translucent olive panel + green pill buttons, no title art */
+  #menupanel{width:min(430px,92vw);background:rgba(88,104,58,.42);border:2px solid rgba(200,215,170,.5);border-radius:20px;padding:16px 18px 14px;box-shadow:0 10px 44px rgba(0,0,0,.5);backdrop-filter:blur(1.5px)}
+  .mbtn{display:block;width:100%;margin:7px 0;padding:8px 0 6px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat,linear-gradient(180deg,#33581a,#203a0e);border:1.5px solid #a8bf8d;border-radius:999px;cursor:pointer;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(0,0,0,.4);color:#ffe14d;font-family:inherit}
   .mbtn:hover{filter:brightness(1.3);border-color:#ffe14d}
   .mbtn canvas{margin:0 auto}
-  /* SELECT FORCE bar (the uniform screen's selector, Algerian colours) */
-  #forceBar{margin-top:14px;display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,#33581a,#203a0e);border:1.5px solid #a8bf8d;border-radius:999px;padding:5px 10px}
-  #forceBar img.flag{height:22px;border:1px solid rgba(0,0,0,.6);border-radius:2px}
-  #forceBar button{background:none;border:none;color:#fff;font-size:17px;cursor:pointer;padding:0 4px;text-shadow:1px 1px 2px #000}
-  #forceBar button:hover{color:#ffe14d}
-  #forceName{flex:1;color:#fff;font-weight:700;letter-spacing:.22em;font-size:13.5px;text-shadow:1px 1px 2px #000}
-  /* ---- sub-panels in the same language ---- */
-  .panel{display:none;margin:18px auto 0;max-width:840px;text-align:left;background:rgba(38,54,22,.93);border:2px solid rgba(178,202,150,.8);border-radius:16px;padding:18px 20px;box-shadow:0 10px 44px rgba(0,0,0,.55)}
-  .panel.open{display:block}
-  .srow{display:flex;align-items:center;gap:12px;margin:11px 0;font-size:13.5px}
+  .backbtn{max-width:230px;margin:20px auto 0}
+  /* ---- SELECT FORCE cards ---- */
+  #forceCards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+  @media(max-width:620px){#forceCards{grid-template-columns:1fr}}
+  .fcard{position:relative;border:2px solid rgba(178,202,150,.7);border-radius:14px;overflow:hidden;cursor:pointer;background:#101408;text-align:center;transition:filter .12s}
+  .fcard:hover{border-color:#ffe14d;filter:brightness(1.15)}
+  .flagbg{height:104px;position:relative;display:flex;align-items:center;justify-content:center}
+  .flagbg svg{position:absolute;inset:0;width:100%;height:100%}
+  .flagGIS{background:#0b0b0b}
+  .flagGIS img{height:96px;width:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(0,0,0,.7)}
+  .squadpic{width:100%;height:118px;object-fit:cover;object-position:center 30%;display:block;border-top:1px solid rgba(0,0,0,.55)}
+  .fname{margin:12px auto 0}
+  .fsub{font-size:10.5px;letter-spacing:.18em;color:#cfe0b8;padding:5px 4px 12px}
+  /* ---- sub-window rows ---- */
+  .srow{display:flex;align-items:center;gap:12px;margin:11px 0;font-size:13.5px;text-align:left}
   .srow label{width:190px;color:#eef3df;letter-spacing:.05em}
   .srow output{color:#ffe14d;width:44px;text-align:right}
   input[type=range]{flex:1;accent-color:#7fae5c}
   input[type=checkbox]{width:17px;height:17px;accent-color:#7fae5c}
-  .credits p{font-size:13px;line-height:1.65;color:#e6ecd8}
-  #men{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-top:14px}
+  .credits p{font-size:13px;line-height:1.65;color:#e6ecd8;text-align:left}
+  #men{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-top:14px;text-align:left}
   .man{background:rgba(10,13,7,.55);border:1.5px solid rgba(178,202,150,.55);border-radius:10px;padding:12px}
   .man img.face{width:64px;height:79px;object-fit:cover;border:1px solid #222;float:left;margin:0 10px 6px 0;border-radius:3px}
   .man .gear{font-size:10.5px;line-height:1.55;color:#cfe0b8;letter-spacing:.04em;clear:both;margin-top:8px}
@@ -43,67 +50,118 @@
   .slot .tp{position:absolute;left:112px;bottom:8px;font-size:9px;letter-spacing:.1em;color:#9db38a;text-shadow:1px 1px 2px #000}
   .slot .cnt{position:absolute;right:8px;bottom:6px;font-size:11px;font-weight:700;color:#ffe9a8;text-shadow:1px 1px 2px #000}
   .cornerhint{position:fixed;bottom:12px;font-size:11.5px;color:rgba(255,255,255,.88);text-shadow:1px 1px 3px #000;z-index:5}
-  footer{margin:26px auto 0;font-size:11px;color:rgba(230,238,215,.75);line-height:1.6;max-width:640px;text-shadow:1px 1px 2px #000}
 </style>
 </head>
 <body>
 <div id="bg"></div><div id="shade"></div>
-<div id="wrap">
-  <canvas id="titleCv" class="gtext"></canvas>
-  <canvas id="subCv" class="gtext"></canvas>
 
+<!-- MAIN MENU -->
+<div class="screen open" id="scr-main">
   <div id="menupanel">
-    <a class="mbtn" href="play.html"><canvas class="gtext mtxt" data-t="SINGLE PLAYER" data-c="#ffe14d"></canvas></a>
+    <button class="mbtn" id="btnSingle"><canvas class="gtext mtxt" data-t="SINGLE PLAYER" data-c="#ffe14d"></canvas></button>
     <button class="mbtn" id="btnLoadout"><canvas class="gtext mtxt" data-t="LOADOUT" data-c="#ffe14d"></canvas></button>
     <a class="mbtn" href="reskin.html"><canvas class="gtext mtxt" data-t="SQUAD" data-c="#ffe14d"></canvas></a>
-    <button class="mbtn" id="btnSettings"><canvas class="gtext mtxt" data-t="OPTIONS" data-c="#ffe14d"></canvas></button>
+    <button class="mbtn" id="btnOptions"><canvas class="gtext mtxt" data-t="OPTIONS" data-c="#ffe14d"></canvas></button>
     <button class="mbtn" id="btnCredits"><canvas class="gtext mtxt" data-t="CREDITS" data-c="#ffe14d"></canvas></button>
-    <div id="forceBar">
-      <img class="flag" src="textures/flag_patch.png" alt="Algeria">
-      <button id="forcePrev" title="Previous force">◀</button>
-      <span id="forceName">ANP</span>
-      <button id="forceNext" title="Next force">▶</button>
+  </div>
+</div>
+
+<!-- SELECT FORCE: ANP or G.I.S, flag behind the squad -->
+<div class="screen" id="scr-force">
+  <div class="window">
+    <canvas class="gtext ptitle" data-t="SELECT FORCE"></canvas>
+    <div id="forceCards">
+      <div class="fcard" id="fcANP">
+        <div class="flagbg">
+          <svg viewBox="0 0 90 60" preserveAspectRatio="none" aria-label="Algeria">
+            <rect x="0" y="0" width="45" height="60" fill="#006233"/>
+            <rect x="45" y="0" width="45" height="60" fill="#f5f5f5"/>
+            <path fill="#d21034" fill-rule="evenodd" d="M45 18a12 12 0 1 0 0 24 12 12 0 1 0 0-24Zm3.4 2.8a9.2 9.2 0 1 0 0 18.4 9.2 9.2 0 1 0 0-18.4Z"/>
+            <path fill="#d21034" d="M51 24.6l1.4 3.2 3.5.3-2.7 2.3.9 3.4-3.1-1.9-3.1 1.9.9-3.4-2.7-2.3 3.5-.3z"/>
+          </svg>
+        </div>
+        <img class="squadpic" src="textures/ui/defload.png" alt="Squad">
+        <canvas class="gtext fname" data-t="ANP" data-c="#ffe14d"></canvas>
+        <div class="fsub">ARMEE NATIONALE POPULAIRE</div>
+      </div>
+      <div class="fcard" id="fcGIS">
+        <div class="flagbg flagGIS"><img src="textures/gis_patch.png" alt="G.I.S emblem"></div>
+        <img class="squadpic" src="textures/ui/defload.png" alt="Squad">
+        <canvas class="gtext fname" data-t="G.I.S" data-c="#ffe14d"></canvas>
+        <div class="fsub">GROUPE D'INTERVENTION SPECIALE</div>
+      </div>
     </div>
+    <button class="mbtn backbtn" data-back="scr-main"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
   </div>
+</div>
 
-  <div class="panel" id="loadout">
-    <canvas id="loadoutTitle" class="gtext"></canvas>
+<!-- SQUAD LOADOUT -->
+<div class="screen" id="scr-loadout">
+  <div class="window">
+    <canvas id="loadoutTitle" class="gtext" style="margin:0 auto"></canvas>
+    <div id="forceLine" style="font-size:11px;letter-spacing:.22em;color:#cfe0b8;margin-top:6px"></div>
     <div id="men"></div>
-    <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.06em;margin:12px 0 0">EVERY MAN CARRIES HIS ROLE WEAPON, A SIG P228, COMBAT KNIFE, FRAG + SMOKE GRENADES AND A MEDI KIT. BENALI ADDS A LAW 66 + BINOCULARS · BOUDIAF CARRIES THE C4.</p>
+    <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.06em;margin:12px 0 0;text-align:left">EVERY MAN CARRIES HIS ROLE WEAPON, A SIG P228, COMBAT KNIFE, FRAG + SMOKE GRENADES AND A MEDI KIT. BENALI ADDS A LAW 66 + BINOCULARS · BOUDIAF CARRIES THE C4.</p>
+    <a class="mbtn" href="play.html" style="max-width:340px;margin:18px auto 0"><canvas class="gtext mtxt" data-t="DEPLOY - MISSION 1" data-c="#b7e39a"></canvas></a>
+    <button class="mbtn backbtn" id="btnLoadoutBack"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
   </div>
+</div>
 
-  <div class="panel" id="settings">
+<!-- OPTIONS -->
+<div class="screen" id="scr-options">
+  <div class="window">
     <canvas class="gtext ptitle" data-t="OPTIONS"></canvas>
     <div class="srow"><label>Mouse sensitivity</label><input type="range" id="setSens" min="0.4" max="2" step="0.05"><output id="outSens"></output></div>
     <div class="srow"><label>Volume</label><input type="range" id="setVol" min="0" max="1" step="0.05"><output id="outVol"></output></div>
     <div class="srow"><label>Enhanced textures</label><input type="checkbox" id="setEnh"></div>
     <div class="srow"><label>Invert mouse Y</label><input type="checkbox" id="setInv"></div>
-    <p style="font-size:12px;color:#cfe0b8">Saved automatically in this browser.</p>
+    <p style="font-size:12px;color:#cfe0b8;text-align:left">Saved automatically in this browser.</p>
+    <button class="mbtn backbtn" data-back="scr-main"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
   </div>
-
-  <div class="panel credits" id="credits">
-    <canvas class="gtext ptitle" data-t="CREDITS"></canvas>
-    <p>BLACK DECADE is a fan-made total conversion built on the original
-       Conflict: Desert Storm (2002) data — models, animations, sounds, weapon
-       tables, the Mission 1 map, the GWint HUD artwork and the CDSFont bitmap
-       font are converted from the original game files for personal,
-       non-commercial use. New theme, factions and scenarios: Algeria's
-       Black Decade (1991–2002).</p>
-  </div>
-
-  <footer>
-    A 4-man ANP/G.I.S squad hunts insurgent cells through the compounds of
-    1990s Algeria. Mission 1 is the original game's first map — zones, enemy
-    placements, patrol waypoints and triggers parsed straight out of
-    Mission1.env. Extracted assets remain private/personal unless rights are cleared.
-  </footer>
 </div>
+
+<!-- CREDITS -->
+<div class="screen" id="scr-credits">
+  <div class="window credits">
+    <canvas class="gtext ptitle" data-t="CREDITS"></canvas>
+    <p>Built on the original Conflict: Desert Storm (2002) game data — models,
+       animations, sounds, weapon tables, the Mission 1 map, the GWint HUD
+       artwork and the CDSFont bitmap font are converted from the original game
+       files for personal, non-commercial use. New setting: Algeria, the
+       Black Decade (1991–2002).</p>
+    <button class="mbtn backbtn" data-back="scr-main"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
+  </div>
+</div>
+
 <div class="cornerhint" style="left:14px">Return: Select</div>
 <div class="cornerhint" style="right:14px">Esc: Back</div>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
 <script>
   const $ = id => document.getElementById(id);
+  // ---- frontend screen windows (one at a time, like the original game) ----
+  const SCREENS = ['scr-main', 'scr-force', 'scr-loadout', 'scr-options', 'scr-credits'];
+  let loadoutBack = 'scr-main';
+  function showScreen(id) { SCREENS.forEach(s => $(s).classList.toggle('open', s === id)); }
+  $('btnSingle').onclick = () => showScreen('scr-force');
+  $('btnLoadout').onclick = () => { loadoutBack = 'scr-main'; showScreen('scr-loadout'); };
+  $('btnOptions').onclick = () => showScreen('scr-options');
+  $('btnCredits').onclick = () => showScreen('scr-credits');
+  document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => showScreen(b.dataset.back));
+  $('btnLoadoutBack').onclick = () => showScreen(loadoutBack);
+  addEventListener('keydown', e => { if (e.code === 'Escape') showScreen('scr-main'); });
+
+  // ---- SELECT FORCE: ANP or G.I.S (stored for the squad screens/game) ----
+  function pickForce(f) {
+    localStorage.setItem('bd_force', f);
+    $('forceLine').textContent = 'FORCE: ' + (f === 'ANP' ? 'ANP — ARMEE NATIONALE POPULAIRE' : 'G.I.S — GROUPE D\'INTERVENTION SPECIALE');
+    loadoutBack = 'scr-force';
+    showScreen('scr-loadout');
+  }
+  $('fcANP').onclick = () => pickForce('ANP');
+  $('fcGIS').onclick = () => pickForce('G.I.S');
+  if (localStorage.getItem('bd_force') === 'G.I.S') $('forceLine').textContent = 'FORCE: G.I.S — GROUPE D\'INTERVENTION SPECIALE';
+
   // settings (same localStorage contract the game reads)
   const sens = $('setSens'), vol = $('setVol'), enh = $('setEnh'), inv = $('setInv');
   sens.value = localStorage.getItem('bd_sens') || '1';
@@ -116,24 +174,11 @@
   vol.oninput = () => { localStorage.setItem('bd_vol', vol.value); show(); };
   enh.onchange = () => localStorage.setItem('bd_enh', enh.checked ? '1' : '0');
   inv.onchange = () => localStorage.setItem('bd_inv', inv.checked ? '1' : '0');
-  const panels = ['loadout', 'settings', 'credits'];
-  const toggle = id => panels.forEach(p => $(p).classList.toggle('open', p === id && !$(p).classList.contains('open')));
-  $('btnLoadout').onclick = () => toggle('loadout');
-  $('btnSettings').onclick = () => toggle('settings');
-  $('btnCredits').onclick = () => toggle('credits');
-
-  // SELECT FORCE selector (original: SELECT UNIFORM ◀ SAS ▶)
-  const FORCES = ['ANP', 'G.I.S'];
-  let fi = Math.max(0, FORCES.indexOf(localStorage.getItem('bd_force') || 'ANP'));
-  const drawForce = () => { $('forceName').textContent = FORCES[fi]; localStorage.setItem('bd_force', FORCES[fi]); };
-  $('forcePrev').onclick = () => { fi = (fi + FORCES.length - 1) % FORCES.length; drawForce(); };
-  $('forceNext').onclick = () => { fi = (fi + 1) % FORCES.length; drawForce(); };
-  drawForce();
 
   // build the loadout columns from the same data the game uses
   $('men').innerHTML = BD.LOADOUTS.map((slots, i) => `
     <div class="man">
-      <img class="face" src="textures/portraits/sq${i + 1}.png">
+      <img class="face" src="textures/portraits/sq${i + 1}.png?v=2">
       <canvas class="gtext mname" data-t="${BD.FULL[i]}" data-c="#ffe14d"></canvas>
       <canvas class="gtext mrole" data-t="${BD.ROLES[i]}" data-c="#cfe0b8" style="margin-top:5px"></canvas>
       ${slots.map(s => {
@@ -151,13 +196,12 @@
       cv.width = src.width; cv.height = src.height;
       cv.getContext('2d').drawImage(src, 0, 0);
     };
-    draw($('titleCv'), 'BLACK DECADE', '#ffe14d', 3.2);
-    draw($('subCv'), 'ALGERIA · 1994 · COUNTER-INSURGENCY OPERATIONS', '#eef3df', 1.5, 'S');
     document.querySelectorAll('.mtxt').forEach(cv => draw(cv, cv.dataset.t, cv.dataset.c, 1.45));
     document.querySelectorAll('.ptitle').forEach(cv => draw(cv, cv.dataset.t, '#ffe14d', 1.4));
+    document.querySelectorAll('.fname').forEach(cv => draw(cv, cv.dataset.t, cv.dataset.c, 2.1));
     document.querySelectorAll('.mname').forEach(cv => draw(cv, cv.dataset.t, cv.dataset.c, 1.5));
     document.querySelectorAll('.mrole').forEach(cv => draw(cv, cv.dataset.t, cv.dataset.c, 1.15));
-    draw($('loadoutTitle'), 'SQUAD LOADOUT — DEFLOAD', '#ffe14d', 1.5);
+    draw($('loadoutTitle'), 'SQUAD LOADOUT', '#ffe14d', 1.5);
   });
 </script>
 </body>

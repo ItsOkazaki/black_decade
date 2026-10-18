@@ -594,6 +594,52 @@ function useItem(slot, now) {
   buildItemBar(); updateHUD();
 }
 
+// ---- team mechanics: medi-kit a mate, hand kit over (the game's squad rules) ----
+function invSay(t) { const h = document.getElementById('invHint'); if (h) h.textContent = t; }
+function tryHeal() {
+  const M = members[activeIdx];
+  if (!M || !M.inv) return;
+  const idx = M.inv.findIndex(s => s.key === 'MEDIKIT' && s.left > 0);
+  if (idx < 0) { showMsg('NO MEDI KIT', 'MEDI KITS LIVE IN THE INVENTORY — SPACE'); return; }
+  let best = null, bd = 3.6;
+  members.forEach((Mt, i) => {
+    if (i === activeIdx || Mt.absent || Mt.prisoner || !Mt.obj) return;
+    const d = Mt.pos.distanceTo(player.pos);
+    if (d < bd && (!Mt.alive || Mt.hp < 100)) { bd = d; best = Mt; }
+  });
+  if (best) {
+    M.inv[idx].left--; throwCd = nowSec + 1.2;
+    if (!best.alive) { best.alive = true; best.hp = 45; mateSetAnim(best, ANIM.idle); showMsg('REVIVED', BD.NAMES[members.indexOf(best)] + ' IS BACK ON HIS FEET'); }
+    else { best.hp = Math.min(100, best.hp + 55); showMsg('MEDI KIT', BD.NAMES[members.indexOf(best)] + ' PATCHED UP'); }
+    buildItemBar(); updateHUD();
+    return;
+  }
+  if (playerHP < 100) { useItem(M.inv[idx], nowSec); return; }
+  showMsg('HEALTH FULL', 'NO WOUNDED MAN IN REACH');
+}
+function giveItem(ti, si) {
+  const A = members[activeIdx], B = members[ti];
+  if (!A || !B || !A.inv || !B.inv || ti === activeIdx) return;
+  if (B.absent || B.prisoner || !B.alive) { invSay(BD.NAMES[ti] + ' IS NOT WITH THE SQUAD — NOTHING HANDED OVER.'); return; }
+  if (B.pos.distanceTo(player.pos) > 30) { invSay('TOO FAR — GET CLOSER TO ' + BD.NAMES[ti] + ' TO HAND KIT OVER.'); return; }
+  const s = A.inv[si];
+  if (!s) return;
+  const def = s.kind === 'gun' ? BD.WEAPONS[s.key] : BD.ITEMS[s.key];
+  if (s.kind === 'item') {
+    if (s.left <= 0) { invSay('NONE LEFT TO GIVE.'); return; }
+    s.left--;
+    const ex = B.inv.find(x => x.kind === 'item' && x.key === s.key);
+    if (ex) ex.left++; else B.inv.push({ kind: 'item', key: s.key, left: 1 });
+  } else {
+    A.inv.splice(si, 1);
+    B.inv.push({ kind: 'gun', key: s.key, ammo: s.ammo });
+    setHeld(Math.min(A.held, A.inv.length - 1));
+  }
+  giveSel = -1;
+  invSay(def.label + ' HANDED TO ' + BD.NAMES[ti] + '.');
+  buildItemBar(); renderInv(); updateHUD();
+}
+
 // ---- mission objectives (triggers named in Mission1.env) ----
 const dist2D = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 function trigPos(name, fb) {
@@ -603,7 +649,7 @@ function trigPos(name, fb) {
 function applySky() {
   const sky = (PROPS && PROPS.sky) || {};
   const fogC = sky.fog ? new THREE.Color(sky.fog[0], sky.fog[1], sky.fog[2]) : new THREE.Color(0xc4ad82);
-  scene.fog = new THREE.Fog(fogC, 70, 620);
+  scene.fog = new THREE.Fog(fogC, 120, 1500); // full-map draw distance
   const cv = document.createElement('canvas'); cv.width = 2; cv.height = 512;
   const g = cv.getContext('2d');
   const grad = g.createLinearGradient(0, 0, 0, 512);
@@ -645,6 +691,7 @@ async function buildStaticWorld() {
     for (const pgeo of (merged ? [merged] : grp.geos)) {
       const mesh = new THREE.Mesh(pgeo, grp.mat);
       mesh.receiveShadow = !SET.lowGfx;
+      mesh.frustumCulled = false;
       world.add(mesh); _groundMeshes.push(mesh);
     }
   }
@@ -653,7 +700,7 @@ async function buildStaticWorld() {
     try {
       const g = await loader.loadAsync('models/mission1/props/' + it.m + '.glb');
       g.scene.position.set(it.p[0], it.p[1], it.p[2]);
-      g.scene.traverse(o => { if (o.isMesh) { o.receiveShadow = !SET.lowGfx; _groundMeshes.push(o); } });
+      g.scene.traverse(o => { if (o.isMesh) { o.receiveShadow = !SET.lowGfx; o.frustumCulled = false; _groundMeshes.push(o); } });
       world.add(g.scene);
     } catch (e) { console.warn('interior failed:', it.m); }
   }
@@ -663,7 +710,9 @@ async function buildStaticWorld() {
     try {
       const g = await loader.loadAsync('models/mission1/props/BLACKHAWK_UH60.glb');
       hawkObj = g.scene;
-      hawkObj.position.set(hawk.pos[0], Math.max(hawk.pos[1], groundY(hawk.pos[0], hawk.pos[2]) + 0.05), hawk.pos[2]);
+      const lzT = ENV && ENV.triggers ? ENV.triggers.find(t => t.name === 'PICKUP_BLACKHAWK_TRIGGER') : null;
+      const hx = lzT ? lzT.pos[0] : hawk.pos[0], hz = lzT ? lzT.pos[2] : hawk.pos[2];
+      hawkObj.position.set(hx, groundY(hx, hz) + 0.05, hz);
       hawkObj.rotation.y = hawk.yaw || 0;
       hawkObj.traverse(o => { if (o.isMesh) { o.castShadow = !SET.lowGfx; if (/rotor|blade/i.test(o.name) && !hawkRotor) hawkRotor = o; } });
       scene.add(hawkObj);
@@ -740,6 +789,7 @@ function buildItemBar() {
   bar.querySelectorAll('.slot').forEach(el => el.addEventListener('click', () => setHeld(+el.dataset.i)));
 }
 let invOpen = false;
+let giveSel = -1;   // inventory slot picked to hand to a squadmate
 function renderInv() {
   if (!invOpen) return;
   const M = members[activeIdx];
@@ -749,12 +799,27 @@ function renderInv() {
   box.innerHTML = M.inv.map((s, i) => {
     const def = s.kind === 'gun' ? BD.WEAPONS[s.key] : BD.ITEMS[s.key];
     const cnt = s.kind === 'item' ? (s.left > 0 ? '× ' + s.left : 'USED') : (s.key === 'LAW66' ? '× ' + s.ammo : (s.kind === 'gun' && !def.melee ? def.mag + ' RD MAG' : ''));
-    return `<div class="slot ${i === M.held ? 'held' : ''}" data-i="${i}"><img src="${BD.ICON(def.icon)}"><span class="nm">${def.label}</span><span class="cnt">${cnt}</span></div>`;
+    return `<div class="slot ${i === M.held ? 'held' : ''} ${i === giveSel ? 'sel' : ''}" data-i="${i}"><img src="${BD.ICON(def.icon)}"><span class="nm">${def.label}</span><span class="cnt">${cnt}</span></div>`;
   }).join('');
   box.querySelectorAll('.slot').forEach(el => {
     el.addEventListener('mouseenter', () => box.querySelectorAll('.slot').forEach(s => s.classList.toggle('hov', s === el)));
-    el.addEventListener('click', () => { const k = +el.dataset.i; const sv = members[activeIdx].inv[k]; setHeld(k); showMsg('SELECTED', (sv.kind === 'gun' ? BD.WEAPONS[sv.key] : BD.ITEMS[sv.key]).name); });
+    el.addEventListener('click', () => { giveSel = +el.dataset.i; const sv = members[activeIdx].inv[giveSel]; invSay('SELECTED: ' + (sv.kind === 'gun' ? BD.WEAPONS[sv.key] : BD.ITEMS[sv.key]).label + ' — CLICK A SOLDIER ABOVE TO HAND IT OVER · DOUBLE-CLICK TO CARRY IT.'); renderInv(); });
+    el.addEventListener('dblclick', () => setHeld(+el.dataset.i));
   });
+  const sq = document.getElementById('invSquad');
+  if (sq) {
+    sq.innerHTML = members.map((Mt, i) => {
+      const state = Mt.absent ? 'NOT ON THIS OP' : Mt.prisoner ? 'CAPTIVE' : !Mt.alive ? 'DOWN' : Math.ceil(i === activeIdx ? playerHP : Mt.hp) + ' HP';
+      const d = i === activeIdx ? 'YOU' : (Mt.absent || Mt.prisoner ? '—' : Math.round(Mt.pos.distanceTo(player.pos)) + ' M AWAY');
+      return `<div class="mate${i === activeIdx ? ' self' : ''}" data-i="${i}"><img src="textures/portraits/sq${i + 1}.png?v=2"><div><b>${BD.NAMES[i]}</b><span>${state} · ${d}</span></div></div>`;
+    }).join('');
+    sq.querySelectorAll('.mate').forEach(el => el.addEventListener('click', () => {
+      const ti = +el.dataset.i;
+      if (ti === activeIdx) { invSay('THAT IS YOU — PICK A SLOT BELOW, THEN A SQUADMATE.'); return; }
+      if (giveSel >= 0) giveItem(ti, giveSel);
+      else invSay('PICK AN ITEM SLOT BELOW FIRST, THEN CLICK THE SOLDIER TO HAND IT OVER.');
+    }));
+  }
   document.getElementById('invGear').textContent = BD.GEAR[activeIdx].map(g => g[2]).join('  ·  ');
 }
 function toggleInv(force) {
@@ -774,6 +839,27 @@ function playMateShot(M) {
 function updateMate(M, dt, now) {
   if (!M.alive || !M.obj) return;
   if (M.prisoner) return;   // ZIANI waits at the prison until rescued
+  // field aid: a mate with a medi kit patches up a badly hurt man next to him
+  M._aidCd = (M._aidCd || 0) - dt;
+  if (M._aidCd <= 0 && M.inv) {
+    const kit = M.inv.find(s => s.key === 'MEDIKIT' && s.left > 0);
+    if (kit) {
+      let tgt = -1;
+      members.forEach((Mt, i) => {
+        if (Mt.absent || Mt.prisoner || !Mt.alive) return;
+        const hp = i === activeIdx ? playerHP : Mt.hp;
+        const mp = i === activeIdx ? player.pos : Mt.pos;
+        if (hp < 45 && M.pos.distanceTo(mp) < 3.2) tgt = i;
+      });
+      if (tgt < 0 && M.hp < 45) tgt = members.indexOf(M);
+      if (tgt >= 0) {
+        kit.left--; M._aidCd = 6;
+        if (tgt === activeIdx) playerHP = Math.min(100, playerHP + 50);
+        else members[tgt].hp = Math.min(100, members[tgt].hp + 50);
+        updateHUD();
+      }
+    }
+  }
   // nearest visible enemy
   let tgt = null, td = 26;
   M._losT = (M._losT || 0) - dt;
@@ -1098,7 +1184,21 @@ let aimT = 0; // time spent raising into the aim pose; first shot waits for it
 
 const startEl = document.getElementById('start');
 let cutscene = null;
-function startCutscene() { cutscene = { t: 0, dur: 8, phase: -1 }; }
+function startCutscene() {
+  // mission-brief cutscene: fly the four objectives in order (game briefing style)
+  const V = (v, dx, dy, dz) => new THREE.Vector3(v.x + dx, groundYCached(v.x + dx, v.z + dz) + dy, v.z + dz);
+  const L = (v, dy) => new THREE.Vector3(v.x, groundYCached(v.x, v.z) + dy, v.z);
+  const lz = OBJ[3] ? OBJ[3].pos : player.pos;
+  const B = (from, to, look, title, sub, dur) => ({ from, to, look, title, sub, dur });
+  const beats = [
+    B(V(player.pos, 30, 22, 30), V(player.pos, 13, 8, 13), L(player.pos, 1.2), 'MISSION 1 — RESCUE', 'NORTHERN ALGERIA · 1994 — YOUR ORDERS, IN ORDER', 4),
+    B(V(prisonPos, 16, 8, 12), V(prisonPos, 8, 3.5, 6), L(prisonPos, 1.5), '1. RESCUE ZIANI', 'HELD IN THE HUT N.E. OF THE BRIDGE — GET HIM OUT ALIVE', 4.2),
+    B(V(c4Pos, 12, 7, 10), V(c4Pos, 6, 3, 5), L(c4Pos, 1.2), '2. RECOVER THE C4', 'THE GUARDS TOOK THE EXPLOSIVES — TAKE THEM BACK', 3.8),
+    B(V(bridgePos, 34, 18, 30), V(bridgePos, 18, 10, 14), L(bridgePos, 4), '3. DESTROY THE BRIDGE', 'PLANT THE C4 ON THE CENTRAL STRUTS (E AT THE BRIDGE)', 4.2),
+    B(V(lz, 24, 14, 24), V(player.pos, 6, 3, 6), L(player.pos, 1.2), '4. EXTRACTION', 'BRING ZIANI BACK TO THE LZ — GOOD HUNTING', 3.8),
+  ];
+  cutscene = { t: 0, beats, idx: -1, dur: beats.reduce((s, b) => s + b.dur, 0) };
+}
 function endCutscene() { if (!cutscene) return; cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); }
 addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', () => {
@@ -1111,7 +1211,8 @@ startEl.addEventListener('click', () => {
   const h1 = startEl.querySelector('h1');
   if (h1) h1.textContent = '▶ CLICK TO PLAY';
   startEl.style.display = 'none';
-  startCutscene();
+  if (window.__deployedOnce) { playing = true; }   // re-deploy / unpause: straight back in
+  else { window.__deployedOnce = true; startCutscene(); }
   updateHUD();
   renderer.domElement.requestPointerLock?.();
 });
@@ -1162,11 +1263,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'KeyP') { playing = false; startEl.style.display = 'flex'; document.exitPointerLock?.(); }
   if ((e.code === 'Space' || e.code === 'Tab') && playing) { e.preventDefault(); toggleInv(); }
   if (e.code === 'KeyQ' && playing && members[activeIdx]) setHeld(members[activeIdx].held + 1);
-  if (e.code === 'KeyH' && playing) {
-    const M = members[activeIdx];
-    const idx = M && M.inv ? M.inv.findIndex(s => s.key === 'MEDIKIT') : -1;
-    if (idx >= 0) useItem(M.inv[idx], nowSec);
-  }
+  if (e.code === 'KeyH' && playing) tryHeal();
   if (e.code === 'KeyE' && playing) {
     const s = curSlot();
     if (s && s.key === 'C4') tryPlantC4();
@@ -1255,7 +1352,7 @@ function updateEnemy(E, dt, now) {
   let T = { pos: player.pos, stance: player.stance, moving: player.moving, mate: null };
   let best = player.pos.distanceTo(E.pos);
   members.forEach((M, i) => {
-    if (i === activeIdx || !M.alive) return;
+    if (i === activeIdx || !M.alive || M.prisoner || M.absent) return;   // captives are not targets
     const d = M.pos.distanceTo(E.pos);
     if (d < best) { best = d; T = { pos: M.pos, stance: 'stand', moving: M.moving, mate: M }; }
   });
@@ -1300,7 +1397,7 @@ function updateEnemy(E, dt, now) {
       if (T.moving) p *= 0.8;
       if (Math.random() < p) {
         if (T.mate) {
-          T.mate.hp -= 8 + Math.random() * 6;
+          if (!T.mate.prisoner) T.mate.hp -= 8 + Math.random() * 6;   // a captive is never shot
           if (T.mate.hp <= 0) {
             T.mate.hp = 0; T.mate.alive = false;
             mateSetAnim(T.mate, 'DEATH_BY_SHOTGUN_BACKWARD', true);
@@ -1434,6 +1531,7 @@ async function load() {
         for (const pgeo of (merged ? [merged] : grp.geos)) {
           const mesh = new THREE.Mesh(pgeo, grp.mat);
           mesh.receiveShadow = !SET.lowGfx;
+          mesh.frustumCulled = false;
           mesh.castShadow = false;   // zones never cast
           world.add(mesh);
           _groundMeshes.push(mesh);  // static world for ground/LOS raycasts
@@ -1724,15 +1822,19 @@ function animate() {
   const now = clock.elapsedTime;
 
   if (cutscene && heroObj) {
-    // intro cutscene: high sweep down to the squad leader (skip with any key/click)
+    // mission-brief cutscene: one beat per objective (skip with any key/click)
     cutscene.t += dt;
-    const k = Math.min(1, cutscene.t / cutscene.dur);
-    const a = player.yaw + 2.6 - 2.6 * k;
-    camera.position.set(player.pos.x + Math.sin(a) * (17 - 12.5 * k), player.pos.y + (10 - 7.6 * k), player.pos.z + Math.cos(a) * (17 - 12.5 * k));
-    camera.lookAt(player.pos.x, player.pos.y + 1.1, player.pos.z);
-    const ph = cutscene.t < 4 ? 0 : 1;
-    if (ph !== cutscene.phase) { cutscene.phase = ph; if (ph === 0) showMsg('NORTHERN ALGERIA — 1994', '23:00 · INFILTRATION'); else showMsg('RESCUE ZIANI', 'HELD N.E. OF THE BRIDGE — MOVE NORTH'); }
-    if (k >= 1) endCutscene();
+    let acc = 0, b = cutscene.beats[cutscene.beats.length - 1], bi = cutscene.beats.length - 1, bt = 1;
+    for (let i = 0; i < cutscene.beats.length; i++) {
+      const B2 = cutscene.beats[i];
+      if (cutscene.t < acc + B2.dur) { b = B2; bi = i; bt = (cutscene.t - acc) / B2.dur; break; }
+      acc += B2.dur;
+    }
+    if (bi !== cutscene.idx) { cutscene.idx = bi; showMsg(b.title, b.sub); }
+    const u = bt * bt * (3 - 2 * bt);
+    camera.position.lerpVectors(b.from, b.to, u);
+    camera.lookAt(b.look);
+    if (cutscene.t >= cutscene.dur) endCutscene();
   }
   if (playing && heroObj) {
     nowSec = now;
