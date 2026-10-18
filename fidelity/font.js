@@ -33,7 +33,12 @@ window.GF = (() => {
     const x = c.getContext('2d');
     x.drawImage(img, 0, 0);
     x.globalCompositeOperation = 'source-in';
-    x.fillStyle = color;
+    if (color.toLowerCase() === '#ffe14d') {
+      // the frontend's shaded yellow: lit top, deep gold base
+      const g = x.createLinearGradient(0, 0, 0, c.height);
+      g.addColorStop(0, '#fff6bd'); g.addColorStop(0.55, '#ffdf5e'); g.addColorStop(1, '#f0a81e');
+      x.fillStyle = g;
+    } else x.fillStyle = color;
     x.fillRect(0, 0, c.width, c.height);
     tintCache[key] = c;
     return c;
@@ -66,7 +71,7 @@ window.GF = (() => {
     c.width = Math.max(1, Math.round(w * scale));
     c.height = Math.max(1, Math.round(h * scale));
     const x = c.getContext('2d');
-    x.imageSmoothingEnabled = false;
+    x.imageSmoothingEnabled = scale > 1.25;   // smooth like the frontend at menu sizes
     let cx = 0;
     for (const g of glyphs) {
       if (g.img) {

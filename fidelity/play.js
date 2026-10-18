@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 // PLAYABLE SLICE — Armstrong (real model/animations) + M16A2 with WEAPS.TXT
 // behaviour (mag 30, reload 1.5 s, 86 ms interval), original sounds.
@@ -305,6 +306,9 @@ const PROP_FILES = {
   HelmetGreen: 'IR_Helmet_Green.glb', HelmetWebbing: 'IR_Helmet_Webbing.glb',
   TankHat: 'IR_TankDriverHat.glb',
 };
+const ABU_NAMES = ['ABU HAMZA', 'ABU YOUSSEF', 'ABU OMAR', 'ABU KHALED', 'ABU SALEM',
+  'ABU NASSER', 'ABU FARID', 'ABU ZIAD', 'ABU HASSAN', 'ABU MAHMOUD',
+  'ABU TAREK', 'ABU WALID', 'ABU SAMIR', 'ABU RAFIK', 'ABU AZIZ'];
 const ROSTER = [
   { face: 'F1', beard: 'Moustache01', hat: null },
   { face: 'Officer', beard: 'Beard01', hat: 'BeretBlack' },
@@ -328,6 +332,7 @@ let rosterOffset = 0;
 
 function setEnemyType(E, type, typeIdx) {
   E.typeIdx = typeIdx;
+  E.abu = ABU_NAMES[typeIdx % ABU_NAMES.length];
   if (!E.obj) return;
   const tex = faceTexCache[type.face];
   if (tex) E.obj.traverse(o => {
@@ -359,9 +364,9 @@ function resetEnemies(advance = false) {
 
 // ---- the squad: 4 Algerian soldiers, switchable (1-4), follow/hold (F) ----
 const SQUAD_DEFS = [
-  { name: 'CONNORS', model: 'models/play/Hero02_Ramirez.glb', tex: 'textures/Hero02_DZ_01.png?v=9', slot: [-1.3, -1.6] },
-  { name: 'JONES', model: 'models/play/Hero03_Jones.glb', tex: 'textures/Hero03_DZ_01.png?v=3', slot: [1.3, -1.6] },
-  { name: 'Foley', model: 'models/play/Hero04_Foley.glb', tex: 'textures/Hero04_DZ_01.png?v=3', slot: [0, -3.2] },
+  { name: 'CHERIF', model: 'models/play/Hero02_Ramirez.glb', tex: 'textures/Hero02_DZ_01.png?v=9', slot: [-1.3, -1.6] },
+  { name: 'BOUDIAF', model: 'models/play/Hero03_Jones.glb', tex: 'textures/Hero03_DZ_01.png?v=3', slot: [1.3, -1.6] },
+  { name: 'ZIANI', model: 'models/play/Hero04_Foley.glb', tex: 'textures/Hero04_DZ_01.png?v=3', slot: [0, -3.2] },
 ];
 const members = [];   // [0] = Armstrong (starts controlled); 1-3 = mates
 let activeIdx = 0;
@@ -386,6 +391,7 @@ function hurtEnemy(E, dmg) {
     E.alive = false;
     kills++;
     setCanvas('killsCv', GF.text('HOSTILES DOWN ' + kills, { size: 'S', color: '#e8a09a', scale: 1.5 }));
+    if (E.abu) showMsg(E.abu + ' DOWN', 'HOSTILES DOWN ' + kills);
     enemySetAnim(E, Math.random() < 0.5 ? E_ANIM.deathF : E_ANIM.deathB, true);
   }
   updateHUD();
@@ -570,7 +576,7 @@ function trigPos(name, fb) {
 }
 function buildObjectives() {
   OBJ.length = 0;
-  OBJ.push({ text: 'RESCUE Foley — N.E. OF THE BRIDGE', pos: trigPos('MAIN_GATE_SWITCH', new THREE.Vector3(-237.6, 0, -449.4)), r: 26 });
+  OBJ.push({ text: 'RESCUE ZIANI — N.E. OF THE BRIDGE', pos: trigPos('MAIN_GATE_SWITCH', new THREE.Vector3(-237.6, 0, -449.4)), r: 26 });
   migPos = trigPos('PROXTRIG_MIG', migPos);
   OBJ.push({ text: 'PLANT THE C4 — DESTROY THE BRIDGE', pos: migPos, r: 9 });
   OBJ.push({ text: 'EXTRACTION — RETURN TO THE LZ', pos: trigPos('PICKUP_BLACKHAWK_TRIGGER', new THREE.Vector3(-113.6, 0, -230.8)), r: 14 });
@@ -1056,7 +1062,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'KeyE' && playing) {
     const s = curSlot();
     if (s && s.key === 'C4') tryPlantC4();
-    else showMsg('NOTHING TO USE HERE', 'C4 IS CARRIED BY JONES — SWITCH WITH 1-4');
+    else showMsg('NOTHING TO USE HERE', 'C4 IS CARRIED BY BOUDIAF — SWITCH WITH 1-4');
   }
 });
 addEventListener('wheel', (e) => {
@@ -1135,6 +1141,7 @@ function doFire(now) {
 }
 
 function updateEnemy(E, dt, now) {
+  if (E.obj) { const vis = player.pos.distanceToSquared(E.pos) < 22500; if (E.obj.visible !== vis) E.obj.visible = vis; }
   if (!E.obj || !E.mixer || !E.alive) return;
   // target = nearest living squad member (you or a mate)
   let T = { pos: player.pos, stance: player.stance, moving: player.moving, mate: null };
@@ -1296,15 +1303,33 @@ async function load() {
   try {
     stats.textContent = 'Loading Mission 1 — the real base…';
     ENV = await (await fetch('models/mission1/units.json')).json();
-    await Promise.all(['Mis1_Zone1', 'Mis1_Zone1A', 'Mis1_Zone1_Bridge', 'Mis1_Zone2', 'Mis1_Zone2A', 'Mis1_Zone3', 'Mis1_Zone3A', 'Mis1_Zone4'].map(async z => {
+    const zoneNames = ['Mis1_Zone1', 'Mis1_Zone1A', 'Mis1_Zone1_Bridge', 'Mis1_Zone2', 'Mis1_Zone2A', 'Mis1_Zone3', 'Mis1_Zone3A', 'Mis1_Zone4'];
+    let zonesDone = 0;
+    await Promise.all(zoneNames.map(async z => {
       const g = await loader.loadAsync('models/mission1/' + z + '.glb');
+      g.scene.updateMatrixWorld(true);
+      const groups = new Map();
       g.scene.traverse(o => {
         if (!o.isMesh) return;
-        o.receiveShadow = !SET.lowGfx;
-        o.castShadow = false;               // zones never cast — big win
-        _groundMeshes.push(o);   // zone meshes are static world geometry (CDS zones tile the ground)
+        const geo = o.geometry.clone().applyMatrix4(o.matrixWorld);
+        for (const a of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv', 'color'].includes(a)) geo.deleteAttribute(a);
+        const key = o.material.uuid + '|' + Object.keys(geo.attributes).sort().join(',');
+        if (!groups.has(key)) groups.set(key, { mat: o.material, geos: [] });
+        groups.get(key).geos.push(geo);
       });
-      world.add(g.scene);
+      for (const grp of groups.values()) {
+        let merged = null;
+        try { merged = grp.geos.length === 1 ? grp.geos[0] : mergeGeometries(grp.geos, false); } catch (e) { merged = null; }
+        for (const pgeo of (merged ? [merged] : grp.geos)) {
+          const mesh = new THREE.Mesh(pgeo, grp.mat);
+          mesh.receiveShadow = !SET.lowGfx;
+          mesh.castShadow = false;   // zones never cast
+          world.add(mesh);
+          _groundMeshes.push(mesh);  // static world for ground/LOS raycasts
+        }
+      }
+      zonesDone++;
+      stats.textContent = 'Loading Mission 1 \u2014 zones ' + zonesDone + '/' + zoneNames.length + '\u2026';
     }));
     stats.textContent = 'Base loaded — kitting out the squad…';
     if (ENV.start) player.pos.set(ENV.start.pos[0], 0, ENV.start.pos[2]);
@@ -1446,7 +1471,7 @@ async function load() {
     enemies.forEach(E => loadEnemy(E));
 
     // ---- the squad ----
-    members.push({ name: 'Bradley', wpn: WEAPONS[0], ammo: WEAPONS[0].mag, obj: heroObj, mixer, actions, rifle: rifleObj,
+    members.push({ name: 'BENALI', wpn: WEAPONS[0], ammo: WEAPONS[0].mag, obj: heroObj, mixer, actions, rifle: rifleObj,
       gunConn: gunConnector, rifleL: rifleLObj, pos: player.pos.clone(), yaw: player.yaw,
       hp: 100, alive: true, current: null, slot: null });
     members[0].inv = makeInv(0); members[0].held = 0;

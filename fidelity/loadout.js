@@ -31,7 +31,8 @@ window.BD = (() => {
     C4:         { label: 'C4 CHARGE',     name: 'C4 Plastic Explosive',                    icon: 'IMAGE_WEAPON_C4',           model: 'models/weapons/Explosive01_C4.glb' },
   };
 
-  const NAMES = ['Bradley', 'CONNORS', 'JONES', 'Foley'];
+  const NAMES = ['BENALI', 'CHERIF', 'BOUDIAF', 'ZIANI'];
+  const FULL = ['YACINE BENALI', 'SOFIANE CHERIF', 'Amine BOUDIAF', 'KARIM ZIANI'];
   const ROLES = ['RIFLEMAN', 'HEAVY WEAPONS', 'COMBAT ENGINEER', 'SNIPER'];
 
   // held slots per man: UnitWpns.txt + Bradley's Mission1.env live loadout
@@ -66,5 +67,5 @@ window.BD = (() => {
       ['SPINE2', 'UK_PouchMedium01', 'POUCH — MEDIUM'], ['SPINE2L', 'UK_AmmoPouch01', 'AMMO POUCH'],
       ['SPINE2R', 'UK_BottlePouch01', 'BOTTLE POUCH'] ],
   ];
-  return { ICON, WEAPONS, ITEMS, NAMES, ROLES, LOADOUTS, GEAR };
+  return { ICON, WEAPONS, ITEMS, NAMES, FULL, ROLES, LOADOUTS, GEAR };
 })();

@@ -10,12 +10,12 @@
   #bg{position:fixed;inset:0;background:url(textures/ui/defload.png) center/cover no-repeat;filter:saturate(.85) brightness(.92)}
   #shade{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%, rgba(5,7,4,.12) 30%, rgba(5,7,4,.55) 100%)}
   #wrap{position:relative;max-width:880px;margin:0 auto;padding:34px 20px 60px;text-align:center}
-  .gtext{display:block;image-rendering:pixelated}
+  .gtext{display:block;image-rendering:auto}
   #titleCv{margin:0 auto;filter:drop-shadow(3px 3px 0 rgba(20,30,12,.9))}
   #subCv{margin:10px auto 0}
   /* ---- original frontend: translucent olive panel + green pill buttons ---- */
   #menupanel{margin:26px auto 0;width:min(430px,92vw);background:rgba(88,104,58,.42);border:2px solid rgba(200,215,170,.5);border-radius:20px;padding:16px 18px 14px;box-shadow:0 10px 44px rgba(0,0,0,.5);backdrop-filter:blur(1.5px)}
-  .mbtn{display:block;width:100%;margin:7px 0;padding:8px 0 6px;background:linear-gradient(180deg,#33581a,#203a0e);border:1.5px solid #a8bf8d;border-radius:999px;cursor:pointer;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(0,0,0,.4)}
+  .mbtn{display:block;width:100%;margin:7px 0;padding:8px 0 6px;background:url(textures/ui/gwint/IMAGE_NAME_BACK.png) center/100% 100% no-repeat,linear-gradient(180deg,#33581a,#203a0e);border:1.5px solid #a8bf8d;border-radius:999px;cursor:pointer;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(0,0,0,.4)}
   .mbtn:hover{filter:brightness(1.3);border-color:#ffe14d}
   .mbtn canvas{margin:0 auto}
   /* SELECT FORCE bar (the uniform screen's selector, Algerian colours) */
@@ -69,7 +69,7 @@
   <div class="panel" id="loadout">
     <canvas id="loadoutTitle" class="gtext"></canvas>
     <div id="men"></div>
-    <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.06em;margin:12px 0 0">EVERY MAN CARRIES HIS ROLE WEAPON, A SIG P228, COMBAT KNIFE, FRAG + SMOKE GRENADES AND A MEDI KIT. Bradley ADDS A LAW 66 + BINOCULARS · JONES CARRIES THE C4.</p>
+    <p style="font-size:11.5px;color:#cfe0b8;letter-spacing:.06em;margin:12px 0 0">EVERY MAN CARRIES HIS ROLE WEAPON, A SIG P228, COMBAT KNIFE, FRAG + SMOKE GRENADES AND A MEDI KIT. BENALI ADDS A LAW 66 + BINOCULARS · BOUDIAF CARRIES THE C4.</p>
   </div>
 
   <div class="panel" id="settings">
@@ -134,7 +134,7 @@
   $('men').innerHTML = BD.LOADOUTS.map((slots, i) => `
     <div class="man">
       <img class="face" src="textures/portraits/sq${i + 1}.png">
-      <canvas class="gtext mname" data-t="${BD.NAMES[i]}" data-c="#ffe14d"></canvas>
+      <canvas class="gtext mname" data-t="${BD.FULL[i]}" data-c="#ffe14d"></canvas>
       <canvas class="gtext mrole" data-t="${BD.ROLES[i]}" data-c="#cfe0b8" style="margin-top:5px"></canvas>
       ${slots.map(s => {
         const def = s.kind === 'gun' ? BD.WEAPONS[s.key] : BD.ITEMS[s.key];
