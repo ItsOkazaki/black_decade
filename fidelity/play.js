@@ -434,6 +434,16 @@ let settledFire = false, nowSec = 0, throwCd = 0, pendingHeal = 0, pendingC4 = 0
 let kills = 0, missionDone = false;
 const projectiles = [], rockets = [], smokes = [];
 let migObj = null, migPos = new THREE.Vector3(-146.8, 0, -495.6), objMarker = null;
+let prisonPos = new THREE.Vector3(-64, 0, -596), c4Pos = new THREE.Vector3(-232, 0, -458),
+    bridgePos = new THREE.Vector3(-237.6, 0, -449.4);
+function computeMissionPoints() {
+  const wp = ((ENV && ENV.waypoints) || []).filter(w => (w.name || '').includes('PRISON'));
+  if (wp.length) prisonPos.set(wp.reduce((s, w) => s + w.pos[0], 0) / wp.length, 0,
+                               wp.reduce((s, w) => s + w.pos[2], 0) / wp.length);
+  c4Pos = trigPos('C4', c4Pos);
+  bridgePos = trigPos('BRIDGE_BOOM_GROUND', bridgePos);
+  migPos = trigPos('PROXTRIG_MIG', migPos);
+}
 const OBJ = [];
 let objIdx = 0;
 
@@ -523,7 +533,22 @@ function spawnSmoke(pos) {
   scene.add(sp);
   smokes.push({ pos: pos.clone(), t: 10, obj: sp });
 }
+let AC = null;
+function boomNoise() {
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const t = AC.currentTime, len = Math.floor(AC.sampleRate * 0.45);
+    const buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.2);
+    const s = AC.createBufferSource(); s.buffer = buf;
+    const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 380;
+    const g = AC.createGain(); g.gain.setValueAtTime(0.55 * SET.vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    s.connect(f); f.connect(g); g.connect(AC.destination); s.start();
+  } catch (e) { /* audio unavailable */ }
+}
 function explode(pos, r, dmg) {
+  boomNoise();
   flash.position.copy(pos); flash.position.y += 1; flash.intensity = 200; flashT = 0.14;
   impact.position.copy(pos); impact.visible = true; impactT = 0.3; impact.scale.setScalar(r);
   const boom = BD.WEAPONS.LAW66.snd && BD.WEAPONS.LAW66.snd[0];
@@ -535,7 +560,7 @@ function explode(pos, r, dmg) {
   }
   const pd = player.pos.distanceTo(pos);
   if (pd < r * 0.7) { playerHP -= 26 * (1 - pd / (r * 0.7)); dmgT = 0.5; if (playerHP <= 0) playerHP = 1; }
-  if (objIdx === 1 && migPos.distanceTo(pos) < 16) completeMig();
+  if (objIdx === 2 && bridgePos.distanceTo(pos) < 18) completeMig();
 }
 function fireRocket() {
   const o = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.09, 0.7), new THREE.MeshBasicMaterial({ color: 0xffca7a }));
@@ -546,8 +571,8 @@ function fireRocket() {
   rockets.push({ obj: o, vel: dir.multiplyScalar(42), t: 4 });
 }
 function tryPlantC4() {
-  if (objIdx !== 1) { showMsg('NO TARGET FOR C4'); return; }
-  if (dist2D(player.pos, migPos) > 7) { showMsg('GET TO THE MiG TO PLANT THE C4'); return; }
+  if (objIdx !== 2) { showMsg('NO TARGET FOR C4'); return; }
+  if (dist2D(player.pos, bridgePos) > 8) { showMsg('GET TO THE BRIDGE TO PLANT THE C4'); return; }
   showMsg('PLANTING C4…');
   pendingC4 = 2.5;
 }
@@ -576,10 +601,11 @@ function trigPos(name, fb) {
 }
 function buildObjectives() {
   OBJ.length = 0;
-  OBJ.push({ text: 'RESCUE ZIANI — N.E. OF THE BRIDGE', pos: trigPos('MAIN_GATE_SWITCH', new THREE.Vector3(-237.6, 0, -449.4)), r: 26 });
-  migPos = trigPos('PROXTRIG_MIG', migPos);
-  OBJ.push({ text: 'PLANT THE C4 — DESTROY THE BRIDGE', pos: migPos, r: 9 });
-  OBJ.push({ text: 'EXTRACTION — RETURN TO THE LZ', pos: trigPos('PICKUP_BLACKHAWK_TRIGGER', new THREE.Vector3(-113.6, 0, -230.8)), r: 14 });
+  computeMissionPoints();
+  OBJ.push({ text: 'RESCUE ZIANI — HELD N.E. OF THE BRIDGE', pos: prisonPos, r: 6 });
+  OBJ.push({ text: 'RECOVER THE C4 EXPLOSIVES', pos: c4Pos, r: 6 });
+  OBJ.push({ text: 'PLANT THE C4 — DESTROY THE BRIDGE', pos: bridgePos, r: 9 });
+  OBJ.push({ text: 'EXTRACTION — RETURN TO THE LZ WITH ZIANI', pos: trigPos('PICKUP_BLACKHAWK_TRIGGER', new THREE.Vector3(-113.6, 0, -230.8)), r: 14 });
   objMarker = new THREE.Sprite(new THREE.SpriteMaterial({
     map: new THREE.TextureLoader().load('textures/ui/gwint/IMAGE_OBJECTIVE.png'), transparent: true, depthTest: false }));
   objMarker.scale.setScalar(2.4);
@@ -608,20 +634,22 @@ function showMsg(title, sub) {
   msgT = 3.2;
 }
 function completeMig() {
-  if (objIdx !== 1) return;
-  objIdx = 2;
-  if (migObj) migObj.rotation.z = 0.12;
-  spawnSmoke(migPos.clone());
-  showMsg('MiG DESTROYED', 'FALL BACK TO THE EXTRACTION POINT');
+  if (objIdx !== 2) return;
+  objIdx = 3;
+  spawnSmoke(bridgePos.clone());
+  showMsg('BRIDGE DESTROYED', 'FALL BACK TO THE EXTRACTION POINT');
   setObjectiveText(); updateHUD();
 }
 function resetSquadToStart() {
   const sp = ENV && ENV.start ? ENV.start.pos : [-120, 0, -234];
   player.pos.set(sp[0], 0, sp[2]);
   player.pos.y = groundYCached(player.pos.x, player.pos.z);
+  { const Z = members[3]; if (Z) Z.prisoner = true; }
   members.forEach((M, i) => {
+    if (M.absent) { M.alive = false; if (M.obj) M.obj.visible = false; return; }
     M.alive = true; M.hp = 100;
-    if (i !== activeIdx) { M.pos.set(sp[0] + i * 1.6 - 2, player.pos.y, sp[2] + 2 + i); M.obj.visible = true; }
+    if (M.prisoner) { M.pos.copy(prisonPos); M.pos.y = groundYCached(prisonPos.x, prisonPos.z); if (M.obj) M.obj.position.copy(M.pos); return; }
+    if (i !== activeIdx) { M.pos.set(sp[0] + i * 1.6 - 2, player.pos.y, sp[2] + 2 + i); if (M.obj) M.obj.visible = true; }
   });
 }
 
@@ -672,6 +700,7 @@ function playMateShot(M) {
 }
 function updateMate(M, dt, now) {
   if (!M.alive || !M.obj) return;
+  if (M.prisoner) return;   // ZIANI waits at the prison until rescued
   // nearest visible enemy
   let tgt = null, td = 26;
   M._losT = (M._losT || 0) - dt;
@@ -995,7 +1024,12 @@ let camYaw = 0, camPitch = 0.32, aiming = false, firing = false;
 let aimT = 0; // time spent raising into the aim pose; first shot waits for it
 
 const startEl = document.getElementById('start');
+let cutscene = null;
+function startCutscene() { cutscene = { t: 0, dur: 8, phase: -1 }; }
+function endCutscene() { if (!cutscene) return; cutscene = null; playing = true; updateHUD(); renderer.domElement.requestPointerLock?.(); }
+addEventListener('mousedown', () => { if (cutscene) endCutscene(); });
 startEl.addEventListener('click', () => {
+  if (!window.__playLoaded) { const st = document.getElementById('stats'); if (st) st.textContent = 'STILL LOADING — ONE MOMENT…'; return; }
   if (playerHP <= 0 || missionDone) {
     playerHP = 100; missionDone = false; objIdx = 0; kills = 0;
     resetEnemies(true); resetSquadToStart(); setObjectiveText();
@@ -1004,7 +1038,7 @@ startEl.addEventListener('click', () => {
   const h1 = startEl.querySelector('h1');
   if (h1) h1.textContent = '▶ CLICK TO PLAY';
   startEl.style.display = 'none';
-  playing = true;
+  startCutscene();
   updateHUD();
   renderer.domElement.requestPointerLock?.();
 });
@@ -1035,6 +1069,7 @@ addEventListener('mouseup', (e) => {
 });
 addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('keydown', (e) => {
+  if (cutscene) { endCutscene(); return; }
   if (e.code === 'ControlLeft' || e.code === 'ControlRight') e.preventDefault();
   keys.add(e.code);
   if (e.code === 'KeyC' && playing) targetStanceIdx = targetStanceIdx === 1 ? 0 : 1;
@@ -1254,7 +1289,7 @@ function updateHUD() {
     const M = members[activeIdx];
     const s = M && M.inv ? M.inv[M.held] : null;
     const def = s ? (s.kind === 'gun' ? BD.WEAPONS[s.key] : BD.ITEMS[s.key]) : WPN;
-    mt.textContent = (def.label || '') + (s && s.kind === 'gun' && !def.melee ? ' · ' + player.ammo + '/' + WPN.mag : '') + (player.reloading ? ' · RELOADING' : '');
+    mt.textContent = (def.label || '') + (player.reloading ? ' · RELOADING' : '');
     const wi = document.querySelector('#wpnbox .wicon');
     if (wi) { const srcI = BD.ICON(def.icon); if (wi.dataset.s !== srcI) { wi.dataset.s = srcI; wi.src = srcI; } }
   }
@@ -1276,8 +1311,8 @@ function updateHUD() {
     pb.className = hpv <= 30 ? 'low' : '';
     const pi = document.getElementById('pi' + i);
     if (pi) {
-      const ic = !M.alive ? 'IMAGE_DOGTAGSINGLE' : i === activeIdx ? 'IMAGE_ORDER_RADIO'
-        : squadHold ? 'IMAGE_HOLD' : (!squadFireFree ? 'IMAGE_HOLDFIRE' : 'IMAGE_FOLLOW');
+      const ic = M.prisoner ? 'IMAGE_VIP' : !M.alive ? 'IMAGE_DOGTAGSINGLE' : i === activeIdx ? 'IMAGE_ORDER_RADIO'
+        : squadHold ? 'IMAGE_HOLDFIRE' : (!squadFireFree ? 'IMAGE_FOLLOW' : 'IMAGE_HOLD');
       const p = 'textures/ui/gwint/' + ic + '.png';
       if (pi.dataset.s !== p) { pi.dataset.s = p; pi.src = p; }
     }
@@ -1347,10 +1382,12 @@ async function load() {
       scene.add(migObj);
     }
     // preload every weapon/item/gear model once (cloned per soldier)
-    for (const def of [...Object.values(BD.WEAPONS), ...Object.values(BD.ITEMS)])
-      modelCache[def.model] = (await loader.loadAsync(def.model)).scene;
-    for (const file of [...new Set(BD.GEAR.flat().map(g => g[1]))])
-      gearCache[file] = (await loader.loadAsync('models/gear/' + file + '.glb')).scene;
+    await Promise.all([...Object.values(BD.WEAPONS), ...Object.values(BD.ITEMS)].map(async def => {
+      try { modelCache[def.model] = (await loader.loadAsync(def.model)).scene; } catch (e) { console.warn('model failed:', def.model); }
+    }));
+    await Promise.all([...new Set(BD.GEAR.flat().map(g => g[1]))].map(async file => {
+      try { gearCache[file] = (await loader.loadAsync('models/gear/' + file + '.glb')).scene; } catch (e) { console.warn('gear failed:', file); }
+    }));
 
     const hero = await loader.loadAsync('models/play/Hero01_Armstrong.glb');
     heroObj = hero.scene;
@@ -1480,6 +1517,10 @@ async function load() {
     setHeldModel(members[0]);
     player.ammo = members[0].inv[0].ammo;
     for (const def of SQUAD_DEFS) await loadMate(def);
+    // Mission 1 is a SOLO rescue in the original: BENALI deploys alone,
+    // CHERIF/BOUDIAF are not on this op, ZIANI starts as the prisoner.
+    [1, 2].forEach(i => { const M = members[i]; if (M) { M.absent = true; M.alive = false; if (M.obj) M.obj.visible = false; const c = document.getElementById('card' + i); if (c) c.style.display = 'none'; } });
+    { const Z = members[3]; if (Z && Z.obj) { Z.prisoner = true; Z.pos.copy(prisonPos); Z.pos.y = groundY(prisonPos.x, prisonPos.z); Z.obj.position.copy(Z.pos); } }
 
     async function loadMate(def) {
       const glb = await loader.loadAsync(def.model);
@@ -1603,6 +1644,17 @@ function animate() {
   const dt = Math.min(clock.getDelta(), 0.05);
   const now = clock.elapsedTime;
 
+  if (cutscene && heroObj) {
+    // intro cutscene: high sweep down to the squad leader (skip with any key/click)
+    cutscene.t += dt;
+    const k = Math.min(1, cutscene.t / cutscene.dur);
+    const a = player.yaw + 2.6 - 2.6 * k;
+    camera.position.set(player.pos.x + Math.sin(a) * (17 - 12.5 * k), player.pos.y + (10 - 7.6 * k), player.pos.z + Math.cos(a) * (17 - 12.5 * k));
+    camera.lookAt(player.pos.x, player.pos.y + 1.1, player.pos.z);
+    const ph = cutscene.t < 4 ? 0 : 1;
+    if (ph !== cutscene.phase) { cutscene.phase = ph; if (ph === 0) showMsg('NORTHERN ALGERIA — 1994', '23:00 · INFILTRATION'); else showMsg('RESCUE ZIANI', 'HELD N.E. OF THE BRIDGE — MOVE NORTH'); }
+    if (k >= 1) endCutscene();
+  }
   if (playing && heroObj) {
     nowSec = now;
     sun.position.set(player.pos.x + 10, 16, player.pos.z + 7);
@@ -1639,12 +1691,19 @@ function animate() {
       if (S.t <= 0) { scene.remove(S.obj); smokes.splice(i, 1); }
     }
     if (pendingHeal > 0) { pendingHeal -= dt; if (pendingHeal <= 0) { playerHP = Math.min(100, playerHP + 55); showMsg('WOUND DRESSED'); updateHUD(); } }
-    if (pendingC4 > 0) { pendingC4 -= dt; if (pendingC4 <= 0) explode(migPos.clone(), 16, 500); }
+    if (pendingC4 > 0) { pendingC4 -= dt; if (pendingC4 <= 0) explode(bridgePos.clone(), 16, 500); }
     if (!missionDone && OBJ.length) {
       const O = OBJ[objIdx];
       if (objIdx === 0 && dist2D(player.pos, O.pos) < O.r) {
-        objIdx = 1; showMsg('OBJECTIVE COMPLETE', OBJ[1].text); setObjectiveText(); updateHUD();
-      } else if (objIdx === 2) {
+        objIdx = 1;
+        { const Z = members[3]; if (Z && Z.prisoner) { Z.prisoner = false; showMsg('ZIANI', '\u201cGOOD TO SEE YOU. WHAT KEPT YOU?\u201d'); } else showMsg('OBJECTIVE COMPLETE', OBJ[1].text); }
+        setObjectiveText(); updateHUD();
+      } else if (objIdx === 1 && dist2D(player.pos, O.pos) < O.r) {
+        objIdx = 2;
+        const M = members[activeIdx];
+        if (M && M.inv && !M.inv.some(s => s.key === 'C4')) M.inv.push({ kind: 'item', key: 'C4', left: 1 });
+        buildItemBar(); showMsg('C4 RECOVERED', OBJ[2].text); setObjectiveText(); updateHUD();
+      } else if (objIdx === 3) {
         const allIn = members.every((M, i) => !M.alive || i === activeIdx || dist2D(M.pos, O.pos) < 30);
         if (dist2D(player.pos, O.pos) < O.r && allIn) {
           missionDone = true; playing = false;
@@ -1799,7 +1858,7 @@ function animate() {
   }
 
   // camera follow (+ aim zoom: narrower FOV, over-the-shoulder)
-  if (heroObj) {
+  if (heroObj && !cutscene) {
     const aimNow = aiming || firing;
     const _hs = curSlot();
     const targetFov = _hs && _hs.key === 'BINOCULARS' && aiming ? 11 : aimNow ? 33 : 50;
