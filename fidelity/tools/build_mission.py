@@ -81,8 +81,12 @@ def build(mdir):
     zones = []
     for model in props.get('scenes', {}):
         # every ENVI scene node with its own EVO is a placed scene (terrain
-        # zones hold terrain only; buildings/bridges/patches are scenes too)
-        if 'INTERIOR' in model or re.search(r'HERO|Bradley|RAMIREZ|JONES|Foley|IRAQ|BLACKHAWK|A10_', model, re.I):
+        # zones hold terrain only; buildings/bridges/patches are scenes too).
+        # INVISIBLE/BLOCKING/BODGE helpers are collision volumes, not visuals,
+        # and 'INTERIOR' scenes are placed separately at their env roots.
+        if 'INTERIOR' in model or re.search(r'INVISIBLE|BLOCKING|BLOCKER', model, re.I):
+            continue
+        if re.search(r'HERO|Bradley|RAMIREZ|JONES|Foley|IRAQ|BLACKHAWK|A10_', model, re.I):
             continue
         src = idx.get(model.upper())
         if not src:

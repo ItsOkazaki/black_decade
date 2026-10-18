@@ -76,6 +76,23 @@ async function addModel(path, x, z, rotY = 0, colR = 0) {
 }
 
 // ---- animation / weapon state ----
+// aim pitch: rotate the spine bones so the character (and his rifle) really
+// points up/down at the target, on top of the authored aim animation
+function findAimBones(root) {
+  const out = { spine: null, spine2: null };
+  root.traverse(o => {
+    const nm = (o.name || '').toUpperCase();
+    if (nm === 'BIP01 SPINE1') out.spine = o;
+    else if (nm === 'BIP01 SPINE2') out.spine2 = o;
+  });
+  return out;
+}
+function applyAimPitch(bones, pitch) {
+  if (!bones) return;
+  const p = THREE.MathUtils.clamp(pitch, -0.65, 0.85);
+  if (bones.spine) bones.spine.rotation.x += -p * 0.55;
+  if (bones.spine2) bones.spine2.rotation.x += -p * 0.45;
+}
 const ANIM = {
   idle: 'IDLE_LOOK_AROUND_WITH_GUN', aim: 'UPRIGHT_AIM_RIFLE',
   walk: 'UPRIGHT_WALK_WITH_RIFLE', run: 'UPRIGHT_RELAXED_RUN_WITH_RIFLE',
@@ -275,6 +292,7 @@ function buildEnemies() {
     enemies.push(makeEnemyState({ label: e.inst || 'INSURGENT', pos: p.clone(), home: p.clone(),
       yaw: e.yaw || 0, waypoints: routeFor(p.x, p.z, e.inst), texture: ENEMY_TEX_POOL[i % 4] }));
   });
+  for (const E of enemies) E.active = player.pos.distanceTo(E.pos) < ENEMY_ACTIVATE_DIST;
 }
 let playerHP = 100, dmgT = 0;
 
@@ -292,11 +310,22 @@ function enemySetAnim(E, name, once = false) {
 function resetEnemy(E) {
   E.hp = 70; E.alive = true; E.state = 'patrol'; E.wp = 0;
   E.spotT = 0; E.lostT = 0; E.burstLeft = 0; E.invPos = null; E.invT = 0; E.pauseT = 0;
+  if (!E.active && E.obj) { scene.remove(E.obj); E.obj = null; E.mixer = null; E.actions = {}; E.current = null; }
+  else if (E.active && !E.obj && enemyFactory) enemyFactory(E);
   E.pos.copy(E.home || E.waypoints[0]);
   if (E.obj) { E.obj.position.copy(E.pos); E.obj.visible = true; }
   Object.values(E.actions).forEach(a => a.stop());
   E.current = null;
   enemySetAnim(E, E_ANIM.walk);
+}
+let enemyFactory = null;   // set inside load(): builds a materialised enemy
+const ENEMY_ACTIVATE_DIST = 160;
+function updateEnemyActivation() {
+  if (!enemyFactory) return;
+  for (const E of enemies) {
+    if (E.obj || !E.alive) continue;
+    if (player.pos.distanceToSquared(E.pos) < ENEMY_ACTIVATE_DIST * ENEMY_ACTIVATE_DIST) enemyFactory(E);
+  }
 }
 // ---- enemy variety: 15 types = game faces x game props (ConnObjs.txt system) ----
 // Faces are texture transplants; beards/moustaches plug into BIP01 FACE
@@ -973,6 +1002,7 @@ function updateMate(M, dt, now) {
     const cy = Math.cos(player.yaw), sy = Math.sin(player.yaw);
     slot = _sv.set(player.pos.x + cy * sx + sy * sz, 0, player.pos.z - sy * sx + cy * sz).clone();
   }
+  M.aimPitch = tgt ? Math.atan2((tgt.pos.y + 1.2) - (M.pos.y + 1.45), Math.max(1, M.pos.distanceTo(tgt.pos))) : 0;
   if (!squadFireFree) tgt = null; // holding fire: no aiming, no shooting
   const to = new THREE.Vector3().subVectors(slot, M.pos); to.y = 0;
   const distSlot = to.length();
@@ -1478,6 +1508,7 @@ function updateEnemy(E, dt, now) {
   } else E.losT -= dt;
   const blocked = E._blocked;
   const canSee = dist < 30 && (Math.cos(dyaw) > 0.25 || dist < 7) && !blocked;
+  E.aimPitch = Math.atan2((T.pos.y + 1.25) - (E.pos.y + 1.5), Math.max(1, dist));
 
   if (E.state === 'engage') {
     if (dist > 24) {   // too far: advance on the target (walk anim, speed-matched)
@@ -1889,6 +1920,7 @@ async function load() {
         });
       } catch (e) { /* original uniform fallback */ }
       scene.add(M.obj);
+      M.aimBones = findAimBones(M.obj);
       M.mixer = new THREE.AnimationMixer(M.obj);
       (glb.animations || []).forEach(c => M.actions[c.name] = M.mixer.clipAction(c));
       M.obj.traverse(o => {
@@ -1903,7 +1935,8 @@ async function load() {
       members.push(M);
     }
 
-    function loadEnemy(E) {
+    enemyFactory = function createEnemyObjects(E) {
+    if (E.obj) return;
     E.obj = skeletonClone(foeTemplate.scene);
     E.obj.position.copy(E.pos);
     E.obj.traverse(o => {
@@ -1943,8 +1976,10 @@ async function load() {
     { const ti = enemies.indexOf(E); setEnemyType(E, ROSTER[ti % ROSTER.length], ti % ROSTER.length); }
     E.pos.y = groundY(E.pos.x, E.pos.z);
     E.obj.position.copy(E.pos);
+    E.aimBones = findAimBones(E.obj);
     enemySetAnim(E, E_ANIM.walk);
-    }
+    };
+    function loadEnemy(E) { if (E.active) enemyFactory(E); }
 
     setAnim(ANIM.idle);
     window.__playLoaded = true;
@@ -2180,14 +2215,20 @@ function animate() {
         if (actions[nm]) actions[nm].timeScale = walkMode ? speed / AUTH.walk : speed / AUTH.run;
       } else setAnim(ANIM.idle);
     }
+    updateEnemyActivation();
     enemies.forEach(E => updateEnemy(E, dt, now));
     members.forEach((M, i) => { if (i !== activeIdx) updateMate(M, dt, now); });
     updateHUD();
   }
 
   if (mixer) mixer.update(dt);
-  enemies.forEach(E => { if (E.mixer) E.mixer.update(dt); positionHeadGear(E); });
-  members.forEach((M, i) => { if (i !== activeIdx && M.mixer) M.mixer.update(dt); });
+  // aim pitch: your spine follows the camera pitch; AI spines track their target
+  if (heroObj) {
+    if (!heroObj.userData.aimBones) heroObj.userData.aimBones = findAimBones(heroObj);
+    if (aiming || firing || current === ANIM.aim) applyAimPitch(heroObj.userData.aimBones, camPitch * 0.8);
+  }
+  enemies.forEach(E => { if (E.mixer) { E.mixer.update(dt); if (E.alive && (E.state === 'engage' || E.aimPitch)) applyAimPitch(E.aimBones, E.aimPitch || 0); } positionHeadGear(E); });
+  members.forEach((M, i) => { if (i !== activeIdx && M.mixer) { M.mixer.update(dt); if (M.aimPitch) applyAimPitch(M.aimBones, M.aimPitch); } });
   if (dmgT > 0) {
     dmgT -= dt;
     const dEl = document.getElementById('dmg');
