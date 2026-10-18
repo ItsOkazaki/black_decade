@@ -28,3 +28,11 @@ passable underneath. SwiftShader runs game-time ~20x slower than wall
 clock, so every wait polls game state — never fixed sleeps. Exit code 0 =
 all passed. Run: `cd /tmp/snap && node shot3.mjs` (game must be served on
 :5175 as above).
+
+## v65 additions (smarter AI round)
+
+Also asserted: guard engages/plants/shoots without point-blank charges,
+engaged enemies take crouch/prone firing postures, enemies throw grenades,
+losing sight triggers a SEARCH with 26 s memory (not amnesia), SPACE tap
+jumps (hold = inventory), and the KIA restart is an instant in-page reset
+(a window marker proves no reload happened).

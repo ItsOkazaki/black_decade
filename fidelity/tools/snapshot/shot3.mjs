@@ -85,26 +85,55 @@ st = await until(s => s.ammo === 30, 60, 'reload completes');
 check('reload refills mag from reserve (finite ammo)', st.ammo === 30 && st.slot.reserve === res0 - (30 - firedAmmo),
   `ammo ${st.ammo}, reserve ${res0} -> ${st.slot.reserve}`);
 
-// guard shoots from his post instead of charging (try a few sentries)
+// guard engages, PLANTS and shoots — he may shift into formation but he
+// must never beeline-charge to point-blank like the old brain
+await page.evaluate(() => window.BD_TEST.hurt(-100000)); // god-mode: he WILL kill an idle player otherwise
 {
-  let ok = false, note = 'no enemy engaged';
-  const es = (await S()).enemies.slice(0, 8);
-  for (const e of es) {
-    await page.evaluate(e2 => window.BD_TEST.teleport(e2.x + 4, e2.z + 24), e);
-    const s2 = await until(s => s.enemies.some(en => en.st === 'engage'), 30, 'guard engage');
-    const en = s2.enemies.filter(x => x.st === 'engage').sort((a, b) => a.d - b.d)[0];
-    if (!en) continue;
-    const p0 = { x: en.x, z: en.z };
-    await sleep(15000);
-    const s3 = await S();
-    if (!s3.playing) { note = 'player died during guard test'; break; }
-    const en2 = s3.enemies.filter(x => x.st === 'engage').sort((a, b) => Math.hypot(a.x - p0.x, a.z - p0.z) - Math.hypot(b.x - p0.x, b.z - p0.z))[0];
-    const drift = en2 ? Math.hypot(en2.x - p0.x, en2.z - p0.z) : 99;
-    note = `engaged guard drifted ${drift.toFixed(1)}m in 15 s`;
-    ok = drift < 8;
-    break;
+  let engagedSeen = false, plantedSeen = false, minD = 999;
+  const e = (await S()).enemies[0];
+  await page.evaluate(e2 => window.BD_TEST.teleport(e2.x + 3, e2.z + 22), e);
+  await sleep(500);
+  await page.evaluate(() => window.BD_TEST.aggro());
+  const t0 = Date.now();
+  while (Date.now() - t0 < 60000) {
+    const sx = await S();
+    if (!sx.playing) break;
+    const engs = sx.enemies.filter(x => x.st === 'engage');
+    if (engs.length) {
+      engagedSeen = true;
+      if (engs.some(x => x.planted && !x.moving)) plantedSeen = true;
+      minD = Math.min(minD, ...engs.map(x => x.d));
+    }
+    if (plantedSeen) break;
+    await sleep(1800);
   }
-  check('guard shoots from post (no downhill charge)', ok, note);
+  check('guard engages, plants and shoots (no point-blank charge)', engagedSeen && plantedSeen && minD > 8,
+    `closest ${minD === 999 ? 'n/a' : minD.toFixed(1)}m, planted-fire ${plantedSeen}`);
+}
+
+// --- the smarter brain: firing postures, grenades, memory & search ---
+await page.evaluate(() => window.BD_TEST.hurt(-100000)); // survive the lesson
+{
+  const e0 = (await S()).enemies[0];
+  await page.evaluate(e => window.BD_TEST.teleport(e.x + 3, e.z + 20), e0);
+  await sleep(500);
+  await page.evaluate(() => window.BD_TEST.aggro());
+  let post = false, gren = false;
+  const end = Date.now() + 150000;
+  while (Date.now() < end && !(post && gren)) {
+    const s2 = await S();
+    if (s2.enemies.some(x => x.st === 'engage' && x.posture !== 'stand')) post = true;
+    if (s2.grenadesThrown > 0) gren = true;
+    await sleep(1500);
+  }
+  check('engaged enemies take firing postures (crouch/prone)', post);
+  check('enemies throw grenades at mid range', gren, 'thrown ' + (await S()).grenadesThrown);
+  // break line of sight completely: he must SEARCH for you, not forget
+  await page.evaluate(() => window.BD_TEST.teleport(-120.1, -233.9));
+  const s4 = await until(x => x.enemies.some(en => en.st === 'search'), 90, 'search state');
+  check('losing sight triggers a search (memory, not amnesia)',
+    s4.enemies.some(en => en.st === 'search') && s4.enemies.some(en => en.mem > 3),
+    JSON.stringify(s4.enemies.slice(0, 3).map(x => x.st + ':' + x.mem)));
 }
 
 // LAW sight + rocket kills armour: 2 rockets (hp 900, 340/hit -> need 3; check damage at least)
@@ -137,17 +166,30 @@ check('rocket damages the tank', st.armor.hp < hp0, `hp ${hp0} -> ${st.armor.hp}
 await page.screenshot({ path: OUT + '/02-tank-hit.png' });
 
 // death -> KIA restart screen (not the briefing)
-await page.evaluate(() => window.BD_TEST.hurt(9999));
+await page.evaluate(() => { window.BD_TEST.setHP(1); window.BD_TEST.hurt(50); });
 st = await until(s => s.kia === 'flex', 20, 'kia screen');
 check('death shows KIA restart screen', st.kia === 'flex', `kia=${st.kia}`);
 await page.screenshot({ path: OUT + '/03-kia.png' });
 
-// restart mission -> fresh state (ammo/HP reset)
-await page.goto(BASE + 'play.html?m=mission1&redeploy=1', { waitUntil: 'load', timeout: 60000 });
-await page.waitForFunction(() => window.__playLoaded === true, { timeout: 240000, polling: 2000 }).catch(() => {});
-st = await until(s => s.playing && s.hp === 100, 40, 'redeploy fresh');
-check('restart mission: fresh HP + full mag', st.playing === true && st.hp === 100 && st.ammo === 30, `hp ${st.hp} ammo ${st.ammo}`);
+// restart mission -> INSTANT reset, no page reload, no asset loading
+await page.evaluate(() => { window.__noReload = 1; });
+await page.evaluate(() => document.getElementById('kiaRestart').click());
+st = await until(s => s.playing && s.hp === 100, 40, 'instant restart');
+const noReload = await page.evaluate(() => window.__noReload === 1);
+check('KIA restart: instant, no reload, fresh HP + full mag',
+  st.playing === true && st.hp === 100 && st.ammo === 30 && noReload,
+  `hp ${st.hp} ammo ${st.ammo} noReload=${noReload}`);
 await page.screenshot({ path: OUT + '/04-redeployed.png' });
+
+// jump: SPACE tap (hold is the inventory)
+await page.keyboard.down('Space');
+await sleep(70);
+await page.keyboard.up('Space');
+let sawAir = false;
+for (let i = 0; i < 50 && !sawAir; i++) { const sj = await S(); if (sj.airborne) sawAir = true; else await sleep(300); }
+check('SPACE tap jumps', sawAir);
+st = await until(s2 => !s2.airborne, 60, 'jump lands');
+check('jump lands back on the ground unharmed', !st.airborne && st.hp === 100, `hp ${st.hp}`);
 
 // bridge: cross ON the deck, and pass UNDER it in the gorge (refY ground fix)
 await page.evaluate(() => window.BD_TEST.hurt(-100000)); // guards can't stop the walk test

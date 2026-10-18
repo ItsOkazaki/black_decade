@@ -76,7 +76,7 @@ function canStandAt(nx, nz, dx, dz, refY) {
   const h = groundHitCached(nx, nz, refY); if (h === null) return false;
   const L = Math.hypot(dx, dz) || 1; dx /= L; dz /= L;
   const hF = groundHitCached(nx + dx * 0.6, nz + dz * 0.6, refY), hB = groundHitCached(nx - dx * 0.6, nz - dz * 0.6, refY);
-  if (hF !== null && hB !== null && Math.abs(hF - hB) / 1.2 > 1.25) return false;   // >46 deg face
+  if (hF !== null && hB !== null && (hF - hB) / 1.2 > 1.25) return false;   // steep UP face blocks; steep DOWN is a ledge — you fall
   if (h - refY > 0.95) return false;                                                // ledge/cliff face
   return true;
 }
@@ -435,6 +435,7 @@ function enemySetAnim(E, name, once = false) {
 
 function resetEnemy(E) {
   E.hp = 70; E.alive = true; E.state = 'patrol'; E.wp = 0;
+  E.memT = 0; E.alert = 0; E.lastSeen = null; E.coverPos = null; E.posture = 'stand'; E.searchPts = null; E.role = undefined;
   E.spotT = 0; E.lostT = 0; E.burstLeft = 0; E.invPos = null; E.invT = 0; E.pauseT = 0;
   if (!E.active && E.obj) { scene.remove(E.obj); E.obj = null; E.mixer = null; E.actions = {}; E.current = null; }
   else if (E.active && !E.obj && enemyFactory) enemyFactory(E);
@@ -579,6 +580,7 @@ function mateSetAnim(M, name, once = false) {
 }
 
 function hurtEnemy(E, dmg) {
+  E.suppressedT = (typeof nowSec === 'number' ? nowSec : 0) + 2.5;
   if (!E.alive) return;
   E.hp -= dmg;
   if (E.hp <= 0) {
@@ -626,6 +628,7 @@ function switchTo(i) {
 const modelCache = {}; // model path -> template scene (cloned per man)
 const gearCache = {};
 let settledFire = false, nowSec = 0, throwCd = 0, pendingHeal = 0, pendingC4 = 0;
+let _spaceT = 0;
 let kills = 0, missionDone = false;
 const projectiles = [], rockets = [], smokes = [];
 let migObj = null, migPos = new THREE.Vector3(-146.8, 0, -495.6), objMarker = null;
@@ -963,7 +966,7 @@ async function buildArmor(sp) {
     const gy = groundY(sp.x, sp.z);
     o.position.set(sp.x, gy - bb.min.y, sp.z);
     o.rotation.y = sp.yaw;
-    o.traverse(m2 => { if (m2.isMesh) { m2.castShadow = !SET.lowGfx; m2.receiveShadow = true; } });
+    o.traverse(m2 => { if (m2.isMesh) { m2.castShadow = !SET.lowGfx; m2.receiveShadow = true; const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.color && mm.userData.c0 === undefined) mm.userData.c0 = mm.color.getHex(); }); } });
     scene.add(o);
     const fwd = new THREE.Vector3(Math.sin(sp.yaw), 0, Math.cos(sp.yaw));
     armor = { obj: o, hp: 900, alive: true, yaw: sp.yaw, wait: 2, dir: 1, fireT: 2.5, smokeT: 0,
@@ -1226,6 +1229,30 @@ function completeMig() {
   spawnSmoke(bridgePos.clone());
   showMsg('BRIDGE DESTROYED', 'FALL BACK TO THE EXTRACTION POINT');
   setObjectiveText(); updateHUD();
+}
+function restartMission() {
+  // full mission reset WITHOUT reloading the page — assets stay in memory,
+  // only the state is rebuilt: fresh kit, fresh ammo, everyone back on post
+  playerHP = 100; missionDone = false; objIdx = 0; kills = 0; dmgT = 0;
+  pendingC4 = 0; pendingHeal = 0; player.vy = 0; player.airborne = false;
+  for (const R of rockets) scene.remove(R.obj); rockets.length = 0;
+  for (const Pj of projectiles) scene.remove(Pj.obj); projectiles.length = 0;
+  for (const Sk of smokes) scene.remove(Sk.obj); smokes.length = 0;
+  members.forEach((M, i) => { M.inv = makeInv(i); M.held = 0; M.hp = 100; M.alive = true; });
+  if (activeIdx !== 0) switchTo(0);
+  resetEnemies(false);
+  pickups.forEach(p => { p.taken = false; if (p.obj) p.obj.visible = true; });
+  if (armor && armorSpawn) {
+    armor.alive = true; armor.hp = 900; armor.fireT = 3; armor.wait = 1; armor.dir = 1; armor.yaw = armorSpawn.yaw;
+    armor.obj.position.set(armorSpawn.x, groundY(armorSpawn.x, armorSpawn.z), armorSpawn.z);
+    armor.obj.rotation.y = armorSpawn.yaw;
+    armor.obj.traverse(m2 => { if (m2.isMesh) { const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.userData.c0 !== undefined) mm.color.setHex(mm.userData.c0); }); } });
+  }
+  resetSquadToStart();
+  setHeld(0);
+  const k = document.getElementById('kia'); if (k) k.style.display = 'none';
+  try { setCanvas('killsCv', GF.text('HOSTILES DOWN 0', { size: 'S', color: '#e8a09a', scale: 1.5 })); } catch (e) { /* decoration */ }
+  setObjectiveText(); buildItemBar(); updateHUD();
 }
 function resetSquadToStart() {
   const sp = ENV && ENV.start ? ENV.start.pos : [-120, 0, -234];
@@ -1756,9 +1783,7 @@ startEl.addEventListener('click', (e) => {
   if (!window.__playLoaded) return;
   if (!e.target.closest('#deployGo')) return;
   if (playerHP <= 0 || missionDone) {
-    playerHP = 100; missionDone = false; objIdx = 0; kills = 0;
-    resetEnemies(true); resetSquadToStart(); setObjectiveText();
-    setCanvas('killsCv', GF.text('HOSTILES DOWN 0', { size: 'S', color: '#e8a09a', scale: 1.5 }));
+    restartMission(); resetEnemies(true);
   }
   const h1 = startEl.querySelector('h1');
   if (h1) h1.textContent = '▶ CLICK TO PLAY';
@@ -1769,7 +1794,7 @@ startEl.addEventListener('click', (e) => {
   renderer.domElement.requestPointerLock?.();
 });
 { const kr = document.getElementById('kiaRestart');
-  if (kr) kr.onclick = () => { location.href = 'play.html?m=' + MIS + '&redeploy=1'; };   // fresh mission: full ammo & kit
+  if (kr) kr.onclick = () => { restartMission(); playing = true; };   // instant: full ammo & kit, no reload
   const kb = document.getElementById('kiaBrief');
   if (kb) kb.onclick = () => { document.getElementById('kia').style.display = 'none'; startEl.style.display = 'flex'; };
 }
@@ -1825,7 +1850,7 @@ addEventListener('keydown', (e) => {
   }
   if (e.code === 'KeyP') { playing = false; startEl.style.display = 'flex'; document.exitPointerLock?.(); }
   if (e.code === 'Tab' && playing) { e.preventDefault(); toggleInv(); }
-  if (e.code === 'Space') { e.preventDefault(); if (playing && !invOpen && !e.repeat) setQuickInv(true); }
+  if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) _spaceT = performance.now(); }
   if (quickInv && playing && !e.repeat && (e.code === 'KeyW' || e.code === 'KeyS'))
     setHeld(members[activeIdx].held + (e.code === 'KeyS' ? 1 : -1));
   if (quickInv && playing && !e.repeat && (e.code === 'KeyA' || e.code === 'KeyD')) {
@@ -1858,7 +1883,12 @@ addEventListener('wheel', (e) => {
 });
 addEventListener('keyup', (e) => {
   keys.delete(e.code);
-  if (e.code === 'Space' && quickInv) setQuickInv(false);
+  if (e.code === 'Space') {
+    if (quickInv) setQuickInv(false);
+    else if (playing && performance.now() - _spaceT < 230 && !player.airborne && player.stance !== 'prone') {
+      player.airborne = true; player.vy = 7.6;   // tap = jump; hold = inventory
+    }
+  }
 });
 
 function startReload() {
@@ -1908,6 +1938,7 @@ function doFire(now) {
   const _fm = (slot.key === 'M16A2' || slot.key === 'SAW') ? player.fireMode : 'AUTO';
   if (_fm === 'SEMI' && player.semiLatch) return;
   raiseAlert(player.pos, 30);
+  window.__lastShotT = now;   // enemies duck when your shots start cracking
   player.nextShot = now + W.interval;
   if (player.ammo <= 0) { playClick(); player.nextShot = now + 0.3; return; }
   player.ammo--; slot.ammo = player.ammo;
@@ -1939,21 +1970,71 @@ function doFire(now) {
 }
 
 // steer with wall-sliding: try the wanted heading, then ±40°, then ±80° —
-// men flow around hillsides instead of grinding straight into them
-function enemyStep(E, dx, dz, speed, dt) {
+// men flow around hillsides instead of grinding straight into them. A step
+// that drops more than maxDrop is refused: soldiers contour along a hill
+// and pick a walkable line down instead of falling off the edge.
+function enemyStep(E, dx, dz, speed, dt, maxDrop = 1.35) {
   const L = Math.hypot(dx, dz) || 1; dx /= L; dz /= L;
   const base = Math.atan2(dx, dz);
-  for (const off of [0, 0.65, -0.65, 1.25, -1.25]) {
+  for (const off of [0, 0.65, -0.65, 1.25, -1.25, 1.9, -1.9]) {
     const a = base + off, sx = Math.sin(a), sz = Math.cos(a);
     const nx = E.pos.x + sx * speed * dt, nz = E.pos.z + sz * speed * dt;
-    if (canStandAt(nx, nz, sx, sz, E.pos.y)) {
-      E.pos.x = nx; E.pos.z = nz;
-      let dy = a - E.yaw; while (dy > Math.PI) dy -= Math.PI * 2; while (dy < -Math.PI) dy += Math.PI * 2;
-      E.yaw += THREE.MathUtils.clamp(dy, -dt * 5, dt * 5);
-      return true;
-    }
+    if (!canStandAt(nx, nz, sx, sz, E.pos.y)) continue;
+    const h = groundHitCached(nx, nz, E.pos.y);
+    if (h === null || E.pos.y - h > maxDrop) continue;   // cliff edge: find another way down
+    E.pos.x = nx; E.pos.z = nz;
+    let dy = a - E.yaw; while (dy > Math.PI) dy -= Math.PI * 2; while (dy < -Math.PI) dy += Math.PI * 2;
+    E.yaw += THREE.MathUtils.clamp(dy, -dt * 5, dt * 5);
+    return true;
   }
   return false;
+}
+// where a man of this role belongs around the target: a fireteam ring, not
+// a conga line — point pushes closest, base anchors at range, flank swings wide
+function formationPos(E, T) {
+  const rangeWanted = E.role === 'point' ? 19 : E.role === 'flank' ? 25 : 34;
+  let ang = Math.atan2(E.pos.x - T.pos.x, E.pos.z - T.pos.z);
+  if (E.role === 'flank') ang += (E.flankSide || 1) * 1.0;
+  return new THREE.Vector3(T.pos.x + Math.sin(ang) * rangeWanted, 0, T.pos.z + Math.cos(ang) * rangeWanted);
+}
+// find a nearby spot that actually hides him from the target (LOS-blocked)
+function findCover(E, T) {
+  const away = Math.atan2(E.pos.x - T.pos.x, E.pos.z - T.pos.z);
+  const chestY = T.pos.y + 1.2;
+  for (const [ang, r] of [[away, 5], [away + 0.8, 5], [away - 0.8, 5], [away + 1.6, 6], [away - 1.6, 6], [away, 8], [away + 0.5, 3.5], [away - 0.5, 3.5]]) {
+    const x = E.pos.x + Math.sin(ang) * r, z = E.pos.z + Math.cos(ang) * r;
+    const h = groundHitCached(x, z, E.pos.y);
+    if (h === null || Math.abs(h - E.pos.y) > 1.2) continue;
+    if (!canStandAt(x, z, Math.sin(ang), Math.cos(ang), E.pos.y)) continue;
+    const from = new THREE.Vector3(x, h + 1.1, z);
+    raycaster.set(from, new THREE.Vector3(T.pos.x - x, chestY - from.y, T.pos.z - z).normalize());
+    raycaster.far = Math.hypot(T.pos.x - x, T.pos.z - z);
+    if (raycaster.intersectObjects(_groundMeshes, false).length > 0) return new THREE.Vector3(x, h, z);
+  }
+  return null;
+}
+let grenadesThrown = 0;
+function enemyGrenade(E, T) {
+  grenadesThrown++;
+  const o = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), new THREE.MeshBasicMaterial({ color: 0x2a2f22 }));
+  o.position.set(E.pos.x, E.pos.y + 1.5, E.pos.z);
+  scene.add(o);
+  const dir = new THREE.Vector3().subVectors(T.pos, o.position);
+  const d = Math.hypot(dir.x, dir.z);
+  dir.normalize();
+  projectiles.push({ obj: o, vel: dir.multiplyScalar(13).add(new THREE.Vector3(0, 5.2, 0)), kind: 'FRAG', t: THREE.MathUtils.clamp(d / 12, 0.7, 2.4) });
+}
+function makeSearch(E) {
+  E.searchPts = [];
+  const c = E.lastSeen || E.pos;
+  for (let i = 0; i < 4; i++) {
+    const a = Math.random() * 6.283, r = 4 + Math.random() * 9;
+    const x = c.x + Math.sin(a) * r, z = c.z + Math.cos(a) * r;
+    const h = groundHitCached(x, z, E.pos.y);
+    if (h !== null && Math.abs(h - E.pos.y) < 1.6) E.searchPts.push(new THREE.Vector3(x, h, z));
+  }
+  if (!E.searchPts.length) E.searchPts.push(c.clone());
+  E.searchI = 0; E.lookT = 0;
 }
 function raiseAlert(pos, radius) {
   for (const E of enemies) {
@@ -1962,7 +2043,9 @@ function raiseAlert(pos, radius) {
   }
 }
 function updateEnemy(E, dt, now) {
-  if (E.homeYaw === undefined) { E.homeYaw = E.yaw; E.homePos = E.pos.clone(); E.pauseT = 0; E.scanPh = Math.random() * 6.28; E.lastSeen = null; E.alertT = 0; E.phaseT = 1 + Math.random() * 2; E.planted = false; }
+  if (E.homeYaw === undefined) { E.homeYaw = E.yaw; E.homePos = E.pos.clone(); E.pauseT = 0; E.scanPh = Math.random() * 6.28; E.lastSeen = null; E.alertT = 0; E.phaseT = 1 + Math.random() * 2; E.planted = false;
+    E.posture = 'stand'; E.memT = 0; E.alert = 0; E.thinkT = Math.random() * 0.4; E.role = undefined; E.flankSide = 1;
+    E.grenadeCd = now + 6 + Math.random() * 10; E.crouchPref = 0.35 + Math.random() * 0.5; E.suppressedT = 0; E.duckUntil = 0; E.coverPos = null; E.hideUntil = 0; E.searchPts = null; E.searchI = 0; E.lookT = 0; }
   if (E.obj) { const vis = player.pos.distanceToSquared(E.pos) < 22500; if (E.obj.visible !== vis) E.obj.visible = vis; }
   if (!E.obj || !E.mixer || !E.alive) return;
   // target = nearest living squad member (you or a mate)
@@ -1980,7 +2063,8 @@ function updateEnemy(E, dt, now) {
   while (dyaw > Math.PI) dyaw -= Math.PI * 2;
   while (dyaw < -Math.PI) dyaw += Math.PI * 2;
   // line of sight: enemy head -> player chest, blocked by environment
-  const head = new THREE.Vector3(E.pos.x, E.pos.y + 1.55, E.pos.z);
+  const headH = E.posture === 'prone' ? 0.55 : E.posture === 'crouch' ? 1.15 : 1.55;
+  const head = new THREE.Vector3(E.pos.x, E.pos.y + headH, E.pos.z);
   const chest = new THREE.Vector3(T.pos.x, T.pos.y + 1.2, T.pos.z);
   const dir = new THREE.Vector3().subVectors(chest, head);
   raycaster.set(head, dir.clone().normalize());
@@ -1997,61 +2081,88 @@ function updateEnemy(E, dt, now) {
   E.spotNeed = (dist < 18 ? 0.35 : dist < 45 ? 0.7 : 1.3)
     * (T.stance === 'crouch' ? 1.7 : T.stance === 'prone' ? 2.6 : 1)
     * (!T.moving && dist > 15 ? 1.5 : 1);
-  E.aimPitch = Math.atan2((T.pos.y + 1.25) - (E.pos.y + 1.5), Math.max(1, dist));
+  E.aimPitch = Math.atan2((T.pos.y + 1.25) - (E.pos.y + headH + 0.1), Math.max(1, dist));
 
   if (E.state === 'engage') {
-    // fire-and-movement cycle: bound forward at the run, plant, fire, bound again
-    E.phaseT -= dt;
-    if (E.phaseT <= 0) { E.planted = !E.planted; E.phaseT = E.planted ? 1.7 + Math.random() * 1.6 : 1.8 + Math.random() * 2; }
     if (canSee) {
-      E.lastSeen = T.pos.clone();
+      E.lastSeen = T.pos.clone(); E.memT = 26; E.alert = 1; E.lostT = 0;
       if (now > E.alertT) { E.alertT = now + 7; raiseAlert(E.pos, 20); }   // shout the contact to nearby guards
+    } else {
+      E.lostT += dt;
+      // he does NOT forget you the second you break line of sight
+      if (E.lostT > 1.2 && E.lastSeen) { E.state = 'search'; makeSearch(E); }
+    }
+    // --- think cycle (~3 Hz): role, posture, cover, grenades ---
+    E.thinkT -= dt;
+    if (E.thinkT <= 0) {
+      E.thinkT = 0.35 + Math.random() * 0.2;
+      if (E.role === undefined) { const ri = enemies.indexOf(E) % 3; E.role = ri === 0 ? 'point' : ri === 1 ? 'base' : 'flank'; E.flankSide = (enemies.indexOf(E) % 2) ? 1 : -1; }
+      if ((E.hp <= 26 || now < E.suppressedT) && now > E.hideUntil && !E.coverPos) {
+        const c = findCover(E, T);
+        if (c) { E.coverPos = c; E.hideUntil = now + 2.4 + Math.random() * 2.2; }
+      }
+      if (now - (window.__lastShotT || -9) < 0.45 && canSee && Math.random() < 0.55) E.duckUntil = now + 1 + Math.random();   // incoming fire: duck
+      const settled = canSee && dist <= E_FIRE_RANGE;
+      E.wantPosture = now < E.duckUntil ? 'crouch' : settled ? (dist > 48 ? 'prone' : (Math.random() < E.crouchPref ? 'crouch' : 'stand')) : 'stand';
     }
     E._moving = false;
-    if (canSee && dist <= E_FIRE_RANGE) {
-      // a guard with eyes on you and the range SHOOTS FROM HIS POSITION —
-      // hilltop and watchtower men hold their post instead of charging down
-      E.planted = true;
-      enemySetAnim(E, E_ANIM.aim);
-    } else if (!canSee && E.lastSeen) {
-      // lost visual: RUN to the last seen position and sweep it
-      const to = new THREE.Vector3().subVectors(E.lastSeen, E.pos); to.y = 0;
-      if (to.length() > 1.6) {
-        if (enemyStep(E, to.x, to.z, 4.35, dt)) E._moving = true;
-        enemySetAnim(E, E_ANIM.run); if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
-      } else { enemySetAnim(E, E_ANIM.idle); E.yaw += Math.sin(now * 0.9 + E.scanPh) * dt * 1.4; }
-    } else if (canSee && dist > E_FIRE_RANGE) {
-      // too far to shoot: close at the run (wall-sliding around the hills),
-      // then stop inside firing range and engage from there
-      const step = toPlayer.clone(); step.y = 0; step.normalize();
-      const stag = Math.sin(now * 1.5 + E.scanPh) * 0.3;
-      const px = -step.z, pz = step.x;
-      step.x += px * stag; step.z += pz * stag;
-      if (enemyStep(E, step.x, step.z, 4.35, dt)) E._moving = true;
-      enemySetAnim(E, E_ANIM.run);
-      if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
-    } else if (E.homePos && E.homePos.distanceTo(E.pos) > 5) {
-      // leash: no contact and far from his post — return to it
-      const to = new THREE.Vector3().subVectors(E.homePos, E.pos); to.y = 0;
-      if (enemyStep(E, to.x, to.z, 3.6, dt)) E._moving = true;
-      enemySetAnim(E, E_ANIM.run);
-      if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 3.6 / AUTH.run;
-    } else enemySetAnim(E, E_ANIM.aim);
-    if (canSee) E.yaw += dyaw * Math.min(1, dt * 6);
-    if (canSee) E.lostT = 0;
-    else {
-      E.lostT += dt;
-      if (E.lostT > 10) { E.state = 'patrol'; E.spotT = 0; enemySetAnim(E, E_ANIM.walk); }
+    let firing = false;
+    if (E.coverPos) {
+      // break contact: run for the cover spot, stay down, then re-engage
+      const to = new THREE.Vector3().subVectors(E.coverPos, E.pos); to.y = 0;
+      if (to.length() > 0.8) {
+        if (enemyStep(E, to.x, to.z, 4.4, dt)) E._moving = true;
+        enemySetAnim(E, E_ANIM.run); if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.4 / AUTH.run;
+        E.posture = 'stand';
+      } else {
+        E.posture = 'crouch';
+        enemySetAnim(E, 'KNEELING_STANCE_WITH_RIFLE');
+        if (now > E.hideUntil) E.coverPos = null;
+      }
+    } else if (canSee) {
+      const inBand = dist <= E_FIRE_RANGE && dist >= 12;
+      if (E.role === 'base' && inBand && dist > 16) {
+        firing = true;   // base of fire: anchor the position and shoot
+      } else {
+        // point & flank men (and anyone out of range) move to their ring
+        // position around the target — a formation, not a conga line
+        const dp = formationPos(E, T);
+        const to = new THREE.Vector3().subVectors(dp, E.pos); to.y = 0;
+        if (to.length() > 2.6 || !inBand) {
+          if (enemyStep(E, to.x, to.z, 4.35, dt)) E._moving = true;
+          enemySetAnim(E, E_ANIM.run);
+          if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
+        } else firing = true;
+        if (dist > E_FIRE_RANGE && to.length() <= 2.6) {
+          // ring spot unreachable/far: just close on the target
+          if (enemyStep(E, toPlayer.x, toPlayer.z, 4.35, dt)) E._moving = true;
+          enemySetAnim(E, E_ANIM.run);
+        }
+      }
     }
-    if (canSee && dist <= E_FIRE_RANGE && now >= E.nextShot) {
+    E.planted = firing && !E._moving;
+    if (firing) {
+      E.posture = E._moving ? 'stand' : (E.wantPosture || 'stand');
+      if (E.posture === 'prone') enemySetAnim(E, 'PRONE_AIM_RIFLE');
+      else if (E.posture === 'crouch') enemySetAnim(E, 'KNEELING_STANCE_WITH_RIFLE');
+      else enemySetAnim(E, E_ANIM.aim);
+    } else if (!E.coverPos && !E._moving) E.posture = 'stand';
+    if (canSee) E.yaw += dyaw * Math.min(1, dt * 6);
+    // grenades: flush a target at mid range, every man on his own clock
+    if (canSee && !E._moving && !E.coverPos && dist > 12 && dist < 31 && now > E.grenadeCd) {
+      E.grenadeCd = now + 10 + Math.random() * 9;
+      enemyGrenade(E, T);
+    }
+    if (canSee && dist <= E_FIRE_RANGE && !E.coverPos && now >= E.nextShot) {
       if (E.burstLeft <= 0) E.burstLeft = 3 + Math.floor(Math.random() * 3);
       E.burstLeft--;
       E.nextShot = now + (E.burstLeft > 0 ? 0.115 : 0.85 + Math.random() * 0.75);
       playAK(dist);
-      flash.position.set(E.pos.x + Math.sin(E.yaw) * 0.7, 1.35, E.pos.z + Math.cos(E.yaw) * 0.7);
+      flash.position.set(E.pos.x + Math.sin(E.yaw) * 0.7, E.pos.y + headH + 0.1, E.pos.z + Math.cos(E.yaw) * 0.7);
       flash.intensity = 40; flashT = 0.05;
       let p = dist < 12 ? 0.50 : dist < 25 ? 0.36 : dist < 45 ? 0.26 : 0.17;
       if (E._moving) p *= 0.55; else if (E.planted) p *= 1.15;   // running snaps shots off; planted fires true
+      if (E.posture === 'prone') p *= 1.12; else if (E.posture === 'crouch') p *= 1.06;
       if (T.stance === 'crouch') p *= 0.75;
       else if (T.stance === 'prone') p *= 0.55;
       if (T.moving) p *= 0.8;
@@ -2072,6 +2183,47 @@ function updateEnemy(E, dt, now) {
         updateHUD();
       }
     }
+  } else if (E.state === 'search') {
+    // hunting: sweep the last-seen ground point to point, weapon up
+    E.memT -= dt;
+    if (canSee) {
+      E.spotT += dt;
+      if (E.spotT > 0.45) { E.state = 'engage'; E.nextShot = now + 0.3; E.lastSeen = T.pos.clone(); E.memT = 26; }
+    } else E.spotT = Math.max(0, E.spotT - dt);
+    if (E.memT <= 0) { E.state = 'return'; E.alert = 0; }
+    else {
+      const tp = (E.searchPts && E.searchPts[E.searchI]) || E.lastSeen || E.homePos;
+      const to = new THREE.Vector3().subVectors(tp, E.pos); to.y = 0;
+      if (E.lookT > 0) {
+        E.lookT -= dt;
+        E.posture = 'crouch';
+        enemySetAnim(E, 'KNEELING_STANCE_WITH_RIFLE');
+        E.yaw += Math.sin(now * 0.8 + E.scanPh) * dt * 1.6;
+      } else if (to.length() < 1.2) {
+        E.lookT = 1.3 + Math.random();
+        E.searchI = (E.searchI + 1) % Math.max(1, (E.searchPts || []).length);
+        if (E.searchI === 0 && E.memT < 14) makeSearch(E);   // still warm: widen the sweep once
+      } else {
+        if (enemyStep(E, to.x, to.z, 3.9, dt)) E._moving = true;
+        enemySetAnim(E, E_ANIM.run);
+        if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 3.9 / AUTH.run;
+        E.posture = 'stand';
+      }
+    }
+  } else if (E.state === 'return') {
+    // memory cold: walk back to his post like nothing — no, like a soldier
+    if (canSee) {
+      E.spotT += dt;
+      if (E.spotT > E.spotNeed * 0.6) { E.state = 'engage'; E.nextShot = now + 0.35; E.lastSeen = T.pos.clone(); E.memT = 26; }
+    } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
+    const to = new THREE.Vector3().subVectors(E.homePos, E.pos); to.y = 0;
+    if (to.length() < 1.3) { E.state = 'patrol'; enemySetAnim(E, E_ANIM.walk); }
+    else {
+      enemyStep(E, to.x, to.z, 1.7, dt);
+      enemySetAnim(E, E_ANIM.walk);
+      if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 1.7 / AUTH.walk;
+      E.posture = 'stand';
+    }
   } else if (E.state === 'investigate') {
     // heard something: move to the spot, look around, then return to post
     if (canSee) {
@@ -2084,7 +2236,7 @@ function updateEnemy(E, dt, now) {
       enemySetAnim(E, E_ANIM.idle);
       E.invT -= dt;
       E.yaw += Math.sin(now * 0.7 + E.scanPh) * dt * 1.1;
-      if (E.invT <= 0) { E.state = 'patrol'; enemySetAnim(E, E_ANIM.walk); }
+      if (E.invT <= 0) { E.state = 'return'; }
     } else {
       to.normalize();
       enemyStep(E, to.x, to.z, 3.9, dt);
@@ -2095,7 +2247,7 @@ function updateEnemy(E, dt, now) {
     if (canSee) {
       E.spotT += dt;
       if (E.spotT > E.spotNeed) {
-        E.state = 'engage'; E.nextShot = now + 0.45; E.lastSeen = T.pos.clone();
+        E.state = 'engage'; E.nextShot = now + 0.45; E.lastSeen = T.pos.clone(); E.memT = 26; E.alert = 1;
         if (Math.random() < 0.55) playVoice('spotted_infantry_loud', 0.5);
         if (Math.random() < 0.5) raiseAlert(E.pos, 22);   // only sometimes does a shout carry (alerts keep last-seen only)
       }
@@ -2131,6 +2283,13 @@ function updateEnemy(E, dt, now) {
     const dx = E.pos.x - c.x, dz = E.pos.z - c.z;
     const d = Math.hypot(dx, dz), min = c.r + 0.35;
     if (d > 0.001 && d < min) { E.pos.x = c.x + dx / d * min; E.pos.z = c.z + dz / d * min; }
+  }
+  // fireteam spacing: never stack two men on the same firing spot
+  for (const O of enemies) {
+    if (O === E || !O.alive) continue;
+    const dx = E.pos.x - O.pos.x, dz = E.pos.z - O.pos.z;
+    const d2 = dx * dx + dz * dz;
+    if (d2 > 0.0001 && d2 < 4.4) { const d = Math.sqrt(d2); E.pos.x += dx / d * (2.1 - d) * 0.5; E.pos.z += dz / d * (2.1 - d) * 0.5; }
   }
   E.pos.y += (groundForY(E.pos) - E.pos.y) * Math.min(1, dt * 9);
   E.obj.position.copy(E.pos);
@@ -2651,6 +2810,7 @@ function animate() {
       objMarker.position.set(O.pos.x, groundYCached(O.pos.x, O.pos.z) + 6 + Math.sin(now * 2) * 0.6, O.pos.z);
     }
     if (msgT > 0) { msgT -= dt; if (msgT <= 0) document.getElementById('msg').style.opacity = 0; }
+    if (keys.has('Space') && !quickInv && !invOpen && performance.now() - _spaceT > 230) setQuickInv(true);
     // stance ladder stepping (stand <-> crouch <-> prone, never direct)
     if (stanceIdx !== targetStanceIdx) {
       stanceStepT -= dt;
@@ -2682,7 +2842,8 @@ function animate() {
         if (!ax && !az) return false;
         const nx = THREE.MathUtils.clamp(player.pos.x + ax, cb ? cb.min.x + 1 : -352, cb ? cb.max.x - 1 : 24);
         const nz = THREE.MathUtils.clamp(player.pos.z + az, cb ? cb.min.z + 1 : -700, cb ? cb.max.z - 1 : -78);
-        if (!canStandAt(nx, nz, move.x, move.z, player.pos.y)) return false;   // void / cliff / ledge: blocked
+        if (player.airborne) { if (groundHitCached(nx, nz) === null && groundHitCached(nx, nz, player.pos.y + 0.55) === null) return false; }
+        else if (!canStandAt(nx, nz, move.x, move.z, player.pos.y)) return false;   // void / cliff face: blocked
         player.pos.x = nx; player.pos.z = nz; return true;
       };
       const stepped = tryStep(move.x * stepLen, move.z * stepLen)
@@ -2900,7 +3061,8 @@ window.BD_TEST = {
     slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, reserve: s2.reserve, left: s2.left } : null; })(),
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
-    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving })),
+    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
+    grenadesThrown,
     pickups: pickups.map(p => ({ t: p.type, x: p.x, z: p.z, d: +Math.hypot(p.x - player.pos.x, p.z - player.pos.z).toFixed(1), taken: p.taken })),
     armor: armor ? { hp: armor.hp, alive: armor.alive, x: +armor.obj.position.x.toFixed(1), z: +armor.obj.position.z.toFixed(1) } : null,
     hasC4: members.some(M => M.inv && M.inv.some(s2 => s2.key === 'C4')) }),
@@ -2916,6 +3078,8 @@ window.BD_TEST = {
   give(key) { const M = members[activeIdx]; const def = BD.WEAPONS[key]; M.inv.push({ kind: 'gun', key, ammo: def.mag, reserve: key === 'RPG7' ? 3 : 0, left: -1 }); setHeld(M.inv.length - 1); },
   select(key) { const M = members[activeIdx]; const i = M.inv.findIndex(s2 => s2.key === key); if (i >= 0) setHeld(i); },
   hurt(n) { playerHP -= n; if (playerHP <= 0) die('TEST'); },
+  setHP(v) { playerHP = v; },
+  aggro() { let n = 0; for (const E of enemies) { if (!E.alive) continue; if (E.pos.distanceTo(player.pos) < 70) { E.state = 'engage'; E.lastSeen = player.pos.clone(); E.memT = 26; E.nextShot = nowSec + 0.5; if (n === 0) E.grenadeCd = nowSec + 0.5; n++; } } },
   pressE() { dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyE' })); },
   reload() { startReload(); },
 };
