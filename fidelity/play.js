@@ -1631,8 +1631,10 @@ const clock = new THREE.Clock();
 let _fpsAcc = 0, _fpsN = 0, _fpsT = 0;
 function animate() {
   requestAnimationFrame(animate);
+  const rawDt = clock.getDelta();
+  const dt = Math.min(rawDt, 0.05);
   { // adaptive quality: shed pixels before shedding frames
-    const raw = clock.getDelta();
+    const raw = rawDt;
     _fpsAcc += raw; _fpsN++; _fpsT += raw;
     if (_fpsT > 2) {
       const avg = _fpsAcc / Math.max(1, _fpsN);
@@ -1641,7 +1643,6 @@ function animate() {
       else if (avg < 0.015 && renderer.getPixelRatio() < 1.5 && !SET.lowGfx) renderer.setPixelRatio(Math.min(1.5, renderer.getPixelRatio() + 0.15));
     }
   }
-  const dt = Math.min(clock.getDelta(), 0.05);
   const now = clock.elapsedTime;
 
   if (cutscene && heroObj) {
