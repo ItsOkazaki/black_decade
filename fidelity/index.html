@@ -31,11 +31,12 @@
   @media(max-width:620px){#forceCards{grid-template-columns:1fr}}
   .fcard{position:relative;border:2px solid rgba(178,202,150,.7);border-radius:14px;overflow:hidden;cursor:pointer;background:#101408;text-align:center;transition:filter .12s}
   .fcard:hover{border-color:#ffe14d;filter:brightness(1.15)}
-  .flagbg{height:104px;position:relative;display:flex;align-items:center;justify-content:center}
+  .flagbg{height:104px;position:relative;display:flex;align-items:center;justify-content:center;background:#0b0b0b}
+  .dzEmblem{height:92px;width:92px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
   .flagbg svg{position:absolute;inset:0;width:100%;height:100%}
   .flagGIS{background:#0b0b0b}
   .flagGIS img{height:96px;width:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(0,0,0,.7)}
-  .squadpic{width:100%;height:118px;object-fit:cover;object-position:center 30%;display:block;border-top:1px solid rgba(0,0,0,.55)}
+  .squadpic{width:100%;height:172px;object-fit:cover;object-position:center 32%;display:block;border-top:1px solid rgba(0,0,0,.55)}
   .fname{margin:12px auto 0}
   .fsub{font-size:10.5px;letter-spacing:.18em;color:#cfe0b8;padding:5px 4px 12px}
   /* ---- sub-window rows ---- */
@@ -45,6 +46,23 @@
   input[type=range]{flex:1;accent-color:#7fae5c}
   input[type=checkbox]{width:17px;height:17px;accent-color:#7fae5c}
   .credits p{font-size:13px;line-height:1.65;color:#e6ecd8;text-align:left}
+  /* ---- mission select slider ---- */
+  #misWindow{width:min(1040px,96vw);max-width:1040px;padding:0;overflow:hidden;border-radius:14px;text-align:left}
+  #misStage{position:relative;height:min(64vh,580px);background:#141207;overflow:hidden}
+  #misImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .22s}
+  #misShade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.16) 52%,rgba(0,0,0,.78));pointer-events:none}
+  .misArrow{position:absolute;top:46%;transform:translateY(-50%);z-index:3;width:48px;height:72px;border-radius:10px;border:1.5px solid rgba(220,230,200,.55);background:rgba(12,16,8,.55);color:#ffe14d;font-size:38px;line-height:1;cursor:pointer;backdrop-filter:blur(2px)}
+  .misArrow:hover{border-color:#fff;color:#fff;background:rgba(30,40,18,.75)}
+  #misPrev{left:12px} #misNext{right:12px}
+  #misMeta{position:absolute;left:20px;bottom:66px;z-index:2;text-shadow:1px 1px 3px #000}
+  #misSub{margin-top:5px;font-size:11px;letter-spacing:.24em;color:#cfe0b8}
+  #misThumbs{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;gap:6px;padding:8px 12px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(180deg,transparent,rgba(0,0,0,.55))}
+  #misThumbs::-webkit-scrollbar{display:none}
+  .mthumb{width:62px;height:39px;object-fit:cover;border:2px solid rgba(255,255,255,.25);border-radius:5px;cursor:pointer;opacity:.72;flex:0 0 auto;transition:opacity .15s,border-color .15s}
+  .mthumb:hover{opacity:1}
+  .mthumb.on{border-color:#ffe14d;opacity:1}
+  #misBar{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(4,6,3,.72)}
+  #misCount{font-size:12px;letter-spacing:.3em;color:#ffe14d;white-space:nowrap}
   #men{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-top:14px;text-align:left}
   .man{background:rgba(10,13,7,.55);border:1.5px solid rgba(178,202,150,.55);border-radius:10px;padding:12px}
   .man img.face{width:64px;height:79px;object-fit:cover;border:1px solid #222;float:left;margin:0 10px 6px 0;border-radius:3px}
@@ -103,20 +121,23 @@
     <div id="forceCards">
       <div class="fcard" id="fcANP">
         <div class="flagbg">
-          <svg viewBox="0 0 90 60" preserveAspectRatio="none" aria-label="Algeria">
-            <rect x="0" y="0" width="45" height="60" fill="#006233"/>
-            <rect x="45" y="0" width="45" height="60" fill="#f5f5f5"/>
-            <path fill="#d21034" fill-rule="evenodd" d="M45 18a12 12 0 1 0 0 24 12 12 0 1 0 0-24Zm3.4 2.8a9.2 9.2 0 1 0 0 18.4 9.2 9.2 0 1 0 0-18.4Z"/>
-            <path fill="#d21034" d="M51 24.6l1.4 3.2 3.5.3-2.7 2.3.9 3.4-3.1-1.9-3.1 1.9.9-3.4-2.7-2.3 3.5-.3z"/>
+          <svg class="dzEmblem" viewBox="0 0 90 90" aria-label="Algeria">
+            <defs><clipPath id="dzc"><circle cx="45" cy="45" r="40"/></clipPath></defs>
+            <g clip-path="url(#dzc)">
+              <rect x="0" y="0" width="45" height="90" fill="#006233"/><rect x="45" y="0" width="45" height="90" fill="#f5f5f5"/>
+              <path fill="#d21034" fill-rule="evenodd" d="M45 29a16 16 0 1 0 0 32 16 16 0 1 0 0-32Zm4.5 3.7a12.3 12.3 0 1 0 0 24.6 12.3 12.3 0 1 0 0-24.6Z"/>
+              <path fill="#d21034" d="M50.5 38.5l1.3 3 3.3.3-2.5 2.2.8 3.2-2.9-1.8-2.9 1.8.8-3.2-2.5-2.2 3.3-.3z"/>
+            </g>
+            <circle cx="45" cy="45" r="40" fill="none" stroke="#cfd8c0" stroke-width="2.5"/>
           </svg>
         </div>
-        <img class="squadpic" src="textures/ui/defload.png" alt="Squad">
+        <img class="squadpic" src="textures/ui/force_anp.jpg" alt="ANP soldiers">
         <canvas class="gtext fname" data-t="ANP" data-c="#ffe14d"></canvas>
         <div class="fsub">ARMEE NATIONALE POPULAIRE</div>
       </div>
       <div class="fcard" id="fcGIS">
         <div class="flagbg flagGIS"><img src="textures/gis_patch.png" alt="G.I.S emblem"></div>
-        <img class="squadpic" src="textures/ui/defload.png" alt="Squad">
+        <img class="squadpic" src="textures/ui/force_gis.jpg" alt="G.I.S operators" style="object-position:center 42%">
         <canvas class="gtext fname" data-t="G.I.S" data-c="#ffe14d"></canvas>
         <div class="fsub">GROUPE D'INTERVENTION SPÉCIALE</div>
       </div>
@@ -125,12 +146,25 @@
   </div>
 </div>
 
-<!-- SELECT MISSION -->
+<!-- SELECT MISSION: the mission fills the box; slide between theatres -->
 <div class="screen" id="scr-missions">
-  <div class="window">
-    <canvas class="gtext ptitle" data-t="SELECT MISSION"></canvas>
-    <div id="misList" style="margin-top:16px;max-height:52vh;overflow:auto"></div>
-    <button class="mbtn backbtn" id="misBack" data-back="scr-force"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
+  <div class="window" id="misWindow">
+    <div id="misStage">
+      <img id="misImg" alt="Mission aerial photograph">
+      <div id="misShade"></div>
+      <button class="misArrow" id="misPrev" aria-label="Previous mission">‹</button>
+      <button class="misArrow" id="misNext" aria-label="Next mission">›</button>
+      <div id="misMeta">
+        <canvas id="misNameCv" class="gtext"></canvas>
+        <div id="misSub"></div>
+      </div>
+      <div id="misThumbs"></div>
+    </div>
+    <div id="misBar">
+      <button class="mbtn" id="misBack" data-back="scr-force" style="max-width:200px;margin:0;flex:0 1 200px"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
+      <div id="misCount"></div>
+      <button class="mbtn" id="misDeploy" style="max-width:320px;margin:0;flex:0 1 320px"><canvas class="gtext mtxt" data-t="DEPLOY" data-c="#b7e39a"></canvas></button>
+    </div>
   </div>
 </div>
 
@@ -220,16 +254,57 @@
     const dl = document.getElementById('deployLink');
     if (dl) dl.href = 'play.html?m=' + id;
   }
-  function buildMissionList() {
-    const list = MISSIONS.filter(me => listMode === 'mp' ? !me.id.startsWith('mission') : me.id.startsWith('mission'));
-    $('misList').innerHTML = list.map(me =>
-      '<button class="mbtn misbtn" data-m="' + me.id + '" style="display:flex;align-items:center;gap:12px;text-align:left"><img src="textures/ui/maps/' + me.id + '.png" alt="" style="width:96px;height:60px;object-fit:cover;border:1px solid rgba(178,202,150,.6);flex:0 0 auto" onerror="this.remove()"><canvas class="gtext mtxt" data-t="' + me.name + '" data-c="#ffe14d"></canvas></button>').join('');
-    document.querySelectorAll('.misbtn').forEach(b => b.onclick = () => { setMission(b.dataset.m); location.href = 'play.html?m=' + b.dataset.m; });
-    if (window.GF && GF.text) document.querySelectorAll('.misbtn .mtxt').forEach(cv => {
-      const s = GF.text(cv.dataset.t, { size: 'L', color: cv.dataset.c, scale: 1.1 });
-      cv.width = s.width; cv.height = s.height; cv.getContext('2d').drawImage(s, 0, 0);
-    });
+  let misIdx = 0;
+  function curMissions() {
+    return MISSIONS.filter(me => listMode === 'mp' ? !me.id.startsWith('mission') : me.id.startsWith('mission'));
   }
+  function drawMisName() {
+    const list = curMissions(), me = list[misIdx];
+    const cv = $('misNameCv'); if (!me || !cv) return;
+    if (window.GF && GF.text) {
+      try {
+        const src = GF.text(me.name.toUpperCase(), { size: 'L', color: '#ffe14d', scale: 1.55 });
+        cv.width = src.width; cv.height = src.height;
+        cv.getContext('2d').drawImage(src, 0, 0);
+      } catch (e) { /* font not ready; GF.load completion redraws */ }
+    }
+    $('misSub').textContent = (listMode === 'mp' ? 'ARCHIVE THEATRE' : 'FORCE: ' + (localStorage.getItem('bd_force') || 'ANP')) +
+      ' · THEATRE ' + (misIdx + 1) + ' OF ' + list.length;
+    $('misCount').textContent = (misIdx + 1) + ' / ' + list.length;
+  }
+  function renderMission() {
+    const list = curMissions(); if (!list.length) return;
+    misIdx = ((misIdx % list.length) + list.length) % list.length;
+    const me = list[misIdx];
+    const img = $('misImg');
+    img.style.opacity = 0;
+    img.onload = () => { img.style.opacity = 1; };
+    img.onerror = () => { img.onerror = null; img.src = 'textures/ui/menu_cover.jpg'; };
+    img.src = 'textures/ui/missions/' + me.id + '.jpg';   // the mission's own aerial, never the briefing map
+    drawMisName();
+    document.querySelectorAll('.mthumb').forEach((t, i) => t.classList.toggle('on', i === misIdx));
+    const on = document.querySelector('.mthumb.on');
+    if (on) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    setMission(me.id);
+  }
+  function buildMissionList() {
+    const list = curMissions();
+    $('misThumbs').innerHTML = list.map((me, i) =>
+      '<img class="mthumb" data-i="' + i + '" src="textures/ui/missions/' + me.id + '.jpg" alt="" onerror="this.onerror=null;this.src=\'textures/ui/menu_cover.jpg\'">').join('');
+    document.querySelectorAll('.mthumb').forEach(t => t.onclick = () => { misIdx = +t.dataset.i; renderMission(); });
+    const si = list.findIndex(m => m.id === (localStorage.getItem('bd_mission') || 'mission1'));
+    misIdx = si >= 0 ? si : 0;
+    renderMission();
+  }
+  $('misPrev').onclick = () => { misIdx--; renderMission(); };
+  $('misNext').onclick = () => { misIdx++; renderMission(); };
+  $('misDeploy').onclick = () => { const me = curMissions()[misIdx]; if (me) { setMission(me.id); location.href = 'play.html?m=' + me.id; } };
+  $('misImg').addEventListener('dblclick', () => $('misDeploy').click());
+  addEventListener('keydown', e => {
+    if (!$('scr-missions').classList.contains('open')) return;
+    if (e.code === 'ArrowLeft') { misIdx--; renderMission(); }
+    if (e.code === 'ArrowRight') { misIdx++; renderMission(); }
+  });
   fetch('missions.json').then(r => r.json()).then(l => { if (Array.isArray(l) && l.length) MISSIONS = l; buildMissionList(); setMission(localStorage.getItem('bd_mission') || 'mission1'); }).catch(() => buildMissionList());
   setMission(localStorage.getItem('bd_mission') || 'mission1');
   $('fcANP').onclick = () => pickForce('ANP');
@@ -276,6 +351,7 @@
     document.querySelectorAll('.mname').forEach(cv => draw(cv, cv.dataset.t, cv.dataset.c, 1.5));
     document.querySelectorAll('.mrole').forEach(cv => draw(cv, cv.dataset.t, cv.dataset.c, 1.15));
     draw($('loadoutTitle'), 'SQUAD LOADOUT', '#ffe14d', 1.5);
+    if (typeof drawMisName === 'function') drawMisName();
   });
 </script>
 <audio id="menumusic" src="sounds/music/menu.wav" loop preload="auto"></audio>
@@ -302,13 +378,13 @@
   function cap(p, ms) { return Promise.race([p, new Promise(function (res) { setTimeout(res, ms); })]); }
   var tasks = [
     ['LOADING COVER ART', function () { return img('textures/ui/menu_cover.jpg'); }],
-    ['LOADING FRONTEND ART', function () { return Promise.all([img('textures/ui/defload.png'), img('textures/gis_patch.png')]); }],
+    ['LOADING FRONTEND ART', function () { return Promise.all([img('textures/ui/force_anp.jpg'), img('textures/ui/force_gis.jpg'), img('textures/gis_patch.png')]); }],
     ['LOADING TYPEFACE', function () { return (window.GF && GF.load) ? GF.load() : Promise.resolve(); }],
     ['LOADING MISSION DATA', function () { return fetch('missions.json').then(function (r) { return r.json(); }).catch(function () {}); }],
     ['LOADING SQUAD FILES', function () { return Promise.all([1, 2, 3, 4].map(function (i) { return img('textures/portraits/sq' + i + '.png?v=2'); })); }],
-    ['LOADING THEATRE MAPS', function () {
+    ['LOADING MISSION IMAGES', function () {
       return fetch('missions.json').then(function (r) { return r.json(); }).then(function (l) {
-        return Promise.all((l || []).map(function (me) { return img('textures/ui/maps/' + me.id + '.png'); }));
+        return Promise.all((l || []).map(function (me) { return img('textures/ui/missions/' + me.id + '.jpg'); }));
       }).catch(function () {});
     }],
     ['LOADING AUDIO', function () {
