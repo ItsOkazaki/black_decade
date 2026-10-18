@@ -20,6 +20,8 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 container.appendChild(renderer.domElement);
 const MAX_ANISO = renderer.capabilities.getMaxAnisotropy();
 
@@ -236,37 +238,35 @@ function makeEnemyState(cfg) {
 // Placements + patrol waypoint chains come from the real Mission1.env.
 let enemies = [];
 let ENV = null;
+let PROPS = null, hawkObj = null, hawkRotor = null, a10Obj = null;
 const ENEMY_TEX_POOL = ['textures/Insurgent_F1.png?v=1', 'textures/Insurgent_Officer.png?v=1',
   'textures/Insurgent_Mechanic.png?v=1', 'textures/Insurgent_Torturer.png?v=1'];
-function routeFor(px, pz) {
-  const wps = ENV.waypoints;
-  let best = null, bd = 1e12;
-  for (const w of wps) { const d = (w.pos[0] - px) ** 2 + (w.pos[2] - pz) ** 2; if (d < bd) { bd = d; best = w; } }
-  if (!best || bd > 2500) {
-    return [new THREE.Vector3(px, 0, pz), new THREE.Vector3(px + 7, 0, pz + 5),
-            new THREE.Vector3(px - 5, 0, pz + 8), new THREE.Vector3(px + 2, 0, pz - 7)];
+function routeFor(px, pz, inst) {
+  const home = new THREE.Vector3(px, 0, pz);
+  const wps = (ENV && ENV.waypoints) || [];
+  const prefix = (inst || '').replace(/[\s_]\d+$/, '');
+  const mine = prefix ? wps.filter(w => (w.name || '').startsWith(prefix)) : [];
+  if (mine.length > 1) {
+    const byId = new Map(wps.map(w => [w.id, w]));
+    let cur = mine.find(w => /_W0$/.test(w.name)) || mine[0];
+    const pts = [], seen = new Set();
+    while (cur && !seen.has(cur.id) && pts.length < 8) {
+      seen.add(cur.id);
+      pts.push(new THREE.Vector3(cur.pos[0], 0, cur.pos[2]));
+      cur = byId.get(cur.next);
+      if (cur && !mine.includes(cur)) break;
+    }
+    if (pts.length > 1) return [home, ...pts];
   }
-  const byId = new Map(wps.map(w => [w.id, w]));
-  const route = [new THREE.Vector3(best.pos[0], 0, best.pos[2])];
-  let cur = byId.get(best.next), guard = 0;
-  while (cur && guard++ < 4) {
-    route.push(new THREE.Vector3(cur.pos[0], 0, cur.pos[2]));
-    if (cur === best) break;
-    cur = byId.get(cur.next);
-  }
-  return route.length > 1 ? route : [new THREE.Vector3(px, 0, pz), new THREE.Vector3(px + 6, 0, pz + 6)];
+  return [home];   // sentry: hold the exact env post
 }
 function buildEnemies() {
   enemies = [];
-  const list = ENV.enemies.map(e => ({ pos: e.pos, label: e.inst || 'INSURGENT' }));
-  for (const t of ENV.triggers) { // barracks garrisons (original spawn regions)
-    if (t.name.startsWith('BARRACKS')) for (let k = 0; k < 2; k++)
-      list.push({ pos: [t.pos[0] + k * 6 - 3, 0, t.pos[2] + (k ? 5 : -4)], label: 'BARRACKS GUARD' });
-  }
-  list.forEach((e, i) => {
+  // exactly the Iraqi HLOI placements from Mission1.env — no invented guards
+  ENV.enemies.forEach((e, i) => {
     const p = new THREE.Vector3(e.pos[0], 0, e.pos[2]);
-    enemies.push(makeEnemyState({ label: e.label, pos: p.clone(), home: p.clone(),
-      waypoints: routeFor(p.x, p.z), texture: ENEMY_TEX_POOL[i % 4] }));
+    enemies.push(makeEnemyState({ label: e.inst || 'INSURGENT', pos: p.clone(), home: p.clone(),
+      yaw: e.yaw || 0, waypoints: routeFor(p.x, p.z, e.inst), texture: ENEMY_TEX_POOL[i % 4] }));
   });
 }
 let playerHP = 100, dmgT = 0;
@@ -440,6 +440,7 @@ function computeMissionPoints() {
   const wp = ((ENV && ENV.waypoints) || []).filter(w => (w.name || '').includes('PRISON'));
   if (wp.length) prisonPos.set(wp.reduce((s, w) => s + w.pos[0], 0) / wp.length, 0,
                                wp.reduce((s, w) => s + w.pos[2], 0) / wp.length);
+  if (PROPS && PROPS.Foley) prisonPos.set(PROPS.Foley[0], 0, PROPS.Foley[2]);
   c4Pos = trigPos('C4', c4Pos);
   bridgePos = trigPos('BRIDGE_BOOM_GROUND', bridgePos);
   migPos = trigPos('PROXTRIG_MIG', migPos);
@@ -599,6 +600,78 @@ function trigPos(name, fb) {
   const t = ENV && ENV.triggers.find(t => t.name === name);
   return t ? new THREE.Vector3(t.pos[0], 0, t.pos[2]) : fb;
 }
+function applySky() {
+  const sky = (PROPS && PROPS.sky) || {};
+  const fogC = sky.fog ? new THREE.Color(sky.fog[0], sky.fog[1], sky.fog[2]) : new THREE.Color(0xc4ad82);
+  scene.fog = new THREE.Fog(fogC, 70, 620);
+  const cv = document.createElement('canvas'); cv.width = 2; cv.height = 512;
+  const g = cv.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0, '#5f83b4'); grad.addColorStop(0.55, '#9db4c8');
+  grad.addColorStop(0.82, '#' + fogC.getHexString()); grad.addColorStop(1, '#' + fogC.getHexString());
+  g.fillStyle = grad; g.fillRect(0, 0, 2, 512);
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+  scene.background = tex;
+  if (sky.sunDif) sun.color.setRGB(sky.sunDif[0], sky.sunDif[1], sky.sunDif[2]);
+  if (sky.sunAmb) scene.traverse(o => { if (o.isHemisphereLight) o.color.setRGB(sky.sunAmb[0], sky.sunAmb[1], sky.sunAmb[2]); });
+}
+
+// every placed object in Mission1.env, baked to merged static geometry
+async function buildStaticWorld() {
+  if (!PROPS) return;
+  const cache = {};
+  const models = [...new Set(PROPS.statics.map(s => s.m))];
+  await Promise.all(models.map(async m => {
+    try { const sc = (await loader.loadAsync('models/mission1/props/' + m + '.glb')).scene; sc.updateMatrixWorld(true); cache[m] = sc; }
+    catch (e) { console.warn('prop failed:', m); }
+  }));
+  const groups = new Map();
+  const M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), EU = new THREE.Euler(), ONE = new THREE.Vector3(1, 1, 1), PV = new THREE.Vector3();
+  for (const s of PROPS.statics) {
+    const sc = cache[s.m]; if (!sc) continue;
+    M4.compose(PV.set(s.p[0], s.y, s.p[1]), Q.setFromEuler(EU.set(0, s.yaw || 0, 0)), ONE);
+    sc.traverse(o => {
+      if (!o.isMesh) return;
+      const geo = o.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(M4, o.matrixWorld));
+      for (const a of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv', 'color'].includes(a)) geo.deleteAttribute(a);
+      const key = o.material.uuid + '|' + Object.keys(geo.attributes).sort().join(',');
+      if (!groups.has(key)) groups.set(key, { mat: o.material, geos: [] });
+      groups.get(key).geos.push(geo);
+    });
+  }
+  for (const grp of groups.values()) {
+    let merged = null;
+    try { merged = grp.geos.length === 1 ? grp.geos[0] : mergeGeometries(grp.geos, false); } catch (e) { merged = null; }
+    for (const pgeo of (merged ? [merged] : grp.geos)) {
+      const mesh = new THREE.Mesh(pgeo, grp.mat);
+      mesh.receiveShadow = !SET.lowGfx;
+      world.add(mesh); _groundMeshes.push(mesh);
+    }
+  }
+  // building interiors (hut/garage/guardhouse scenes at their env roots)
+  for (const it of (PROPS.interiors || [])) {
+    try {
+      const g = await loader.loadAsync('models/mission1/props/' + it.m + '.glb');
+      g.scene.position.set(it.p[0], it.p[1], it.p[2]);
+      g.scene.traverse(o => { if (o.isMesh) { o.receiveShadow = !SET.lowGfx; _groundMeshes.push(o); } });
+      world.add(g.scene);
+    } catch (e) { console.warn('interior failed:', it.m); }
+  }
+  // the extraction Black Hawk (env placement), rotor turning
+  const hawk = PROPS.vehicles && PROPS.vehicles.hawk && PROPS.vehicles.hawk[0];
+  if (hawk) {
+    try {
+      const g = await loader.loadAsync('models/mission1/props/BLACKHAWK_UH60.glb');
+      hawkObj = g.scene;
+      hawkObj.position.set(hawk.pos[0], Math.max(hawk.pos[1], groundY(hawk.pos[0], hawk.pos[2]) + 0.05), hawk.pos[2]);
+      hawkObj.rotation.y = hawk.yaw || 0;
+      hawkObj.traverse(o => { if (o.isMesh) { o.castShadow = !SET.lowGfx; if (/rotor|blade/i.test(o.name) && !hawkRotor) hawkRotor = o; } });
+      scene.add(hawkObj);
+    } catch (e) { console.warn('hawk failed'); }
+  }
+  try { a10Obj = (await loader.loadAsync('models/mission1/props/A10_SMALL.glb')).scene; a10Obj.visible = false; scene.add(a10Obj); } catch (e) { /* no jet */ }
+}
+
 function buildObjectives() {
   OBJ.length = 0;
   computeMissionPoints();
@@ -1254,6 +1327,7 @@ function updateEnemy(E, dt, now) {
       E.spotT += dt;
       if (E.spotT > 0.55) { E.state = 'engage'; E.nextShot = now + 0.4; }
     } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
+    if (E.waypoints.length <= 1) enemySetAnim(E, E_ANIM.idle);
     const wp = E.waypoints[E.wp];
     const to = new THREE.Vector3().subVectors(wp, E.pos);
     to.y = 0;
@@ -1338,6 +1412,8 @@ async function load() {
   try {
     stats.textContent = 'Loading Mission 1 — the real base…';
     ENV = await (await fetch('models/mission1/units.json')).json();
+    try { PROPS = await (await fetch('models/mission1/props.json')).json(); } catch (e) { PROPS = null; }
+    applySky();
     const zoneNames = ['Mis1_Zone1', 'Mis1_Zone1A', 'Mis1_Zone1_Bridge', 'Mis1_Zone2', 'Mis1_Zone2A', 'Mis1_Zone3', 'Mis1_Zone3A', 'Mis1_Zone4'];
     let zonesDone = 0;
     await Promise.all(zoneNames.map(async z => {
@@ -1366,6 +1442,8 @@ async function load() {
       zonesDone++;
       stats.textContent = 'Loading Mission 1 \u2014 zones ' + zonesDone + '/' + zoneNames.length + '\u2026';
     }));
+    stats.textContent = 'Placing the base — vehicles, bridge, buildings…';
+    await buildStaticWorld();
     stats.textContent = 'Base loaded — kitting out the squad…';
     if (ENV.start) player.pos.set(ENV.start.pos[0], 0, ENV.start.pos[2]);
     player.pos.y = groundY(player.pos.x, player.pos.z);
@@ -1883,6 +1961,16 @@ function animate() {
   sun.target.position.copy(player.pos);
   sun.target.updateMatrixWorld();
   if (flashT > 0) { flashT -= dt; if (flashT <= 0) flash.intensity = 0; }
+  if (hawkRotor) hawkRotor.rotation.y += dt * 22;
+  if (a10Obj) { // A10 flyover (env A10_FLYOVER01): periodic low pass over the valley
+    const T = 46, k = (now % T) / T;
+    if (k < 0.32) {
+      const u = k / 0.32;
+      a10Obj.visible = true;
+      a10Obj.position.set(-390 + u * 470, 58 - Math.sin(u * Math.PI) * 14, -660 + u * 480);
+      a10Obj.rotation.set(0, Math.atan2(470, 480), Math.sin(u * Math.PI * 2) * 0.12);
+    } else a10Obj.visible = false;
+  }
   if (impactT > 0) { impactT -= dt; impact.scale.setScalar(1 + (0.12 - impactT) * 8); if (impactT <= 0) impact.visible = false; }
   const cImg = document.getElementById('compassImg');
   if (cImg) cImg.style.transform = `rotate(${(-camYaw * 57.2958).toFixed(1)}deg)`;
