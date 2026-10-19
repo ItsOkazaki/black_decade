@@ -72,12 +72,37 @@ function groundHitCached(x, z, refY) {
   return v;
 }
 function groundForY(p) { const h = groundHitCached(p.x, p.z, p.y + 0.45); return h === null ? groundYCached(p.x, p.z) : h; }
+function slopeAt(x, z, refY) {
+  // "mid-face" test: from a point embedded in a cliff face the ground keeps
+  // rising steeply behind you AND dropping steeply ahead of you. A ledge rim
+  // (rises behind, level with you) and a cliff foot (level, drops behind)
+  // are honest ground — only the face itself fails.
+  const hC = groundHitCached(x, z, refY);
+  if (hC === null) return { steep: false, downX: 0, downZ: 0 };
+  let mn = hC, mx = hC, dX = 0, dZ = 0;
+  const S = [[0.55, 0], [-0.55, 0], [0, 0.55], [0, -0.55]];
+  for (const [ox, oz] of S) {
+    const h = groundHitCached(x + ox, z + oz, refY);
+    if (h === null) continue;
+    if (h > mx) mx = h;
+    if (h < mn) { mn = h; dX = ox; dZ = oz; }
+  }
+  const L = Math.hypot(dX, dZ) || 1;
+  return { steep: (mx - hC) > 0.85 && (hC - mn) > 0.85, downX: dX / L, downZ: dZ / L };
+}
 function canStandAt(nx, nz, dx, dz, refY) {
-  const h = groundHitCached(nx, nz, refY); if (h === null) return false;
+  const h = groundHitCached(nx, nz, refY);
+  if (h === null) {
+    // nothing in the step window: stepping off a real drop (ground exists
+    // far below) is allowed for the player — he falls; the void stays shut
+    if (refY === player.pos.y) { const gAbs = groundYCached(nx, nz); if (gAbs !== null && gAbs < refY - 0.5) return true; }
+    return false;
+  }
   const L = Math.hypot(dx, dz) || 1; dx /= L; dz /= L;
   const hF = groundHitCached(nx + dx * 0.6, nz + dz * 0.6, refY), hB = groundHitCached(nx - dx * 0.6, nz - dz * 0.6, refY);
   if (hF !== null && hB !== null && (hF - hB) / 1.2 > 1.25) return false;   // steep UP face blocks; steep DOWN is a ledge — you fall
   if (h - refY > 0.95) return false;                                                // ledge/cliff face
+  if ((!player.airborne || refY !== player.pos.y) && h > refY - 0.5 && slopeAt(nx, nz, refY).steep) return false;   // a cliff face is ground nowhere — but stepping OFF an edge (a real drop) stays allowed: you fall
   return true;
 }
 const _groundMeshes = [];   // zone ground meshes only — never the whole world
@@ -379,6 +404,7 @@ const E_SIGHT = 95, E_FIRE_RANGE = 72;   // m: guards see, shoot and chase at re
 
 function makeEnemyState(cfg) {
   return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: 70, alive: true,
+    envY: 0, holdPost: false, path: null, pathGoal: null,
     yaw: 0, state: 'patrol', wp: 0, spotT: 0, lostT: 0, burstLeft: 0, nextShot: 0,
     headBone: null, headGear: null, label: 'HOSTILE', props: [], faceConn: null, hatConn: null, typeIdx: 0 }, cfg);
 }
@@ -410,13 +436,18 @@ function routeFor(px, pz, inst) {
 }
 function buildEnemies() {
   enemies = [];
+  buildWpGraph();
   // exactly the Iraqi HLOI placements from Mission1.env — no invented guards
   // use the fullest placement list (later missions name more Iraqi unit types)
   const list = (ENV.enemies && ENV.enemies.length >= (PROPS ? PROPS.enemiesHLOI.length : 0)) ? ENV.enemies : (PROPS ? PROPS.enemiesHLOI : []);
   list.forEach((e, i) => {
     const p = new THREE.Vector3(e.pos[0], 0, e.pos[2]);
+    const wps = routeFor(p.x, p.z, e.inst);
+    // single-point route = a posted sentry (tower, bunker, HMG): he fights
+    // from that post and never abandons it
     enemies.push(makeEnemyState({ label: e.inst || 'INSURGENT', pos: p.clone(), home: p.clone(),
-      yaw: e.yaw || 0, waypoints: routeFor(p.x, p.z, e.inst), texture: ENEMY_TEX_POOL[i % 4] }));
+      envY: e.pos[1] || 0, holdPost: wps.length <= 1,
+      yaw: e.yaw || 0, waypoints: wps, texture: ENEMY_TEX_POOL[i % 4] }));
   });
   for (const E of enemies) E.active = player.pos.distanceTo(E.pos) < ENEMY_ACTIVATE_DIST;
 }
@@ -773,6 +804,7 @@ function die(cause) {
   playerHP = 0;
   if (missionDone || !playing) return;
   playing = false; firing = false; aiming = false;
+  if (actions && actions['DEATH_BY_SHOTGUN_BACKWARD']) setAnim('DEATH_BY_SHOTGUN_BACKWARD', true);
   const k = document.getElementById('kia');
   const kn = document.getElementById('kiaName');
   if (kn) kn.textContent = (members[activeIdx] ? members[activeIdx].name : 'BENALI') + ' — K.I.A.';
@@ -963,7 +995,9 @@ async function buildArmor(sp) {
     const g = await loader.loadAsync(MISDIR + 'props/' + sp.m + '.glb');
     const o = g.scene;
     const bb = new THREE.Box3().setFromObject(o);
-    const gy = groundY(sp.x, sp.z);
+    // the mission data parks it in the gorge; groundY() would find the bridge
+    // deck 15 m overhead and float the vehicle on the crossing
+    const gy = (() => { const h = groundHitY(sp.x, sp.z, (sp.y || 0) + 0.6); return h !== null ? h : groundY(sp.x, sp.z); })();
     o.position.set(sp.x, gy - bb.min.y, sp.z);
     o.rotation.y = sp.yaw;
     o.traverse(m2 => { if (m2.isMesh) { m2.castShadow = !SET.lowGfx; m2.receiveShadow = true; const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.color && mm.userData.c0 === undefined) mm.userData.c0 = mm.color.getHex(); }); } });
@@ -1057,7 +1091,7 @@ function buildFlagBanners() {
   if (!_flagTex) _flagTex = makeFlagTexture();
   const geo = new THREE.PlaneGeometry(1.7, 1.05); geo.translate(0.87, 0, 0);
   const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: _flagTex, side: THREE.DoubleSide, roughness: 0.92 }));
-  m.position.set(sc.p[0], sc.p[1] + 4.3, sc.p[2]);
+  m.position.set(sc.p[0], sc.p[1] + 6.1, sc.p[2]);
   scene.add(m); banners.push(m);
 }
 
@@ -1086,15 +1120,10 @@ async function buildStaticWorld() {
   const M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), EU = new THREE.Euler(), ONE = new THREE.Vector3(1, 1, 1), PV = new THREE.Vector3();
   for (const s of PROPS.statics) {
     const sc = cache[s.m]; if (!sc) continue;
-    if (/^(MIG29|A10)/.test(s.m)) {
-      // flying aircraft are animated (see the A-10 pass) -- never baked frozen
-      // into the sky; a jet actually parked on the ground stays as a prop.
-      const infA = info[s.m];
-      if (infA && (s.y + infA.ce.y - infA.sz.y / 2) > groundYCached(s.p[0], s.p[1]) + 4) continue;
-    }
+    if (/^(MIG29|A10)/.test(s.m)) continue;   // aircraft fly (A-10 passes, the captured MiG is its own objective model) — never bake one frozen into the sky
     const pr = pickupRule(s.m);
     if (pr) { pickupSpawns.push({ m: s.m, x: s.p[0], z: s.p[1], type: pr[1], label: pr[2] }); continue; }
-    if (/^(BMP2|T72|T62)/.test(s.m) && !armorSpawn) { armorSpawn = { m: s.m, x: s.p[0], z: s.p[1], yaw: s.yaw || 0 }; continue; }
+    if (/^(BMP2|T72|T62)/.test(s.m) && !armorSpawn) { armorSpawn = { m: s.m, x: s.p[0], z: s.p[1], y: s.y || 0, yaw: s.yaw || 0 }; continue; }
     let sy = s.y;
     if (/TRUCK|URAL|JEEP|TANK|APC|BMP|T72/.test(s.m)) {
       // vehicles sit on their wheels: lift/lower so the model's lowest point meets the terrain
@@ -1244,7 +1273,7 @@ function restartMission() {
   pickups.forEach(p => { p.taken = false; if (p.obj) p.obj.visible = true; });
   if (armor && armorSpawn) {
     armor.alive = true; armor.hp = 900; armor.fireT = 3; armor.wait = 1; armor.dir = 1; armor.yaw = armorSpawn.yaw;
-    armor.obj.position.set(armorSpawn.x, groundY(armorSpawn.x, armorSpawn.z), armorSpawn.z);
+    armor.obj.position.set(armorSpawn.x, (() => { const h = groundHitY(armorSpawn.x, armorSpawn.z, (armorSpawn.y || 0) + 0.6); return h !== null ? h : groundY(armorSpawn.x, armorSpawn.z); })(), armorSpawn.z);
     armor.obj.rotation.y = armorSpawn.yaw;
     armor.obj.traverse(m2 => { if (m2.isMesh) { const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.userData.c0 !== undefined) mm.color.setHex(mm.userData.c0); }); } });
   }
@@ -2039,9 +2068,62 @@ function makeSearch(E) {
 function raiseAlert(pos, radius) {
   for (const E of enemies) {
     if (!E.alive || E.state !== 'patrol') continue;
-    if (E.pos.distanceTo(pos) < (radius || 30)) { E.state = 'investigate'; E.invPos = pos.clone(); E.invT = 6; E.spotT = 0; }
+    if (E.pos.distanceTo(pos) >= (radius || 30)) continue;
+    if (!E.holdPost) { E.state = 'investigate'; E.invPos = pos.clone(); E.invT = 6; E.spotT = 0; }
+    else E.alert = Math.max(E.alert, 0.6);   // sentries perk up, stay put
   }
 }
+/* ---- routing: the mission file ships a waypoint graph (id/next links) --
+ * Long enemy travel follows those authored routes instead of walking in a
+ * straight line into walls and hillsides; only short hops steer directly. */
+let wpGraph = null;
+function buildWpGraph() {
+  const wps = (ENV && ENV.waypoints) || [];
+  if (!wps.length) { wpGraph = null; return; }
+  const pts = wps.map(w => new THREE.Vector3(w.pos[0], 0, w.pos[2]));
+  const idx = new Map(wps.map((w, i) => [w.id, i]));
+  const adj = new Map();
+  const link = (a, b) => { if (a === b) return; if (!adj.has(a)) adj.set(a, new Set()); adj.get(a).add(b); };
+  wps.forEach((w, i) => { const j = idx.get(w.next); if (j !== undefined) { link(i, j); link(j, i); } });
+  wpGraph = { pts, adj };
+}
+function wpPath(fromPos, toPos) {
+  if (!wpGraph || !wpGraph.adj.size) return null;
+  const { pts, adj } = wpGraph;
+  let si = 0, gi = 0, bd = 1e18, bg = 1e18;
+  for (let i = 0; i < pts.length; i++) {
+    const ds = (pts[i].x - fromPos.x) ** 2 + (pts[i].z - fromPos.z) ** 2;
+    const dg = (pts[i].x - toPos.x) ** 2 + (pts[i].z - toPos.z) ** 2;
+    if (ds < bd) { bd = ds; si = i; } if (dg < bg) { bg = dg; gi = i; }
+  }
+  if (si === gi) return [toPos.clone()];
+  const prev = new Map([[si, -1]]); const q = [si];
+  while (q.length) {
+    const c = q.shift(); if (c === gi) break;
+    for (const n of (adj.get(c) || [])) if (!prev.has(n)) { prev.set(n, c); q.push(n); }
+  }
+  if (!prev.has(gi)) return null;
+  const path = []; let c = gi;
+  while (c !== -1) { path.push(pts[c].clone()); c = prev.get(c); }
+  path.reverse(); path.push(toPos.clone());
+  return path;
+}
+function moveToward(E, target, speed, dt) {
+  let tp = target;
+  const d = Math.hypot(target.x - E.pos.x, target.z - E.pos.z);
+  if (d > 25) {
+    if (!E.path || !E.path.length || !E.pathGoal || E.pathGoal.distanceToSquared(target) > 100) {
+      E.path = wpPath(E.pos, target); E.pathGoal = target.clone();
+    }
+    if (E.path && E.path.length) {
+      tp = E.path[0];
+      if (Math.hypot(tp.x - E.pos.x, tp.z - E.pos.z) < 1.8) { E.path.shift(); tp = E.path[0] || target; }
+    }
+  } else E.path = null;
+  if (enemyStep(E, tp.x - E.pos.x, tp.z - E.pos.z, speed, dt)) { E._moving = true; return true; }
+  return false;
+}
+
 function updateEnemy(E, dt, now) {
   if (E.homeYaw === undefined) { E.homeYaw = E.yaw; E.homePos = E.pos.clone(); E.pauseT = 0; E.scanPh = Math.random() * 6.28; E.lastSeen = null; E.alertT = 0; E.phaseT = 1 + Math.random() * 2; E.planted = false;
     E.posture = 'stand'; E.memT = 0; E.alert = 0; E.thinkT = Math.random() * 0.4; E.role = undefined; E.flankSide = 1;
@@ -2078,6 +2160,7 @@ function updateEnemy(E, dt, now) {
   // ~150 deg frontal cone (plus point-blank awareness) + a detection build-up:
   // distant / crouched / prone / still targets take seconds to be spotted.
   const canSee = dist < E_SIGHT && (Math.cos(dyaw) > 0.26 || dist < 6) && !blocked;   // no eyes behind his head
+  E._canSee = canSee;
   E.spotNeed = (dist < 18 ? 0.35 : dist < 45 ? 0.7 : 1.3)
     * (T.stance === 'crouch' ? 1.7 : T.stance === 'prone' ? 2.6 : 1)
     * (!T.moving && dist > 15 ? 1.5 : 1);
@@ -2090,14 +2173,21 @@ function updateEnemy(E, dt, now) {
     } else {
       E.lostT += dt;
       // he does NOT forget you the second you break line of sight
-      if (E.lostT > 1.2 && E.lastSeen) { E.state = 'search'; makeSearch(E); }
+      if (E.lostT > 1.2 && E.lastSeen && !E.holdPost) { E.state = 'search'; makeSearch(E); }
+      else if (E.holdPost) { E.memT = Math.max(0, E.memT - dt); if (E.memT <= 0) E.state = 'return'; }
+      // blind but alerted: turn toward where you last saw/heard him — a
+      // soldier does not stare at the wrong wall for a minute
+      const lt = E.lastSeen || T.pos;
+      let dy2 = Math.atan2(lt.x - E.pos.x, lt.z - E.pos.z) - E.yaw;
+      while (dy2 > Math.PI) dy2 -= Math.PI * 2; while (dy2 < -Math.PI) dy2 += Math.PI * 2;
+      E.yaw += dy2 * Math.min(1, dt * 2.6);
     }
     // --- think cycle (~3 Hz): role, posture, cover, grenades ---
     E.thinkT -= dt;
     if (E.thinkT <= 0) {
       E.thinkT = 0.35 + Math.random() * 0.2;
       if (E.role === undefined) { const ri = enemies.indexOf(E) % 3; E.role = ri === 0 ? 'point' : ri === 1 ? 'base' : 'flank'; E.flankSide = (enemies.indexOf(E) % 2) ? 1 : -1; }
-      if ((E.hp <= 26 || now < E.suppressedT) && now > E.hideUntil && !E.coverPos) {
+      if ((E.hp <= 26 || now < E.suppressedT) && now > E.hideUntil && !E.coverPos && !E.holdPost) {
         const c = findCover(E, T);
         if (c) { E.coverPos = c; E.hideUntil = now + 2.4 + Math.random() * 2.2; }
       }
@@ -2107,7 +2197,12 @@ function updateEnemy(E, dt, now) {
     }
     E._moving = false;
     let firing = false;
-    if (E.coverPos) {
+    if (E.holdPost && !E.coverPos) {
+      // posted sentry: fight from the post — tower floor, bunker, HMG — the
+      // mission data put him somewhere that matters; he does not leave it
+      if (canSee && dist <= E_FIRE_RANGE) firing = true;
+      else if (!canSee) E.yaw += Math.sin(now * 0.55 + E.scanPh) * dt * 1.1;   // scan the approaches
+    } else if (E.coverPos) {
       // break contact: run for the cover spot, stay down, then re-engage
       const to = new THREE.Vector3().subVectors(E.coverPos, E.pos); to.y = 0;
       if (to.length() > 0.8) {
@@ -2129,7 +2224,7 @@ function updateEnemy(E, dt, now) {
         const dp = formationPos(E, T);
         const to = new THREE.Vector3().subVectors(dp, E.pos); to.y = 0;
         if (to.length() > 2.6 || !inBand) {
-          if (enemyStep(E, to.x, to.z, 4.35, dt)) E._moving = true;
+          if (moveToward(E, dp, 4.35, dt)) E._moving = true;
           enemySetAnim(E, E_ANIM.run);
           if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 4.35 / AUTH.run;
         } else firing = true;
@@ -2204,7 +2299,7 @@ function updateEnemy(E, dt, now) {
         E.searchI = (E.searchI + 1) % Math.max(1, (E.searchPts || []).length);
         if (E.searchI === 0 && E.memT < 14) makeSearch(E);   // still warm: widen the sweep once
       } else {
-        if (enemyStep(E, to.x, to.z, 3.9, dt)) E._moving = true;
+        if (moveToward(E, tp, 3.9, dt)) E._moving = true;
         enemySetAnim(E, E_ANIM.run);
         if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 3.9 / AUTH.run;
         E.posture = 'stand';
@@ -2219,7 +2314,7 @@ function updateEnemy(E, dt, now) {
     const to = new THREE.Vector3().subVectors(E.homePos, E.pos); to.y = 0;
     if (to.length() < 1.3) { E.state = 'patrol'; enemySetAnim(E, E_ANIM.walk); }
     else {
-      enemyStep(E, to.x, to.z, 1.7, dt);
+      moveToward(E, E.homePos, 1.7, dt);
       enemySetAnim(E, E_ANIM.walk);
       if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 1.7 / AUTH.walk;
       E.posture = 'stand';
@@ -2238,8 +2333,7 @@ function updateEnemy(E, dt, now) {
       E.yaw += Math.sin(now * 0.7 + E.scanPh) * dt * 1.1;
       if (E.invT <= 0) { E.state = 'return'; }
     } else {
-      to.normalize();
-      enemyStep(E, to.x, to.z, 3.9, dt);
+      moveToward(E, tp, 3.9, dt);
       enemySetAnim(E, E_ANIM.run);
       if (E.actions[E_ANIM.run]) E.actions[E_ANIM.run].timeScale = 3.9 / AUTH.run;
     }
@@ -2555,6 +2649,11 @@ async function load() {
     }
     loadStep(94, 'Deploying hostiles…');
     const foeTemplate = await loader.loadAsync('models/enemy/IraqInfantry01_Sandy.glb');
+    // One shared BIP01 rig: the foe template alone lacks kneel/prone clips and
+    // the heroes lack death clips — merge both libraries so EVERY soldier
+    // (enemy, squad mate, player) can kneel, go prone, and fall dead.
+    const animLib = [...(foeTemplate.animations || []), ...(hero.animations || [])];
+    for (const c of animLib) if (!actions[c.name]) actions[c.name] = mixer.clipAction(c);
     const akTemplate = (await loader.loadAsync('models/enemy/Rifle05_AK47.glb')).scene;
     const texByUrl = {};
     Object.entries(FACE_TEX).forEach(([k, u]) => { texByUrl[u] = faceTexCache[k]; });
@@ -2611,6 +2710,7 @@ async function load() {
       M.aimBones = findAimBones(M.obj);
       M.mixer = new THREE.AnimationMixer(M.obj);
       (glb.animations || []).forEach(c => M.actions[c.name] = M.mixer.clipAction(c));
+      for (const c of animLib) if (!M.actions[c.name]) M.actions[c.name] = M.mixer.clipAction(c);
       M.obj.traverse(o => {
         const nm = (o.name || '').toUpperCase();
         if (nm.includes('GUNR')) M.gunConn = o;
@@ -2648,6 +2748,7 @@ async function load() {
     scene.add(E.obj);
     E.mixer = new THREE.AnimationMixer(E.obj);
     (foeTemplate.animations || []).forEach(c => E.actions[c.name] = E.mixer.clipAction(c));
+    for (const c of animLib) if (!E.actions[c.name]) E.actions[c.name] = E.mixer.clipAction(c);
     const ak = akTemplate.clone(true);
     let eConn = null;
     E.obj.traverse(o => { if (o.name && o.name.toUpperCase().includes('GUNR')) eConn = o; });
@@ -2662,7 +2763,9 @@ async function load() {
       if (nm.includes('FACE') && nm.includes('CONNECTOR')) E.faceConn = o;
     });
     { const ti = enemies.indexOf(E); setEnemyType(E, ROSTER[ti % ROSTER.length], ti % ROSTER.length); }
-    E.pos.y = groundY(E.pos.x, E.pos.z);
+    { const hRef = groundHitY(E.pos.x, E.pos.z, (E.envY || 0) + 0.6);
+      E.pos.y = hRef !== null ? hRef : groundY(E.pos.x, E.pos.z); }
+    if (E.home) E.home.y = E.pos.y;   // respawns land on the same platform
     E.obj.position.copy(E.pos);
     E.aimBones = findAimBones(E.obj);
     enemySetAnim(E, E_ANIM.walk);
@@ -2768,12 +2871,14 @@ function animate() {
       const R = rockets[i];
       R.obj.position.addScaledVector(R.vel, dt);
       R.t -= dt;
-      const gy = groundYCached(R.obj.position.x, R.obj.position.z);
+      // ground just BELOW the rocket — never the highest surface in the
+      // column (a rocket under the bridge must not blow up on the deck)
+      const gy = groundHitCached(R.obj.position.x, R.obj.position.z, R.obj.position.y + 0.3);
       const hitE = enemies.some(E => E.alive && E.pos.distanceTo(R.obj.position) < 1.4);
       const hitArmor = armor && armor.alive && R.obj.position.distanceTo(armor.obj.position.clone().add(new THREE.Vector3(0, 1.6, 0))) < 3.6;
       R.trail -= dt;
       if (R.trail <= 0) { R.trail = 0.045; spawnSmoke(R.obj.position.clone(), 1.15, 0.55, 0); }
-      if (R.t <= 0 || R.obj.position.y <= gy + 0.1 || hitE || hitArmor || R.obj.position.distanceTo(migPos) < 3) {
+      if (R.t <= 0 || (gy !== null && R.obj.position.y <= gy + 0.1) || hitE || hitArmor || R.obj.position.distanceTo(migPos) < 3) {
         explode(R.obj.position.clone(), 7, 300);
         scene.remove(R.obj); rockets.splice(i, 1);
       }
@@ -2886,6 +2991,11 @@ function animate() {
             if (impactV > 10) hurtPlayerFall(Math.round((impactV - 10) * 6));   // ~9 m hurts badly, ~16 m+ kills
           }
         } else player.pos.y += (gy - player.pos.y) * Math.min(1, dt * 12);
+      } else if (player.airborne) {
+        player.vy -= 22 * dt; player.pos.y += player.vy * dt;   // ground still far below: keep falling
+      } else {
+        const gAbs = groundYCached(player.pos.x, player.pos.z);
+        if (gAbs !== null && gAbs < player.pos.y - 0.42) { player.airborne = true; player.vy = 0; }   // stepped off a drop taller than the step window
       }
     }
     heroObj.position.copy(player.pos);
@@ -3061,10 +3171,11 @@ window.BD_TEST = {
     slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, reserve: s2.reserve, left: s2.left } : null; })(),
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
-    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
+    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, x: +E.pos.x.toFixed(1), y: +E.pos.y.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), see: !!E._canSee, hold: !!E.holdPost, yaw: +E.yaw.toFixed(2), ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
+    corpses: enemies.filter(E => !E.alive).slice(0, 6).map(E => ({ anim: E.current, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1) })),
     grenadesThrown,
     pickups: pickups.map(p => ({ t: p.type, x: p.x, z: p.z, d: +Math.hypot(p.x - player.pos.x, p.z - player.pos.z).toFixed(1), taken: p.taken })),
-    armor: armor ? { hp: armor.hp, alive: armor.alive, x: +armor.obj.position.x.toFixed(1), z: +armor.obj.position.z.toFixed(1) } : null,
+    armor: armor ? { hp: armor.hp, alive: armor.alive, x: +armor.obj.position.x.toFixed(1), y: +armor.obj.position.y.toFixed(1), z: +armor.obj.position.z.toFixed(1) } : null,
     hasC4: members.some(M => M.inv && M.inv.some(s2 => s2.key === 'C4')) }),
   teleport(x, z) { player.pos.set(x, groundY(x, z), z); player.vy = 0; player.airborne = false; },
   pitch(v) { camPitch = v; },
@@ -3080,6 +3191,7 @@ window.BD_TEST = {
   hurt(n) { playerHP -= n; if (playerHP <= 0) die('TEST'); },
   setHP(v) { playerHP = v; },
   aggro() { let n = 0; for (const E of enemies) { if (!E.alive) continue; if (E.pos.distanceTo(player.pos) < 70) { E.state = 'engage'; E.lastSeen = player.pos.clone(); E.memT = 26; E.nextShot = nowSec + 0.5; if (n === 0) E.grenadeCd = nowSec + 0.5; n++; } } },
+  slay() { const E = enemies.filter(e2 => e2.alive).sort((a, b) => a.pos.distanceTo(player.pos) - b.pos.distanceTo(player.pos))[0]; if (!E) return null; hurtEnemy(E, 999); return { anim: E.current, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1) }; },
   pressE() { dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyE' })); },
   reload() { startReload(); },
 };
