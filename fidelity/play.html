@@ -189,7 +189,7 @@ window.addEventListener('error', function(e){
 <audio id="gamemusic" src="sounds/music/menu_cutscene.wav" loop preload="auto"></audio>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=68"></script>
+<script type="module" src="play.js?v=69"></script>
 
 <style>
 #itemFlash{position:fixed;top:11%;left:50%;transform:translateX(-50%);z-index:60;text-align:center;opacity:0;pointer-events:none}
@@ -198,6 +198,8 @@ window.addEventListener('error', function(e){
 #itemFlash.show{animation:itemflash 1.6s ease forwards}
 @keyframes itemflash{0%{opacity:0;transform:translateX(-50%) scale(.75)}12%{opacity:1;transform:translateX(-50%) scale(1)}55%{opacity:1}75%{opacity:.25}88%{opacity:1}100%{opacity:0}}
 #lawSight{position:fixed;inset:0;z-index:40;pointer-events:none;display:none}
+#rpgSight{position:fixed;inset:0;z-index:40;pointer-events:none;display:none}
+#binocOv{position:fixed;inset:0;z-index:40;pointer-events:none;display:none}
 #kia{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(30,2,2,.82),rgba(5,0,0,.96));text-align:center}
 #kiaName{font:700 34px Consolas,monospace;letter-spacing:.35em;color:#e8b0a0;text-shadow:2px 2px 6px #000}
 #kiaCause{font:13px Consolas,monospace;letter-spacing:.3em;color:#9a8f7a;margin:10px 0 26px}
@@ -224,6 +226,34 @@ window.addEventListener('error', function(e){
 <rect x="330" y="398.5" width="34" height="3"/><rect x="436" y="398.5" width="34" height="3"/>
 <rect x="316" y="560" width="168" height="3"/><rect x="316" y="560" width="3" height="14"/><rect x="481" y="560" width="3" height="14"/><rect x="398.5" y="560" width="3" height="10"/>
 </g></svg></div>
+<div id="rpgSight"><svg width="100%" height="100%" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+<defs><radialGradient id="rsg" cx="50%" cy="50%" r="62%">
+<stop offset="55%" stop-color="#5a6248" stop-opacity="0.16"/>
+<stop offset="78%" stop-color="#23281a" stop-opacity="0.6"/>
+<stop offset="100%" stop-color="#050604" stop-opacity="0.94"/>
+</radialGradient></defs>
+<rect width="800" height="800" fill="url(#rsg)"/>
+<circle cx="400" cy="400" r="262" fill="rgba(190,200,160,0.05)" stroke="#101208" stroke-width="16"/>
+<g stroke="#0c0e08" stroke-width="3" fill="none">
+<path d="M378 452 L400 408 L422 452"/>
+<line x1="310" y1="470" x2="490" y2="470"/>
+<line x1="330" y1="512" x2="470" y2="512"/><line x1="350" y1="554" x2="450" y2="554"/>
+<line x1="400" y1="180" x2="400" y2="330"/><line x1="400" y1="470" x2="400" y2="620"/>
+<line x1="212" y1="400" x2="330" y2="400"/><line x1="470" y1="400" x2="588" y2="400"/>
+</g><g fill="#0c0e08"><circle cx="400" cy="400" r="4"/><circle cx="330" cy="470" r="3.5"/><circle cx="470" cy="470" r="3.5"/></g>
+</svg></div>
+<div id="binocOv"><svg width="100%" height="100%" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+<defs><mask id="bmask"><rect width="800" height="800" fill="white"/>
+<circle cx="302" cy="400" r="196" fill="black"/><circle cx="498" cy="400" r="196" fill="black"/></mask></defs>
+<rect width="800" height="800" fill="rgba(2,3,2,0.985)" mask="url(#bmask)"/>
+<circle cx="302" cy="400" r="196" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="10"/>
+<circle cx="498" cy="400" r="196" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="10"/>
+<g stroke="rgba(10,14,10,0.8)" stroke-width="2.5">
+<line x1="302" y1="330" x2="302" y2="470"/><line x1="498" y1="330" x2="498" y2="470"/>
+<line x1="232" y1="400" x2="372" y2="400"/><line x1="428" y1="400" x2="568" y2="400"/>
+<line x1="262" y1="486" x2="342" y2="486"/><line x1="272" y1="486" x2="272" y2="474"/><line x1="302" y1="486" x2="302" y2="472"/><line x1="332" y1="486" x2="332" y2="474"/>
+</g><circle cx="400" cy="400" r="3" fill="rgba(10,14,10,0.8)"/>
+</svg></div>
 <div id="perf" style="position:fixed;top:8px;left:8px;z-index:80;display:none;background:rgba(0,0,0,.55);color:#bfe8bf;font:11px Consolas,monospace;padding:4px 8px;letter-spacing:.08em"></div>
 <div id="kia"><div>
 <div id="kiaName">BENALI — K.I.A.</div>
@@ -231,5 +261,6 @@ window.addEventListener('error', function(e){
 <button class="kiaBtn" id="kiaRestart">↻ RESTART MISSION</button>
 <button class="kiaBtn" id="kiaBrief">MISSION BRIEFING</button>
 </div></div>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
 </html>

@@ -191,6 +191,7 @@
     <div class="srow"><label>Volume</label><input type="range" id="setVol" min="0" max="1" step="0.05"><output id="outVol"></output></div>
     <div class="srow"><label>Enhanced textures</label><input type="checkbox" id="setEnh"></div>
     <div class="srow"><label>Invert mouse Y</label><input type="checkbox" id="setInv"></div>
+    <div class="srow"><label>Difficulty</label><select id="setDiff"><option value="EASY">EASY — greener hostiles</option><option value="NORMAL">NORMAL — the original fight</option><option value="HARD">HARD — veterans</option></select></div>
     <p style="font-size:12px;color:#cfe0b8;text-align:left">Saved automatically in this browser.</p>
     <button class="mbtn backbtn" data-back="scr-main"><canvas class="gtext mtxt" data-t="BACK" data-c="#ffe14d"></canvas></button>
   </div>
@@ -326,6 +327,9 @@
   vol.oninput = () => { localStorage.setItem('bd_vol', vol.value); show(); };
   enh.onchange = () => localStorage.setItem('bd_enh', enh.checked ? '1' : '0');
   inv.onchange = () => localStorage.setItem('bd_inv', inv.checked ? '1' : '0');
+  const dif = $('setDiff');
+  dif.value = localStorage.getItem('bd_diff') || 'NORMAL';
+  dif.onchange = () => localStorage.setItem('bd_diff', dif.value);
 
   // build the loadout columns from the same data the game uses
   $('men').innerHTML = BD.LOADOUTS.map((slots, i) => `
@@ -409,5 +413,6 @@
 })();
 </script>
 <script>addEventListener("pointerdown",function(e){if(!e.target.closest(".mbtn,.fcard,.backbtn,a"))return;var a=document.getElementById("uiclick");if(a){try{a.currentTime=0;a.play().catch(function(){});}catch(_){}}},true);</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
 </html>

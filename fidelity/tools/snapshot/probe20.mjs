@@ -63,9 +63,12 @@ if (near) {
   const hp0 = new Map((await S()).enemies.map(e => [e.x + ',' + e.z, e.hp]));
   st = await until(s => s.mates[1] && s.mates[1].tgt, 60, 'mate acquires target beyond 26 m');
   check('mate acquires a visible target at ~33 m (was capped at 26 m)', !!(st.mates[1] && st.mates[1].tgt), JSON.stringify(st.mates[1]));
-  st = await until(s => s.enemies.some(e => e.hp < 70) || s.voicePlays > 0, 90, 'mate fire hurts someone / voice');
+  st = await until(s => s.enemies.some(e => e.hp < 70), 90, 'mate fire hurts someone');
   const hurt = st.enemies.filter(e => e.hp < 70).length;
   check('mate fire actually wounds enemies', hurt > 0 || st.enemies.length < hp0.size, hurt + ' wounded, alive ' + st.enemies.length + '/' + hp0.size);
+  // the contact shout comes when the wounded man turns, finds the shooter and
+  // engages — give the fight its own window to reach that beat
+  st = await until(s => s.voicePlays > 0, 150, 'enemy shouts in combat');
   check('enemy voice lines play in combat', st.voicePlays > 0, 'voicePlays=' + st.voicePlays);
 }
 

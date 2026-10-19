@@ -240,6 +240,14 @@ const SET = {
   inv: localStorage.getItem('bd_inv') === '1',
 };
 SET.lowGfx = (navigator.hardwareConcurrency || 4) <= 4;
+// the original game's difficulty: enemy toughness, aim, damage and nerve
+const DIFFS = {
+  EASY:   { name: 'EASY',   hp: 0.75, acc: 0.55, dmg: 0.55, react: 1.45 },
+  NORMAL: { name: 'NORMAL', hp: 1.0,  acc: 1.0,  dmg: 1.0,  react: 1.0 },
+  HARD:   { name: 'HARD',   hp: 1.25, acc: 1.45, dmg: 1.5,  react: 0.65 },
+};
+const DIFF = DIFFS[(() => { try { return localStorage.getItem('bd_diff'); } catch (e) { return null; } })()] || DIFFS.NORMAL;
+const EXTRA_ANIMS = [];   // the recovered original animation library (models/play/animlib.glb)
 try { // software rasterizers (SwiftShader/llvmpipe) mean this machine has no GPU path — start lean
   const gl = renderer.getContext();
   const dbg = gl.getExtension('WEBGL_debug_renderer_info');
@@ -401,8 +409,25 @@ function playClick() { clickAudio.currentTime = 0; clickAudio.play().catch(() =>
 const player = {
   pos: new THREE.Vector3(0, 0, 1.5), yaw: 0.35, stance: 'stand', // stand|crouch|prone
   ammo: 30, reloading: false, reloadT: 0, nextShot: 0, moving: false,
-  fireMode: 'AUTO', burstN: 0, semiLatch: false
+  fireMode: 'AUTO', burstN: 0, semiLatch: false, actT: 0
 };
+// pose families: how a man carries each thing in his hands (original-game clips)
+const POSE = {
+  PISTOL: { aim: 'UPRIGHT_STANCE_WITH_PISTOL', walk: 'UPRIGHT_WALK_WITH_PISTOL', run: 'UPRIGHT_RELAXED_RUN_WITH_PISTOL', idle: 'UPRIGHT_RELAXED_WITH_PISTOL', crouchAim: 'KNEELING_STANCE_WITH_PISTOL' },
+  LAW:    { aim: 'UPRIGHT_STANCE_WITH_LAW', walk: 'UPRIGHT_WALK_WITH_LAW', run: 'UPRIGHT_RELAXED_RUN_WITH_LAW', idle: 'UPRIGHT_RELAXED_WITH_LAW', crouchAim: 'KNEELING_STANCE_WITH_LAW' },
+  ONEHAND:{ aim: null, walk: 'UPRIGHT_WALK_WITH_PISTOL', run: 'UPRIGHT_RELAXED_RUN_WITH_PISTOL', idle: 'UPRIGHT_RELAXED_WITH_PISTOL', crouchAim: 'KNEELING_STANCE_WITH_PISTOL' },
+  BINOC:  { aim: 'UPRIGHT_USE_BINOCULARS', walk: 'UPRIGHT_WALK_WITH_PISTOL', run: 'UPRIGHT_RELAXED_RUN_WITH_PISTOL', idle: 'UPRIGHT_RELAXED_WITH_PISTOL', crouchAim: 'UPRIGHT_USE_BINOCULARS' },
+};
+function heldPose() {
+  const s = curSlot();
+  if (!s) return null;
+  if (s.kind === 'item') return s.key === 'BINOCULARS' ? POSE.BINOC : POSE.ONEHAND;
+  if (s.key === 'SIGP228') return POSE.PISTOL;
+  if (s.key === 'LAW66' || s.key === 'RPG7') return POSE.LAW;
+  if (s.key === 'KNIFE') return POSE.ONEHAND;
+  return null;   // rifles keep the classic rifle set
+}
+function aimAllowed() { const s = curSlot(); return !!s && (s.kind === 'gun' || s.key === 'BINOCULARS'); }
 // role weapons from WEAPS.TXT / Units.txt (Rifleman, Heavy Wpns, Engineer, Sniper)
 function wavs(bank) {
   return [1, 2].map(i => { const a = new Audio(`sounds/${bank}_shot${i}.wav`); a.preload = 'auto'; return a; });
@@ -431,7 +456,7 @@ const E_ANIM = { walk: 'UPRIGHT_WALK_WITH_RIFLE', run: 'UPRIGHT_RELAXED_RUN_WITH
 const E_SIGHT = 95, E_FIRE_RANGE = 72;   // m: guards see, shoot and chase at real ranges
 
 function makeEnemyState(cfg) {
-  return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: 70, alive: true,
+  return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: Math.round(100 * DIFF.hp), alive: true,
     envY: 0, holdPost: false, path: null, pathGoal: null, grenadesLeft: 2, stillT: 0, seenT: -99,
     yaw: 0, state: 'patrol', wp: 0, spotT: 0, lostT: 0, burstLeft: 0, nextShot: 0,
     headBone: null, headGear: null, label: 'HOSTILE', props: [], faceConn: null, hatConn: null, typeIdx: 0 }, cfg);
@@ -493,7 +518,7 @@ function enemySetAnim(E, name, once = false) {
 }
 
 function resetEnemy(E) {
-  E.hp = 70; E.alive = true; E.state = 'patrol'; E.wp = 0; E.grenadesLeft = 2; E.stillT = 0; E.seenT = -99; E.path = null;
+  E.hp = Math.round(100 * DIFF.hp); E.alive = true; E.state = 'patrol'; E.wp = 0; E.grenadesLeft = 2; E.stillT = 0; E.seenT = -99; E.path = null;
   E.memT = 0; E.alert = 0; E.lastSeen = null; E.coverPos = null; E.posture = 'stand'; E.searchPts = null; E.role = undefined;
   E.spotT = 0; E.lostT = 0; E.burstLeft = 0; E.invPos = null; E.invT = 0; E.pauseT = 0;
   if (!E.active && E.obj) { scene.remove(E.obj); E.obj = null; E.mixer = null; E.actions = {}; E.current = null; }
@@ -638,17 +663,23 @@ function mateSetAnim(M, name, once = false) {
   M.current = name;
 }
 
-function hurtEnemy(E, dmg) {
+function hurtEnemy(E, dmg, head) {
   E.suppressedT = (typeof nowSec === 'number' ? nowSec : 0) + 2.5;
   if (!E.alive) return;
   if (dmg > 0 && E.hp > 0 && Math.random() < 0.10) playEnemyVoice(E, 'pain'); // a wounded man yells — sometimes
   E.hp -= dmg;
+  if (dmg > 0 && E.hp > 0) {
+    // shot at — even unseen, he turns to the fight and hunts the firing point
+    // (alert stays clear: when he truly sees you, the contact shout still comes)
+    E.lastSeen = player.pos.clone(); E.memT = Math.max(E.memT || 0, 20);
+    if (E.state === 'patrol' || E.state === 'return' || E.state === 'investigate') { E.state = 'search'; makeSearch(E); }
+  }
   if (E.hp <= 0) {
     E.alive = false;
     if (Math.random() < 0.45) playEnemyVoice(E, 'death');
     kills++;
     setCanvas('killsCv', GF.text('HOSTILES DOWN ' + kills, { size: 'S', color: '#e8a09a', scale: 1.5 }));
-    enemySetAnim(E, Math.random() < 0.5 ? E_ANIM.deathF : E_ANIM.deathB, true);
+    enemySetAnim(E, head && E.actions['UPRIGHT_HEADSHOT'] ? 'UPRIGHT_HEADSHOT' : (Math.random() < 0.5 ? E_ANIM.deathF : E_ANIM.deathB), true);
     if (Math.random() < 0.4) playVoice('enemy_killed', 0.45);
   }
   updateHUD();
@@ -676,6 +707,7 @@ function switchTo(i) {
   playerHP = M.hp;
   player.stance = 'stand'; player.stanceTarget = 'stand';
   player.reloading = false; aiming = false; firing = false;
+  if (old.obj) old.obj.visible = true;   // in case he was hidden in the binocular eyes-view
   heroObj = M.obj; mixer = M.mixer; actions = M.actions;
   rifleObj = M.heldObj || M.rifle; gunConnector = M.gunConn; rifleLObj = M.rifleL;
   Object.values(actions).forEach(a => a.stop());
@@ -777,6 +809,7 @@ function attachGear(obj, memberIdx) {
 }
 
 function throwGrenade(kind) {
+  setAnim('anim_10FF6EC2', true); player.actT = 0.6;   // overarm throw (recovered library clip)
   const tpl = modelCache[BD.ITEMS[kind].model];
   if (!tpl) return;
   const o = tpl.clone(true);
@@ -882,6 +915,7 @@ function fireRocket() {
   o.lookAt(o.position.clone().add(dir));
   scene.add(o);
   rockets.push({ obj: o, vel: dir.multiplyScalar(46), t: 4, trail: 0 });
+  muzzlePuff(o.position.clone(), true);   // launcher blast (the game's own M15ShotA flame)
   camPitch = Math.min(1.12, camPitch + 0.05);   // the tube kicks up
   spawnSmoke(player.pos.clone().add(new THREE.Vector3(-Math.sin(player.yaw) * 1.3, 1.35, -Math.cos(player.yaw) * 1.3)), 2.4, 0.8, 0);   // backblast
 }
@@ -898,14 +932,17 @@ function tryPlantC4() {
   if (s.left !== undefined && s.left > 0) s.left--;
   buildItemBar();
   showMsg('PLANTING C4…');
+  setAnim('KNEELING_PLANT_C4', true); player.actT = 2.5;   // kneels and plants the charge
   pendingC4 = 2.5;
 }
 function useItem(slot, now) {
   if (now < throwCd) return;
   if (slot.key === 'MEDIKIT') {
     if (slot.left <= 0) { playClick(); return; }
+    if (pendingHeal > 0) return;   // already dressing a wound
     if (playerHP >= 100) { showMsg('HEALTH FULL'); return; }
     slot.left--; throwCd = now + 1.4; pendingHeal = 1.2;
+    setAnim('anim_85ABBE9A', true); player.actT = 1.3;   // dressing the wound, one hand on the kit
     showMsg('DRESSING WOUND…'); buildItemBar(); updateHUD();
     return;
   }
@@ -2088,7 +2125,7 @@ document.addEventListener('mousemove', (e) => {
 renderer.domElement.addEventListener('mousedown', (e) => {
   if (!playing) return;
   if (e.button === 0) firing = true;
-  if (e.button === 2) aiming = true;
+  if (e.button === 2 && aimAllowed()) aiming = true;   // a medikit is not aimed like a gun
 });
 addEventListener('mouseup', (e) => {
   if (e.button === 0) { firing = false; dragging = false; player.semiLatch = false; player.burstN = 0; }
@@ -2148,7 +2185,7 @@ addEventListener('keydown', (e) => {
   }
 });
 addEventListener('wheel', (e) => {
-  if (playing && !invOpen && members[activeIdx]) setHeld(members[activeIdx].held + (e.deltaY > 0 ? 1 : -1));
+  if (playing && (quickInv || invOpen) && members[activeIdx]) setHeld(members[activeIdx].held + (e.deltaY > 0 ? 1 : -1));   // the wheel only works while SPACE holds the strip open
 });
 addEventListener('keyup', (e) => {
   keys.delete(e.code);
@@ -2185,6 +2222,20 @@ const raycaster = new THREE.Raycaster();
 
 /* ---- tracers: pooled streaks so every shot reads on screen ---- */
 const tracers = [];
+// original-game FX sprites: FrontEnd/M15ShotA (muzzle blast) + Metal_Decal (strike marks)
+const _m15Tex = new THREE.TextureLoader().load('textures/fx/m15shot.png');
+const _decalTex = new THREE.TextureLoader().load('textures/fx/metal_decal.png');
+const _mzlPool = [], _decalPool = [];
+for (let i = 0; i < 6; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _m15Tex, transparent: true, opacity: 0, depthWrite: false })); sp.visible = false; scene.add(sp); _mzlPool.push({ sp, t: 0 }); }
+for (let i = 0; i < 14; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _decalTex, transparent: true, opacity: 0, depthWrite: false })); sp.scale.set(0.42, 0.42, 1); sp.visible = false; scene.add(sp); _decalPool.push({ sp, t: 0 }); }
+let _decalI = 0;
+function muzzlePuff(p, big) { const s = _mzlPool.find(x => x.t <= 0) || _mzlPool[0]; s.sp.position.copy(p); s.sp.scale.set(big ? 1.6 : 0.95, big ? 0.85 : 0.5, 1); s.sp.material.rotation = Math.random() * 6.28; s.t = 0.07; s.sp.visible = true; }
+function spawnDecal(p) { const s = _decalPool[_decalI++ % _decalPool.length]; s.sp.position.copy(p); s.t = 6; s.sp.visible = true; s.sp.material.opacity = 0.85; s.sp.material.rotation = Math.random() * 6.28; }
+function updateFxSprites(dt) {
+  for (const s of _mzlPool) if (s.t > 0) { s.t -= dt; s.sp.material.opacity = Math.max(0, s.t / 0.07) * 0.95; if (s.t <= 0) s.sp.visible = false; }
+  for (const s of _decalPool) if (s.t > 0) { s.t -= dt; if (s.t < 1.2) s.sp.material.opacity = Math.max(0, s.t / 1.2) * 0.85; if (s.t <= 0) s.sp.visible = false; }
+}
+
 function spawnTracer(a, b, col = 0xffe2ae, w = 1) {
   let T = tracers.find(t => t.life <= 0);
   if (!T) {
@@ -2213,12 +2264,13 @@ function doFire(now) {
   const M = members[activeIdx];
   if (!M || !M.inv) return;
   const slot = M.inv[M.held];
-  if (slot.kind === 'item') { useItem(slot, now); return; }
+  if (slot.kind === 'item') { if (!player.itemLatch) { player.itemLatch = true; useItem(slot, now); } return; }
   const W = BD.WEAPONS[slot.key];
   if (W.melee) { // combat knife: silent, close only
     if (now < player.nextShot) return;
     player.nextShot = now + W.interval;
     playClick();
+    setAnim('UPRIGHT_STEALTH_KNIFE', true); player.actT = 0.55;   // the slash, not a gun-shot
     let best = null, bd = 2.4;
     for (const E of enemies) {
       if (!E.alive) continue;
@@ -2259,8 +2311,13 @@ function doFire(now) {
       hitE = enemies.find(E => E.obj === n) || null;
       n = n.parent;
     }
-    if (hitE && hitE.alive) hurtEnemy(hitE, W.dmg);
+    if (hitE && hitE.alive) {
+      const hh = hitE.posture === 'prone' ? 0.45 : hitE.posture === 'crouch' ? 1.05 : 1.5;
+      const head = hits[0].point.y > hitE.pos.y + hh;   // a head shot is earned now, not a one-hit gift
+      hurtEnemy(hitE, Math.round(W.dmg * (head ? 2.6 : 1)), head);
+    } else spawnDecal(hits[0].point);
   }
+  muzzlePuff(rifleObj ? flash.position : new THREE.Vector3(player.pos.x, player.pos.y + 1.42, player.pos.z), slot.key === 'BARRETT' || slot.key === 'PSG1');
   { // visible tracer from the muzzle to the strike (or downrange on a miss)
     const mz = rifleObj ? flash.position.clone() : new THREE.Vector3(player.pos.x, player.pos.y + 1.42, player.pos.z);
     const end = hits.length ? hits[0].point : raycaster.ray.at(170, new THREE.Vector3());
@@ -2353,6 +2410,15 @@ function contactAlert(src) {
     } else if (E.state === 'search' && src.lastSeen) { E.lastSeen = src.lastSeen.clone(); E.memT = Math.max(E.memT, 12); }
   }
 }
+const _powTex = new THREE.TextureLoader().load('textures/fx/pow_skin.png');
+_powTex.flipY = false; _powTex.colorSpace = THREE.SRGBColorSpace;
+let powMats = null;
+function applyPOWSkin() {
+  const Z = members[3]; if (!Z || !Z.obj || powMats) return; powMats = [];
+  Z.obj.traverse(o => { if (o.isMesh && o.name === 'NEWSKIN') { (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { if (m.map) { powMats.push([m, m.map]); m.map = _powTex; m.needsUpdate = true; } }); } });
+}
+function restorePOWSkin() { if (powMats) powMats.forEach(([m, t]) => { m.map = t; m.needsUpdate = true; }); powMats = null; }
+
 function makeSearch(E) {
   E.searchPts = [];
   const c = E.lastSeen || E.pos;
@@ -2459,7 +2525,7 @@ function updateEnemy(E, dt, now) {
   const blocked = E._blocked;
   // ~150 deg frontal cone (plus point-blank awareness) + a detection build-up:
   // distant / crouched / prone / still targets take seconds to be spotted.
-  const canSee = dist < E_SIGHT && (Math.cos(dyaw) > 0.26 || dist < 6) && !blocked;   // no eyes behind his head
+  const canSee = dist < E_SIGHT && (Math.cos(dyaw) > 0.26 || dist < 6 || (T.stance === 'stand' && dist < 14)) && !blocked;   // no eyes behind his head — but a standing man at 14 m is in his face
   E._canSee = canSee;
   E.spotNeed = (dist < 18 ? 0.35 : dist < 45 ? 0.7 : 1.3)
     * (T.stance === 'crouch' ? 1.7 : T.stance === 'prone' ? 2.6 : 1)
@@ -2557,8 +2623,8 @@ function updateEnemy(E, dt, now) {
           playEnemyVoice(E, 'attack'); // he yells as the grenade comes over
           E.grenadesLeft--;
           enemyGrenade(E, { pos: gTarget });
-          enemySetAnim(E, 'UPRIGHT_RELOAD', true);
-          if (E.actions['UPRIGHT_RELOAD']) E.actions['UPRIGHT_RELOAD'].timeScale = 1.7;
+          enemySetAnim(E, 'anim_10FF6EC2', true);
+          if (E.actions['anim_10FF6EC2']) E.actions['anim_10FF6EC2'].timeScale = 1.2;
         }
       }
     }
@@ -2576,16 +2642,17 @@ function updateEnemy(E, dt, now) {
       if (T.stance === 'crouch') p *= 0.75;
       else if (T.stance === 'prone') p *= 0.55;
       if (T.moving) p *= 0.8;
+      p *= DIFF.acc;
       if (Math.random() < p) {
         if (T.mate) {
-          if (!T.mate.prisoner) T.mate.hp -= 8 + Math.random() * 6;   // a captive is never shot
+          if (!T.mate.prisoner) T.mate.hp -= (8 + Math.random() * 6) * DIFF.dmg;   // a captive is never shot
           if (T.mate.hp <= 0) {
             T.mate.hp = 0; T.mate.alive = false;
             mateSetAnim(T.mate, 'DEATH_BY_SHOTGUN_BACKWARD', true);
             playVoice('man_down', 0.6);
           }
         } else {
-          playerHP -= 8 + Math.random() * 6;
+          playerHP -= (8 + Math.random() * 6) * DIFF.dmg;
           dmgT = 0.45;
           if (Math.random() < 0.08) playVoice('im_hit', 0.42);   // rare pain reaction, not a scream track
           if (playerHP <= 0) die('HOSTILE FIRE');
@@ -2598,7 +2665,7 @@ function updateEnemy(E, dt, now) {
     E.memT -= dt;
     if (canSee) {
       E.spotT += dt;
-      if (E.spotT > 0.45) { E.state = 'engage'; E.nextShot = now + 0.3; E.lastSeen = T.pos.clone(); E.memT = 26; }
+      if (E.spotT > 0.45) { E.state = 'engage'; E.nextShot = now + 0.3 * DIFF.react; E.lastSeen = T.pos.clone(); E.memT = 26; }
     } else E.spotT = Math.max(0, E.spotT - dt);
     if (E.memT <= 0) { E.state = 'return'; E.alert = 0; }
     else {
@@ -2608,8 +2675,8 @@ function updateEnemy(E, dt, now) {
         if (gd > 9 && gd < 31) {
           E.grenadeCd = now + 16 + Math.random() * 12; playEnemyVoice(E, 'attack'); E.grenadesLeft--;
           enemyGrenade(E, { pos: E.lastSeen });
-          enemySetAnim(E, 'UPRIGHT_RELOAD', true);
-          if (E.actions['UPRIGHT_RELOAD']) E.actions['UPRIGHT_RELOAD'].timeScale = 1.7;
+          enemySetAnim(E, 'anim_10FF6EC2', true);
+          if (E.actions['anim_10FF6EC2']) E.actions['anim_10FF6EC2'].timeScale = 1.2;
         }
       }
       const tp = (E.searchPts && E.searchPts[E.searchI]) || E.lastSeen || E.homePos;
@@ -2634,7 +2701,7 @@ function updateEnemy(E, dt, now) {
     // memory cold: walk back to his post like nothing — no, like a soldier
     if (canSee) {
       E.spotT += dt;
-      if (E.spotT > E.spotNeed * 0.6) { E.state = 'engage'; E.nextShot = now + 0.35; E.lastSeen = T.pos.clone(); E.memT = 26; }
+      if (E.spotT > E.spotNeed * 0.6) { E.state = 'engage'; E.nextShot = now + 0.35 * DIFF.react; E.lastSeen = T.pos.clone(); E.memT = 26; }
     } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
     const to = new THREE.Vector3().subVectors(E.homePos, E.pos); to.y = 0;
     if (to.length() < 1.3) { E.state = 'patrol'; enemySetAnim(E, E_ANIM.walk); }
@@ -2648,7 +2715,7 @@ function updateEnemy(E, dt, now) {
     // heard something: move to the spot, look around, then return to post
     if (canSee) {
       E.spotT += dt;
-      if (E.spotT > E.spotNeed * 0.6) { E.state = 'engage'; E.nextShot = now + 0.35; }
+      if (E.spotT > E.spotNeed * 0.6) { E.state = 'engage'; E.nextShot = now + 0.35 * DIFF.react; }
     } else E.spotT = Math.max(0, E.spotT - dt * 0.5);
     const tp = E.invPos || E.homePos;
     const to = new THREE.Vector3().subVectors(tp, E.pos); to.y = 0;
@@ -2666,7 +2733,7 @@ function updateEnemy(E, dt, now) {
     if (canSee) {
       E.spotT += dt;
       if (E.spotT > E.spotNeed) {
-        E.state = 'engage'; E.nextShot = now + 0.45; E.lastSeen = T.pos.clone(); E.memT = 26; E.alert = 1;
+        E.state = 'engage'; E.nextShot = now + 0.45 * DIFF.react; E.lastSeen = T.pos.clone(); E.memT = 26; E.alert = 1;
         if (Math.random() < 0.55) playVoice('spotted_infantry_loud', 0.5);
         if (Math.random() < 0.5) raiseAlert(E.pos, 22);   // only sometimes does a shout carry (alerts keep last-seen only)
       }
@@ -2674,7 +2741,11 @@ function updateEnemy(E, dt, now) {
     if (E.waypoints.length <= 1) {
       // sentry on his env post: stands and scans around his env heading
       enemySetAnim(E, E_ANIM.idle);
-      E.yaw = E.homeYaw + Math.sin(now * 0.33 + E.scanPh) * 0.55;
+      // sentry scan: his eyes wander a wide arc, then he re-posts on a new facing
+      if (now > (E.scanT || 0)) { E.scanT = now + 4 + Math.random() * 5; E.scanC = E.homeYaw + (Math.random() - 0.5) * 6.0; }
+      { const des = (E.scanC ?? E.homeYaw) + Math.sin(now * 0.5 + E.scanPh) * 0.45;
+        let dd = des - E.yaw; while (dd > Math.PI) dd -= Math.PI * 2; while (dd < -Math.PI) dd += Math.PI * 2;
+        E.yaw += Math.max(-dt * 1.1, Math.min(dt * 1.1, dd)); }
     } else if (E.pauseT > 0) {
       // pause at the waypoint and look around (original guard behaviour)
       E.pauseT -= dt;
@@ -2690,9 +2761,20 @@ function updateEnemy(E, dt, now) {
         enemySetAnim(E, E_ANIM.idle);
       } else {
         to.normalize();
-        enemyStep(E, to.x, to.z, 1.25, dt);
-        enemySetAnim(E, E_ANIM.walk);
-        if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 1.25 / AUTH.walk;
+        if (enemyStep(E, to.x, to.z, 1.25, dt)) {
+          E.stuckT = 0;
+          enemySetAnim(E, E_ANIM.walk);
+          if (E.actions[E_ANIM.walk]) E.actions[E_ANIM.walk].timeScale = 1.25 / AUTH.walk;
+        } else {
+          // boxed in by the ground: scan like a sentry, then try the next leg
+          E.stuckT = (E.stuckT || 0) + dt;
+          enemySetAnim(E, E_ANIM.idle);
+          if (now > (E.scanT || 0)) { E.scanT = now + 4 + Math.random() * 5; E.scanC = E.yaw + (Math.random() - 0.5) * 6.0; }
+          { const des = (E.scanC ?? E.yaw) + Math.sin(now * 0.5 + E.scanPh) * 0.45;
+            let dd = des - E.yaw; while (dd > Math.PI) dd -= Math.PI * 2; while (dd < -Math.PI) dd += Math.PI * 2;
+            E.yaw += Math.max(-dt * 1.1, Math.min(dt * 1.1, dd)); }
+          if (E.stuckT > 6) { E.stuckT = 0; E.wp = (E.wp + 1) % E.waypoints.length; E.pauseT = 1.2; }
+        }
       }
     }
   }
@@ -2719,7 +2801,9 @@ function updateEnemy(E, dt, now) {
 function updateHUD() {
   const ad = document.getElementById('ammoDigits');
   if (ad) {
-    const sv = String(player.ammo);
+    // guns show magazine rounds; items show how many are left (binoculars: none)
+    const _hs2 = curSlot();
+    const sv = _hs2 && _hs2.kind === 'item' ? (_hs2.left >= 0 ? String(_hs2.left) : '') : String(player.ammo);
     if (ad.dataset.v !== sv) {
       ad.dataset.v = sv;
       ad.innerHTML = sv.split('').map(ch => `<img src="textures/ui/gwint/IMAGE_${ch}.png">`).join('');
@@ -2737,7 +2821,11 @@ function updateHUD() {
     const wi = document.querySelector('#wpnbox .wicon');
     if (wi) { const srcI = BD.ICON(def.icon); if (wi.dataset.s !== srcI) { wi.dataset.s = srcI; wi.src = srcI; } }
     const ls = document.getElementById('lawSight');
-    if (ls) { const on = !!(playing && (aiming || firing) && s && s.kind === 'gun' && BD.WEAPONS[s.key].rocket); if (ls.style.display !== (on ? 'block' : 'none')) ls.style.display = on ? 'block' : 'none'; }
+    if (ls) { const on = !!(playing && (aiming || firing) && s && s.key === 'LAW66'); if (ls.style.display !== (on ? 'block' : 'none')) ls.style.display = on ? 'block' : 'none'; }
+    const rs5 = document.getElementById('rpgSight');
+    if (rs5) { const on = !!(playing && (aiming || firing) && s && s.key === 'RPG7'); if (rs5.style.display !== (on ? 'block' : 'none')) rs5.style.display = on ? 'block' : 'none'; }
+    const bo5 = document.getElementById('binocOv');
+    if (bo5) { const on = !!(playing && aiming && s && s.key === 'BINOCULARS'); if (bo5.style.display !== (on ? 'block' : 'none')) bo5.style.display = on ? 'block' : 'none'; }
   }
   const st = document.getElementById('stancetext');
   if (st) st.textContent = player.stance.toUpperCase() + (aiming ? ' · AIM' : '');
@@ -2779,7 +2867,7 @@ function updateHUD() {
   const foeEl = document.getElementById('foe');
   if (foeEl) foeEl.textContent = 'HOSTILES ' + enemies.filter(E => E.alive).length + '/' + enemies.length;
   const _cx = document.getElementById('cross');
-  if (_cx) _cx.style.display = (playing && (aiming || firing) && !invOpen && !f1Open) ? 'block' : 'none';
+  if (_cx) _cx.style.display = (playing && (aiming || firing) && !invOpen && !f1Open && !(aiming && curSlot() && curSlot().key === 'BINOCULARS')) ? 'block' : 'none';   // the glasses draw their own glass
 }
 
 async function load() {
@@ -2864,6 +2952,7 @@ async function load() {
       try { gearCache[file] = (await loader.loadAsync('models/gear/' + file + '.glb')).scene; } catch (e) { console.warn('gear failed:', file); }
     }));
 
+    try { const alib = await loader.loadAsync('models/play/animlib.glb'); EXTRA_ANIMS.push(...(alib.animations || [])); } catch (e) { console.warn('animlib', e); }
     const hero = await loader.loadAsync('models/play/Hero01_Armstrong.glb');
     heroObj = hero.scene;
     heroObj.position.copy(player.pos);
@@ -2980,7 +3069,7 @@ async function load() {
     // One shared BIP01 rig: the foe template alone lacks kneel/prone clips and
     // the heroes lack death clips — merge both libraries so EVERY soldier
     // (enemy, squad mate, player) can kneel, go prone, and fall dead.
-    const animLib = [...(foeTemplate.animations || []), ...(hero.animations || [])];
+    const animLib = [...EXTRA_ANIMS, ...(foeTemplate.animations || []), ...(hero.animations || [])];
     for (const c of animLib) if (!actions[c.name]) actions[c.name] = mixer.clipAction(c);
     const akTemplate = (await loader.loadAsync('models/enemy/Rifle05_AK47.glb')).scene;
     const texByUrl = {};
@@ -2999,6 +3088,7 @@ async function load() {
     setHeldModel(members[0]);
     player.ammo = members[0].inv[0].ammo;
     for (const def of SQUAD_DEFS) await loadMate(def);
+    if (IS_M1) applyPOWSkin();   // the captive waits in the game's PoW skin until rescued
     if (IS_M1) {
       // Mission 1 is a SOLO rescue in the original: BENALI deploys alone,
       // CHERIF/BOUDIAF are not on this op, ZIANI is the prisoner — and he does
@@ -3233,7 +3323,7 @@ function animate() {
         finishMission();
       } else if (objIdx === 0 && dist2D(player.pos, O.pos) < O.r) {
         objIdx = members.some(Mt => Mt.inv && Mt.inv.some(s2 => s2.key === 'C4' && (s2.left === undefined || s2.left > 0))) ? 2 : 1; // C4 may already be recovered — never strand the chain
-        { const Z = members[3]; if (Z && Z.prisoner) { Z.prisoner = false; const c3 = document.getElementById('card3'); if (c3) c3.style.display = ''; showMsg('ZIANI', '\u201cGOOD TO SEE YOU. WHAT KEPT YOU?\u201d'); } else showMsg('OBJECTIVE COMPLETE', OBJ[objIdx].text); }
+        { const Z = members[3]; if (Z && Z.prisoner) { Z.prisoner = false; restorePOWSkin(); const c3 = document.getElementById('card3'); if (c3) c3.style.display = ''; showMsg('ZIANI', '\u201cGOOD TO SEE YOU. WHAT KEPT YOU?\u201d'); } else showMsg('OBJECTIVE COMPLETE', OBJ[objIdx].text); }
         setObjectiveText(); updateHUD();
       } else if (objIdx === 3) {
         const allIn = members.every((M, i) => !M.alive || i === activeIdx || dist2D(M.pos, O.pos) < 30);
@@ -3362,27 +3452,38 @@ function animate() {
         buildItemBar(); updateHUD();
       }
     }
+    if (!firing) player.itemLatch = false;
+    if (aiming && !aimAllowed()) aiming = false;   // swapped to an item in hand: the aim comes down
     aimT = (aiming || firing) ? aimT + dt : 0;
     settledFire = aimT > 0.22 && (player.stance === 'stand' || !player.moving); // crouch/prone: planted to shoot
     if (firing && !player.reloading) doFire(now);
 
-    // animation selection
-    if (!player.reloading) {
-      if (player.stance === 'prone') {
-        const nm = player.moving && actions[ANIM.proneCrawl] ? ANIM.proneCrawl : ANIM.prone;
+    // animation selection — the pose follows what's actually in his hands
+    if (player.actT > 0) player.actT -= dt;   // slash / throw / dressing / planting owns the body
+    else if (!player.reloading) {
+      const PO = heldPose();
+      const cs = curSlot();
+      if (player.airborne && actions['FALLING_MID_AIR']) setAnim('FALLING_MID_AIR');
+      else if (player.stance === 'prone') {
+        const nm = cs && cs.key === 'BINOCULARS' && aiming && actions['PRONE_USE_BINOCULARS'] ? 'PRONE_USE_BINOCULARS'
+          : (player.moving && actions[ANIM.proneCrawl] ? ANIM.proneCrawl : ANIM.prone);
         setAnim(nm);
       } else if (player.stance === 'crouch') {
-        if (aiming || firing) {
+        if ((aiming || firing) && PO && PO.crouchAim && actions[PO.crouchAim]) setAnim(PO.crouchAim);
+        else if (aiming || firing) {
           if (player.moving) { // crouch aim-move: crouched legs + kneeling aim upper
             let nm = 'CAIM_F';
             if (Math.abs(s) >= Math.abs(f) && s !== 0) nm = s > 0 ? 'CAIM_R' : 'CAIM_L';
             if (actions[nm]) { setAnim(nm); actions[nm].timeScale = speed / AUTH.crouch; }
             else setAnim(ANIM.crouchAim);
           } else setAnim(ANIM.crouchAim); // the kneeling shooting stance
-        } else {
+        } else if (PO && PO.walk && actions[PO.walk]) { setAnim(PO.walk); actions[PO.walk].timeScale = player.moving ? speed / AUTH.crouch : 0; }
+        else {
           setAnim(ANIM.crouchWalk);
           if (actions[ANIM.crouchWalk]) actions[ANIM.crouchWalk].timeScale = player.moving ? speed / AUTH.crouch : 0;
         }
+      } else if ((aiming || firing) && PO && PO.aim) {
+        setAnim(player.moving && actions[PO.walk] ? PO.walk : PO.aim);   // pistol up / LAW shouldered / glasses raised
       } else if (aiming || firing) {
         if (player.moving) { // aim-move blends: locomotion legs + aiming upper body
           let nm = 'AIMM_F';
@@ -3392,10 +3493,10 @@ function animate() {
           else setAnim(ANIM.aim);
         } else setAnim(ANIM.aim, false, 0.28);
       } else if (player.moving) {
-        const nm = walkMode ? ANIM.walk : ANIM.run;
+        const nm = PO && PO.walk ? (walkMode ? PO.walk : PO.run) : (walkMode ? ANIM.walk : ANIM.run);
         setAnim(nm);
         if (actions[nm]) actions[nm].timeScale = walkMode ? speed / AUTH.walk : speed / AUTH.run;
-      } else setAnim(ANIM.idle);
+      } else setAnim(PO && PO.idle && actions[PO.idle] ? PO.idle : ANIM.idle);
     }
     updateEnemyActivation();
     updateFootsteps(dt, player.moving ? speed : 0);
@@ -3410,6 +3511,7 @@ function animate() {
     updateHUD();
   }
 
+  updateFxSprites(dt);
   if (mixer) mixer.update(dt);
   // aim pitch: your spine follows the camera pitch; AI spines track their target
   if (heroObj) {
@@ -3443,13 +3545,16 @@ function animate() {
     const aimNow = aiming || firing;
     const _hs = curSlot();
     const targetFov = _hs && _hs.key === 'BINOCULARS' && aiming ? 11 : aimNow ? 33 : 50;
+    // through the glasses = eyes view: camera in the hero's head, body hidden
+    const binocNow = !!(_hs && _hs.key === 'BINOCULARS' && aiming);
+    if (heroObj) heroObj.visible = !binocNow;
     if (Math.abs(camera.fov - targetFov) > 0.05) {
       camera.fov += (targetFov - camera.fov) * Math.min(1, dt * 9);
       camera.updateProjectionMatrix();
     }
-    const dist = aimNow ? 1.9 : 4.3;
+    const dist = binocNow ? 0 : aimNow ? 1.9 : 4.3;
     const rgt = new THREE.Vector3(Math.cos(camYaw), 0, -Math.sin(camYaw));
-    const shoulder = aimNow ? 0.55 : 0.12;
+    const shoulder = binocNow ? 0 : aimNow ? 0.55 : 0.12;
     const cx = player.pos.x + Math.sin(camYaw) * Math.cos(camPitch) * dist + rgt.x * shoulder;
     const cz = player.pos.z + Math.cos(camYaw) * Math.cos(camPitch) * dist + rgt.z * shoulder;
     let cy = player.pos.y + 1.55 + Math.sin(camPitch) * dist;
@@ -3506,7 +3611,10 @@ addEventListener('resize', () => {
 // ---- headless self-test hooks (snapshot system) ----
 window.BD_TEST = {
   state: () => ({ playing, objIdx, hp: Math.round(playerHP), ammo: player.ammo,
-    slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, reserve: s2.reserve, left: s2.left } : null; })(),
+    slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, kind: s2.kind, reserve: s2.reserve, left: s2.left } : null; })(),
+    anim: current, aiming: aiming, diff: DIFF.name,
+    sights: { law: (document.getElementById('lawSight') || {}).style?.display || '', rpg: (document.getElementById('rpgSight') || {}).style?.display || '', binoc: (document.getElementById('binocOv') || {}).style?.display || '' },
+    fx: { mzl: _mzlPool.some(x => x.sp.visible), decals: _decalPool.filter(x => x.sp.visible).length },
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
     enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, hp: Math.round(E.hp), x: +E.pos.x.toFixed(1), y: +E.pos.y.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), see: !!E._canSee, hold: !!E.holdPost, yaw: +E.yaw.toFixed(2), gr: E.grenadesLeft ?? 2, ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
@@ -3534,6 +3642,9 @@ window.BD_TEST = {
   aggro() { let n = 0; for (const E of enemies) { if (!E.alive) continue; if (E.pos.distanceTo(player.pos) < 70) { E.state = 'engage'; E.lastSeen = player.pos.clone(); E.memT = 26; E.nextShot = nowSec + 0.5; if (n === 0) E.grenadeCd = nowSec + 0.5; n++; } } },
   slay() { const E = enemies.filter(e2 => e2.alive).sort((a, b) => a.pos.distanceTo(player.pos) - b.pos.distanceTo(player.pos))[0]; if (!E) return null; hurtEnemy(E, 999); return { anim: E.current, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1) }; },
   pressE() { dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyE' })); },
+  powSkin() { return { applied: !!powMats, prisoner: !!(members[3] && members[3].prisoner) }; },
+  bones() { const out = {}; if (!heroObj) return { err: 'no hero' }; heroObj.updateMatrixWorld(true); const seen = []; heroObj.traverse(o => { if (o.name) seen.push(o.name); }); out._n = seen.length; out._sample = seen.filter(x => /ARM|HAND|HEAD/.test(x)).slice(0, 8); for (const nm of ['BIP01_R_UPPERARM', 'BIP01_R_FOREARM', 'BIP01_HEAD', 'BIP01_L_UPPERARM', 'BIP01_PELVIS']) { const o = heroObj.getObjectByName(nm); if (o) { const v = new THREE.Vector3(); o.getWorldPosition(v); { const v = new THREE.Vector3(); o.getWorldPosition(v); const q = new THREE.Quaternion(); o.getWorldQuaternion(q); out[nm] = [+v.x.toFixed(2), +v.y.toFixed(2), +v.z.toFixed(2), 'q', +q.x.toFixed(2), +q.y.toFixed(2), +q.z.toFixed(2), +q.w.toFixed(2)]; } } } return out; },
+  hitNearest(dmg, head) { const E = enemies.filter(e2 => e2.alive).sort((a, b) => a.pos.distanceTo(player.pos) - b.pos.distanceTo(player.pos))[0]; if (!E) return null; const before = E.hp; hurtEnemy(E, dmg, !!head); return { before, after: E.hp, alive: E.alive, st: E.state, anim: E.current }; },
   toggleGate() { toggleGate(); return gateTarget; },
   reload() { startReload(); },
   giveItem(key, n = 1) { const M = members[activeIdx]; if (M && M.inv) { const s = M.inv.find(s2 => s2.key === key); if (s) s.left = (s.left || 0) + n; else M.inv.push({ kind: 'item', key, left: n }); } },

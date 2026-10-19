@@ -65,3 +65,22 @@ jumps (hold = inventory), and the KIA restart is an instant in-page reset
   data-placed character figures (heroes/NPCs the missions place as scenery);
   the statics system bakes raw geometry, so the pose must live in the
   vertices. Vehicle crew with authored seated bind poses are excluded.
+
+## probe36.mjs — v69 item/pose/balance round
+
+Asserts: wheel only cycles items while SPACE is held; medikit cannot be
+aimed, rides one-handed (relaxed pose) and heals after the dressing pause;
+knife held one-handed and kills at reach; frags throw once per click;
+LAW66 gets the green glass + UPRIGHT_STANCE_WITH_LAW, RPG7 its own optic
+(POSE families from the recovered `models/play/animlib.glb` — the original
+game's full 79-clip set incl. UPRIGHT_STEALTH_KNIFE, UPRIGHT_USE_BINOCULARS,
+KNEELING_PLANT_C4, UPRIGHT_HEADSHOT and the hashed throw/medkit clips
+anim_10FF6EC2 / anim_85ABBE9A); binoculars raise the twin-lens mask and the
+use-binoculars clip; head shots pay x2.6 but no longer one-shot (enemy HP
+100; two M16 body hits = 56 left standing... head-shot kills play
+UPRIGHT_HEADSHOT); difficulty EASY/NORMAL/HARD scales enemy HP 75/100/125
+(OPTIONS screen, `bd_diff`) plus their accuracy/damage/reactions; a wounded
+guard turns and hunts instead of standing in patrol; posted sentries scan
+wide arcs and notice a standing man behind them. probe20's voice check now
+polls its own window (the wounded-exit raced the contact shout once enemy
+HP changed). Run: `cd /tmp/snap && node probe36.mjs`.
