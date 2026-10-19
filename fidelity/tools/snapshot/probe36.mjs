@@ -8,7 +8,7 @@ let PASS = 0, FAIL = 0;
 const ok = (name, cond, extra = '') => { if (cond) { PASS++; console.log('  ok', name, extra); } else { FAIL++; console.log('  FAIL', name, extra); } };
 
 const browser = await puppeteer.launch({
-  executablePath: '/tmp/chromium', headless: 'new',
+  executablePath: '/tmp/chromium', headless: 'new', protocolTimeout: 1200000,
   env: { ...process.env, LD_LIBRARY_PATH: LIBS },
   args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--mute-audio', '--window-size=1280,800'],
 });
@@ -31,7 +31,7 @@ const near = (st, x, z) => st.enemies.slice().sort((a, b) => Math.hypot(a.x - x,
 // =============== page 1: NORMAL ===============
 let page = await newPage(null);
 let st = await S(page);
-ok('enemy HP 100 on NORMAL', st.enemies.length > 0 && Math.max(...st.enemies.map(e => e.hp)) === 100, 'maxhp=' + Math.max(...st.enemies.map(e => e.hp)));
+ok('enemy HP 48 on NORMAL (OG HStat)', st.enemies.length > 0 && Math.max(...st.enemies.map(e => e.hp)) === 48, 'maxhp=' + Math.max(...st.enemies.map(e => e.hp)));
 ok('difficulty reported', st.diff === 'NORMAL', st.diff);
 
 // --- a posted sentry: stand 16 m behind him; he must notice on his own
@@ -51,10 +51,10 @@ const victim = st.enemies.slice().sort((a, b) => a.d - b.d)[0];
 ok('a wounded guard turns to hunt (not patrol)', hit && victim && victim.st !== 'patrol', 'state=' + (victim && victim.st) + ' hp ' + (hit && hit.before) + '->' + (hit && hit.after));
 
 // --- headshot math
-const h1 = await page.evaluate(() => window.BD_TEST.hitNearest(22, false));
-const h2 = await page.evaluate(() => window.BD_TEST.hitNearest(22, false));
-ok('body hits chip exactly weapon damage (22 a hit)', h1 && h2 && h1.after === h1.before - 22 && h2.after === h2.before - 22 && h2.alive, JSON.stringify([h1, h2]));
-const h3 = await page.evaluate(() => window.BD_TEST.hitNearest(57, true));
+const h1 = await page.evaluate(() => window.BD_TEST.hitNearest(14, false));
+const h2 = await page.evaluate(() => window.BD_TEST.hitNearest(14, false));
+ok('body hits chip exactly OG weapon damage (14 a hit)', h1 && h2 && h1.after === h1.before - 14 && h2.after === h2.before - 14 && h2.alive, JSON.stringify([h1, h2]));
+const h3 = await page.evaluate(() => window.BD_TEST.hitNearest(14, true));
 ok('follow-up head shot kills', h3 && !h3.alive, JSON.stringify(h3));
 await sleep(500);
 st = await S(page);
@@ -160,11 +160,11 @@ await page.close();
 // =============== difficulty pages ===============
 page = await newPage('HARD');
 st = await S(page);
-ok('HARD: enemy HP 125', Math.max(...st.enemies.map(e => e.hp)) === 125, '' + Math.max(...st.enemies.map(e => e.hp)));
+ok('HARD: enemy HP 60 (48 x 1.25)', Math.max(...st.enemies.map(e => e.hp)) === 60, '' + Math.max(...st.enemies.map(e => e.hp)));
 await page.close();
 page = await newPage('EASY');
 st = await S(page);
-ok('EASY: enemy HP 75', Math.max(...st.enemies.map(e => e.hp)) === 75, '' + Math.max(...st.enemies.map(e => e.hp)));
+ok('EASY: enemy HP 36 (48 x 0.75)', Math.max(...st.enemies.map(e => e.hp)) === 36, '' + Math.max(...st.enemies.map(e => e.hp)));
 await page.close();
 
 await browser.close();

@@ -7,7 +7,8 @@ const half = parseInt(process.argv[2] || '0', 10);
 const missions = JSON.parse(fs.readFileSync('/home/user/black_decade/fidelity/missions.json', 'utf8'));
 const list = missions.filter((_, i) => i % 2 === half);
 const browser = await puppeteer.launch({
-  executablePath: '/tmp/chromium', headless: 'new',
+  
+  protocolTimeout: 1200000,executablePath: '/tmp/chromium', headless: 'new',
   env: { ...process.env, LD_LIBRARY_PATH: '/tmp/snap/libs' },
   args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--mute-audio', '--window-size=900,560'],
 });

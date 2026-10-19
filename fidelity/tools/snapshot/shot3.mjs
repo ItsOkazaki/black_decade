@@ -11,7 +11,8 @@ const results = [];
 function check(name, ok, extra = '') { results.push([name, ok]); console.log((ok ? 'PASS ' : 'FAIL ') + name + (extra ? ' — ' + extra : '')); }
 
 const browser = await puppeteer.launch({
-  executablePath: '/tmp/chromium', headless: 'new',
+  
+  protocolTimeout: 1200000,executablePath: '/tmp/chromium', headless: 'new',
   env: { ...process.env, LD_LIBRARY_PATH: LIBS },
   args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--mute-audio', '--window-size=1280,800'],
 });

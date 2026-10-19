@@ -456,7 +456,7 @@ const E_ANIM = { walk: 'UPRIGHT_WALK_WITH_RIFLE', run: 'UPRIGHT_RELAXED_RUN_WITH
 const E_SIGHT = 95, E_FIRE_RANGE = 72;   // m: guards see, shoot and chase at real ranges
 
 function makeEnemyState(cfg) {
-  return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: Math.round(100 * DIFF.hp), alive: true,
+  return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: Math.round(48 * DIFF.hp), alive: true,
     envY: 0, holdPost: false, path: null, pathGoal: null, grenadesLeft: 2, stillT: 0, seenT: -99,
     yaw: 0, state: 'patrol', wp: 0, spotT: 0, lostT: 0, burstLeft: 0, nextShot: 0,
     headBone: null, headGear: null, label: 'HOSTILE', props: [], faceConn: null, hatConn: null, typeIdx: 0 }, cfg);
@@ -518,7 +518,7 @@ function enemySetAnim(E, name, once = false) {
 }
 
 function resetEnemy(E) {
-  E.hp = Math.round(100 * DIFF.hp); E.alive = true; E.state = 'patrol'; E.wp = 0; E.grenadesLeft = 2; E.stillT = 0; E.seenT = -99; E.path = null;
+  E.hp = Math.round(48 * DIFF.hp); E.alive = true; E.state = 'patrol'; E.wp = 0; E.grenadesLeft = 2; E.stillT = 0; E.seenT = -99; E.path = null;
   E.memT = 0; E.alert = 0; E.lastSeen = null; E.coverPos = null; E.posture = 'stand'; E.searchPts = null; E.role = undefined;
   E.spotT = 0; E.lostT = 0; E.burstLeft = 0; E.invPos = null; E.invT = 0; E.pauseT = 0;
   if (!E.active && E.obj) { scene.remove(E.obj); E.obj = null; E.mixer = null; E.actions = {}; E.current = null; }
@@ -883,7 +883,7 @@ function explode(pos, r, dmg) {
     const d = E.pos.distanceTo(pos);
     if (d < r + 1) hurtEnemy(E, dmg * Math.max(0.15, 1 - d / (r + 2)));
   }
-  if (armor && armor.alive && armor.obj.position.distanceTo(pos) < 6.5) damageArmor(340);
+  if (armor && armor.alive && armor.obj.position.distanceTo(pos) < 6.5) damageArmor(550);
   const pd = player.pos.distanceTo(pos);
   if (pd < r * 0.7) { playerHP -= 26 * (1 - pd / (r * 0.7)); dmgT = 0.5; if (playerHP <= 0) die('BLAST'); }
   if (objIdx === 2 && bridgePos.distanceTo(pos) < 18) completeMig();
@@ -1170,7 +1170,7 @@ async function buildArmor(sp) {
     o.traverse(m2 => { if (m2.isMesh) { m2.castShadow = !SET.lowGfx; m2.receiveShadow = true; const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.color && mm.userData.c0 === undefined) mm.userData.c0 = mm.color.getHex(); }); } });
     scene.add(o);
     const fwd = new THREE.Vector3(Math.sin(sp.yaw), 0, Math.cos(sp.yaw));
-    armor = { obj: o, hp: 900, alive: true, yaw: sp.yaw, wait: 2, dir: 1, fireT: 2.5, smokeT: 0,
+    armor = { obj: o, hp: 500, alive: true, yaw: sp.yaw, wait: 2, dir: 1, fireT: 2.5, smokeT: 0,
       a: new THREE.Vector3(sp.x, 0, sp.z).addScaledVector(fwd, -17),
       b: new THREE.Vector3(sp.x, 0, sp.z).addScaledVector(fwd, 17),
       col: { x: sp.x, z: sp.z, r: 3.1, top: gy + 3.4 }, turret: null };
@@ -1468,7 +1468,7 @@ function restartMission() {
   resetEnemies(false);
   pickups.forEach(p => { p.taken = false; if (p.obj) p.obj.visible = true; });
   if (armor && armorSpawn) {
-    armor.alive = true; armor.hp = 900; armor.fireT = 3; armor.wait = 1; armor.dir = 1; armor.yaw = armorSpawn.yaw;
+    armor.alive = true; armor.hp = 500; armor.fireT = 3; armor.wait = 1; armor.dir = 1; armor.yaw = armorSpawn.yaw;
     armor.obj.position.set(armorSpawn.x, (() => { const h = groundHitY(armorSpawn.x, armorSpawn.z, (armorSpawn.y || 0) + 0.6); return h !== null ? h : groundY(armorSpawn.x, armorSpawn.z); })(), armorSpawn.z);
     armor.obj.rotation.y = armorSpawn.yaw;
     armor.obj.traverse(m2 => { if (m2.isMesh) { const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.userData.c0 !== undefined) mm.color.setHex(mm.userData.c0); }); } });
@@ -3309,7 +3309,7 @@ function animate() {
       S.obj.material.opacity = Math.min(0.75, S.t * 0.4);
       if (S.t <= 0) { scene.remove(S.obj); smokes.splice(i, 1); }
     }
-    if (pendingHeal > 0) { pendingHeal -= dt; if (pendingHeal <= 0) { playerHP = Math.min(100, playerHP + 55); showMsg('WOUND DRESSED'); updateHUD(); } }
+    if (pendingHeal > 0) { pendingHeal -= dt; if (pendingHeal <= 0) { playerHP = Math.min(100, playerHP + 100); showMsg('WOUND DRESSED'); updateHUD(); } }
     if (pendingC4 > 0) { pendingC4 -= dt; if (pendingC4 <= 0) explode(bridgePos.clone(), 16, 500); }
     if (!missionDone && OBJ.length) {
       const O = OBJ[objIdx];
@@ -3544,7 +3544,7 @@ function animate() {
   if (heroObj && !cutscene) {
     const aimNow = aiming || firing;
     const _hs = curSlot();
-    const targetFov = _hs && _hs.key === 'BINOCULARS' && aiming ? 11 : aimNow ? 33 : 50;
+    const targetFov = _hs && _hs.key === 'BINOCULARS' && aiming ? 10 : aimNow ? 33 : 50;
     // through the glasses = eyes view: camera in the hero's head, body hidden
     const binocNow = !!(_hs && _hs.key === 'BINOCULARS' && aiming);
     if (heroObj) heroObj.visible = !binocNow;
