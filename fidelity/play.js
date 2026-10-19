@@ -240,6 +240,12 @@ const SET = {
   inv: localStorage.getItem('bd_inv') === '1',
 };
 SET.lowGfx = (navigator.hardwareConcurrency || 4) <= 4;
+try { // software rasterizers (SwiftShader/llvmpipe) mean this machine has no GPU path — start lean
+  const gl = renderer.getContext();
+  const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+  const rn = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
+  if (/swiftshader|llvmpipe|software rasterizer/i.test(rn)) { SET.lowGfx = true; console.log('software renderer:', rn); }
+} catch (e) {}
 if (SET.lowGfx) { renderer.shadowMap.enabled = false; renderer.setPixelRatio(1); }
 let texOn = SET.enh;
 const _btnTex = document.getElementById('btnTex');
@@ -292,6 +298,26 @@ const voiceAudio = {};
  'advance_order_loud','advance_order_quiet','fire_at_will_loud'].forEach(n => {
   const a = new Audio('sounds/voice/' + n + '.wav'); a.preload = 'auto'; voiceAudio[n] = a;
 });
+const boomAudio = ['sounds/explosion1.wav', 'sounds/explosion2.wav'].map(u => { const a = new Audio(u); a.preload = 'auto'; return a; });
+// enemy voices decoded from the game's MP_IraqiSoldier bank (mp_mission1.sch),
+// bucketed by line energy: shouts / attack calls / pain cries / death cries / calm search talk
+const evAudio = {};
+for (let i = 1; i <= 18; i++) { const n = 'iraq' + String(i).padStart(2, '0'); const a = new Audio('sounds/voice/' + n + '.wav'); a.preload = 'auto'; evAudio[n] = a; }
+const EVK = { spot: ['iraq01', 'iraq03', 'iraq07', 'iraq09', 'iraq18'], attack: ['iraq04', 'iraq08', 'iraq10', 'iraq11'],
+  pain: ['iraq05', 'iraq15', 'iraq17'], death: ['iraq13', 'iraq14', 'iraq16'], search: ['iraq02', 'iraq06', 'iraq12'] };
+let _evNext = 0, voicePlays = 0;
+function playEnemyVoice(E, kind) {
+  if (!playing || !E || !E.pos) return;
+  const t = performance.now();
+  if (t < _evNext) return;
+  const d = camera.position.distanceTo(E.pos);
+  if (d > 75) return;
+  const list = EVK[kind] || EVK.spot;
+  const a = evAudio[list[(Math.random() * list.length) | 0]];
+  if (!a) return;
+  _evNext = t + 1100; voicePlays++;
+  try { a.volume = Math.max(0.05, Math.min(0.9, 1.15 - d / 75)) * (SET.vol || 1); a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
+}
 let _voiceNext = 0;
 let _vLast = {};
 function playVoice(name, vol = 0.55) {
@@ -381,10 +407,11 @@ const player = {
 function wavs(bank) {
   return [1, 2].map(i => { const a = new Audio(`sounds/${bank}_shot${i}.wav`); a.preload = 'auto'; return a; });
 }
-const WEAPONS = [BD.WEAPONS.M16A2, BD.WEAPONS.SAW, BD.WEAPONS.M16A2, BD.WEAPONS.BARRETT];
+const WEAPONS = [BD.WEAPONS.M16A2, BD.WEAPONS.SAW, BD.WEAPONS.PSG1, BD.WEAPONS.BARRETT]; // role guns: rifle / SAW / engineer-marksman PSG1 / sniper
 Object.values(BD.WEAPONS).forEach(w => { if (w.bank) w.snd = wavs(w.bank); w.alt = 0; });
 GF.load();
 setTimeout(() => { const fp = document.getElementById('forcePlay'); if (fp && !window.__playLoaded) { fp.dataset.armed = '1'; fp.style.display = 'block'; fp.onclick = (e) => { e.stopPropagation(); window.__playLoaded = true; window.__forcePlay = true; startEl.style.display = 'none'; playing = true; updateHUD(); }; } }, 45000);
+let frameN = 0;
 let WPN = WEAPONS[0];
 let prevStance = 'stand', transitionFade = 0.18; // stance changes blend slower (see setAnim)
 // Stance ladder: stand(0) -> crouch(1) -> prone(2). Going prone or standing
@@ -614,9 +641,11 @@ function mateSetAnim(M, name, once = false) {
 function hurtEnemy(E, dmg) {
   E.suppressedT = (typeof nowSec === 'number' ? nowSec : 0) + 2.5;
   if (!E.alive) return;
+  if (dmg > 0 && E.hp > 0 && Math.random() < 0.10) playEnemyVoice(E, 'pain'); // a wounded man yells — sometimes
   E.hp -= dmg;
   if (E.hp <= 0) {
     E.alive = false;
+    if (Math.random() < 0.45) playEnemyVoice(E, 'death');
     kills++;
     setCanvas('killsCv', GF.text('HOSTILES DOWN ' + kills, { size: 'S', color: '#e8a09a', scale: 1.5 }));
     enemySetAnim(E, Math.random() < 0.5 ? E_ANIM.deathF : E_ANIM.deathB, true);
@@ -784,13 +813,38 @@ function boomNoise() {
     s.connect(f); f.connect(g); g.connect(AC.destination); s.start();
   } catch (e) { /* audio unavailable */ }
 }
+const fireballs = [];
+function spawnFireball(pos, scale) {
+  if (!fireballs.length) {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 2, 64, 64, 62);
+    g.addColorStop(0, 'rgba(255,244,205,1)'); g.addColorStop(0.35, 'rgba(255,166,64,0.92)');
+    g.addColorStop(0.7, 'rgba(216,84,22,0.45)'); g.addColorStop(1, 'rgba(110,30,0,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    const tex = new THREE.CanvasTexture(c);
+    for (let i = 0; i < 8; i++) {
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+      sp.visible = false; scene.add(sp); fireballs.push({ sp, t: 0, life: 0.5, s0: 1 });
+    }
+  }
+  const F = fireballs.find(f => f.t <= 0) || fireballs[0];
+  F.sp.position.copy(pos); F.sp.position.y += 0.7;
+  F.s0 = scale; F.t = F.life; F.sp.visible = true; F.sp.material.opacity = 1; F.sp.scale.setScalar(scale * 0.35);
+}
+let lastBoomAt = 0, shakeAmp = 0;
 function explode(pos, r, dmg) {
   raiseAlert(pos, 48);
+  lastBoomAt = performance.now() / 1000;
   boomNoise();
-  flash.position.copy(pos); flash.position.y += 1; flash.intensity = 200; flashT = 0.14;
+  spawnFireball(pos, r * 1.6);                       // the visible fireball the blasts were missing
+  spawnSmoke(pos, r * 1.15, 6, 1.1); spawnSmoke(pos, r * 0.85, 8.5, 2.3); // dust/smoke column
+  flash.position.copy(pos); flash.position.y += 1; flash.intensity = 300; flashT = 0.16;
   impact.position.copy(pos); impact.visible = true; impactT = 0.3; impact.scale.setScalar(r);
-  const boom = BD.WEAPONS.LAW66.snd && BD.WEAPONS.LAW66.snd[0];
-  if (boom) { boom.volume = 0.8 * SET.vol; boom.currentTime = 0; boom.play().catch(() => {}); }
+  const boomA = boomAudio[(Math.random() * boomAudio.length) | 0]; // the game's own explosion recording
+  const bd = camera.position.distanceTo(pos);
+  if (boomA) { try { boomA.volume = Math.max(0.06, Math.min(1, 1.5 - bd / 95)) * (SET.vol || 1); boomA.currentTime = 0; boomA.play().catch(() => {}); } catch (e) {} }
+  if (bd < 30) shakeAmp = Math.max(shakeAmp, 0.16 + 0.5 * (1 - bd / 30));
   for (const E of enemies) {
     if (!E.alive) continue;
     const d = E.pos.distanceTo(pos);
@@ -834,8 +888,12 @@ function fireRocket() {
 function tryPlantC4() {
   const M = members[activeIdx];
   const s = M && M.inv ? M.inv.find(s2 => s2.key === 'C4' && (s2.left === undefined || s2.left > 0)) : null;
-  if (!s) { showMsg('NO C4 ON YOU', 'RECOVER THE C4 CHARGES FIRST'); return; }
-  if (objIdx !== 2) { showMsg('NO TARGET FOR C4'); return; }
+  if (!s) { const other = members.find((Mt, i) => i !== activeIdx && Mt.inv && Mt.inv.some(s2 => s2.key === 'C4' && (s2.left === undefined || s2.left > 0)));
+    showMsg('NO C4 ON YOU', other ? other.name + ' IS CARRYING THE C4 — SWITCH TO HIM (PGUP / PGDN)' : 'RECOVER THE C4 CHARGES FIRST'); return; }
+  if (!IS_M1) { showMsg('NO TARGET FOR C4', 'NO DEMOLITION TARGET IN THIS MISSION'); return; }
+  if (objIdx === 0) { showMsg('NO TARGET FOR C4', 'RESCUE ZIANI FIRST'); return; }
+  if (objIdx === 1) { showMsg('NO TARGET FOR C4', 'RECOVER THE C4 CHARGES FIRST'); return; }
+  if (objIdx !== 2) { showMsg('NO TARGET FOR C4', 'THE C4 IS ALREADY PLANTED'); return; }
   if (dist2D(player.pos, bridgePos) > 8) { showMsg('GET TO THE BRIDGE TO PLANT THE C4'); return; }
   if (s.left !== undefined && s.left > 0) s.left--;
   buildItemBar();
@@ -1052,6 +1110,7 @@ function takePickup(p) {
     const s = M.inv.find(s2 => s2.key === 'C4'); if (s) s.left += 1; else M.inv.push({ kind: 'item', key: 'C4', left: 1 });
     flashPickup(BD.ITEMS.C4, 'C4 CHARGE');
     if (IS_M1 && objIdx === 1) { objIdx = 2; showMsg('C4 RECOVERED', OBJ[2].text); setObjectiveText(); }
+    else if (IS_M1 && objIdx === 0) showMsg('C4 RECOVERED', 'RESCUE ZIANI — THEN PLANT IT ON THE BRIDGE');
   } else if (p.type.indexOf('weapon:') === 0) {
     const key = p.type.slice(7), def = BD.WEAPONS[key];
     const s = M.inv.find(s2 => s2.key === key);
@@ -1485,6 +1544,71 @@ function toggleInv(force) {
 }
 
 const _sv = new THREE.Vector3();
+// ---- wall collision, extracted from the world's own geometry ----
+// Zone meshes carry no colliders in the heightfield world (vertical rays only
+// see floors/roofs), so men walked straight through building walls. At load we
+// harvest every near-vertical, body-height triangle edge into a 2D segment
+// grid; characters get pushed out of those segments. Doorways and arches have
+// no triangles, so they stay open — exactly like the real map.
+const WALLCELL = 4, wallGrid = new Map(); let wallSegCount = 0;
+function buildWallSegments() {
+  wallGrid.clear(); wallSegCount = 0;
+  world.updateMatrixWorld(true);
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+  world.traverse(o => {
+    if (!o.isMesh || o.userData.noWall) return;
+    if ((o.name || '').toUpperCase().includes('GATE')) return;
+    const g = o.geometry; if (!g || !g.attributes.position) return;
+    const p = g.attributes.position, n = g.attributes.normal, idx = g.index;
+    const triCount = idx ? idx.count / 3 : p.count / 3, m = o.matrixWorld;
+    for (let t = 0; t < triCount; t++) {
+      const i0 = idx ? idx.getX(t * 3) : t * 3, i1 = idx ? idx.getX(t * 3 + 1) : t * 3 + 1, i2 = idx ? idx.getX(t * 3 + 2) : t * 3 + 2;
+      if (n && Math.abs(n.getY(i0)) > 0.5 && Math.abs(n.getY(i1)) > 0.5 && Math.abs(n.getY(i2)) > 0.5) continue; // floors/roofs — cheap skip
+      A.fromBufferAttribute(p, i0).applyMatrix4(m); B.fromBufferAttribute(p, i1).applyMatrix4(m); C.fromBufferAttribute(p, i2).applyMatrix4(m);
+      const ux = B.x - A.x, uy = B.y - A.y, uz = B.z - A.z, vx = C.x - A.x, vy = C.y - A.y, vz = C.z - A.z;
+      const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      const nl = Math.hypot(nx, ny, nz); if (nl < 1e-9) continue;
+      if (Math.abs(ny / nl) > 0.45) continue;                       // not wall-ish
+      const y0 = Math.min(A.y, B.y, C.y), y1 = Math.max(A.y, B.y, C.y);
+      if (y1 - y0 < 0.55) continue;                                  // curbs and trim don't block a man
+      let P = null, Q = null, bl = 0.25;
+      for (const [P1, Q1] of [[A, B], [B, C], [C, A]]) { const l = Math.hypot(P1.x - Q1.x, P1.z - Q1.z); if (l > bl) { bl = l; P = P1; Q = Q1; } }
+      if (!P) continue;
+      const seg = [P.x, P.z, Q.x, Q.z, y0, y1];
+      const steps = Math.max(1, Math.ceil(bl / (WALLCELL * 0.5))), seen = new Set();
+      for (let s2 = 0; s2 <= steps; s2++) {
+        const k = Math.floor((seg[0] + (seg[2] - seg[0]) * s2 / steps) / WALLCELL) + ',' + Math.floor((seg[1] + (seg[3] - seg[1]) * s2 / steps) / WALLCELL);
+        if (seen.has(k)) continue; seen.add(k);
+        if (!wallGrid.has(k)) wallGrid.set(k, []);
+        wallGrid.get(k).push(seg);
+      }
+      wallSegCount++;
+    }
+  });
+  console.log('wall segments:', wallSegCount);
+}
+function wallPush(P, feetY, r) {
+  if (!wallSegCount) return;
+  const cx = Math.floor(P.x / WALLCELL), cz = Math.floor(P.z / WALLCELL);
+  for (let ix = cx - 1; ix <= cx + 1; ix++) for (let iz = cz - 1; iz <= cz + 1; iz++) {
+    const cell = wallGrid.get(ix + ',' + iz); if (!cell) continue;
+    for (const s2 of cell) {
+      // only a face that rises at least to the knee from where you stand is a
+      // wall; the side of a ledge you're on top of must never push you back
+      if (s2[5] <= feetY + 0.55 || s2[4] >= feetY + 1.5) continue;
+      const dx = s2[2] - s2[0], dz = s2[3] - s2[1], L2 = dx * dx + dz * dz;
+      if (L2 < 1e-8) continue;
+      let t = ((P.x - s2[0]) * dx + (P.z - s2[1]) * dz) / L2; t = t < 0 ? 0 : t > 1 ? 1 : t;
+      const qx = s2[0] + dx * t, qz = s2[1] + dz * t;
+      let px = P.x - qx, pz = P.z - qz;
+      const d2 = px * px + pz * pz;
+      if (d2 >= r * r) continue;
+      if (d2 < 1e-10) { const il = 1 / Math.sqrt(L2); P.x = qx - dz * il * r; P.z = qz + dx * il * r; continue; }
+      const push = (r - Math.sqrt(d2)) / Math.sqrt(d2);
+      P.x += px * push; P.z += pz * push;
+    }
+  }
+}
 let mateAlt = 0;
 function playMateShot(M) {
   raiseAlert(M.pos, 26);
@@ -1493,9 +1617,11 @@ function playMateShot(M) {
   a.currentTime = 0;
   a.play().catch(() => {});
 }
+const _tv = new THREE.Vector3();
 function updateMate(M, dt, now) {
   if (!M.alive || !M.obj) return;
   if (M.prisoner) return;   // ZIANI waits at the prison until rescued
+  M.stance = player.stance; // orders: the squad mirrors the stance of the man you're playing
   // field aid: a mate with a medi kit patches up a badly hurt man next to him
   M._aidCd = (M._aidCd || 0) - dt;
   if (M._aidCd <= 0 && M.inv) {
@@ -1517,24 +1643,35 @@ function updateMate(M, dt, now) {
       }
     }
   }
-  // nearest visible enemy
-  let tgt = null, td = 26;
+  // nearest enemy he can actually SEE, out to his weapon's real reach.
+  // (the old code keyed its LOS cache by E.id — enemies have no id, so every
+  //  man shared one "undefined" verdict — and it only looked 26 m out with the
+  //  eye ray pinned at y=1.5, under the terrain on half the maps.)
+  const ENGAGE_R = M.wpn && M.wpn.type && M.wpn.type.includes('SNIPER') ? 78 : 68;
   M._losT = (M._losT || 0) - dt;
-  const doLOS = M._losT <= 0;
-  if (doLOS) M._losT = 0.25;
-  for (const E of enemies) {
-    if (!E.alive || !E.obj) continue;
-    const d = M.pos.distanceTo(E.pos);
-    if (d > td) continue;
-    if (doLOS) {
-      _sv.set(M.pos.x, 1.5, M.pos.z);
-      const dir = new THREE.Vector3(E.pos.x - M.pos.x, 0, E.pos.z - M.pos.z).normalize();
-      raycaster.set(_sv, dir); raycaster.far = d;
-      M._los = M._los || {};
-      M._los[E.id] = raycaster.intersectObjects(_groundMeshes, false).length === 0;
+  if (M._losT <= 0) {
+    M._losT = 0.3;
+    M._losMap = M._losMap || new Map();
+    const eyeY = M.pos.y + (M.stance === 'prone' ? 0.55 : M.stance === 'crouch' ? 1.05 : 1.55);
+    const cand = [];
+    for (const E of enemies) { if (!E.alive || !E.obj) continue; const d = E.pos.distanceTo(M.pos); if (d < ENGAGE_R) cand.push([d, E]); }
+    cand.sort((a, b) => a[0] - b[0]);
+    let checked = 0, nt = null;
+    _sv.set(M.pos.x, eyeY, M.pos.z);
+    for (const [d, E] of cand) {
+      if (checked >= 4) break;   // round-robin: at most 4 fresh LOS rays per mate per tick
+      checked++;
+      _tv.set(E.pos.x - M.pos.x, (E.pos.y + 1.1) - eyeY, E.pos.z - M.pos.z);
+      const dist = _tv.length(); _tv.normalize();
+      raycaster.set(_sv, _tv); raycaster.far = dist;
+      const vis = raycaster.intersectObjects(_groundMeshes, false).length === 0;
+      M._losMap.set(E, vis);
+      if (vis) { nt = E; break; }
     }
-    if (M._los && M._los[E.id]) { tgt = E; td = d; }
+    if (!nt && M.tgt && M.tgt.alive && M._losMap.get(M.tgt) && M.pos.distanceTo(M.tgt.pos) < ENGAGE_R + 10) nt = M.tgt; // keep a confirmed target
+    M.tgt = nt;
   }
+  let tgt = M.tgt || null;
   // formation slot (or hold position)
   let slot;
   if (squadHold) slot = M.holdPos || M.pos;
@@ -1544,18 +1681,18 @@ function updateMate(M, dt, now) {
     slot = _sv.set(player.pos.x + cy * sx + sy * sz, 0, player.pos.z - sy * sx + cy * sz).clone();
   }
   M.aimPitch = tgt ? Math.atan2((tgt.pos.y + 1.2) - (M.pos.y + 1.45), Math.max(1, M.pos.distanceTo(tgt.pos))) : 0;
-  if (!squadFireFree) tgt = null; // holding fire: no aiming, no shooting
+  if (!squadFireFree) { tgt = null; M.tgt = null; } // holding fire: no aiming, no shooting
   const to = new THREE.Vector3().subVectors(slot, M.pos); to.y = 0;
   const distSlot = to.length();
   M.moving = false;
-  if (tgt && distSlot < 3.2) {
-    // engage: face the enemy, aim, burst fire
+  if (tgt) {
+    // engage: face the enemy, aim from his current stance, burst fire
     const want = Math.atan2(tgt.pos.x - M.pos.x, tgt.pos.z - M.pos.z);
     let d2 = want - M.yaw;
     while (d2 > Math.PI) d2 -= Math.PI * 2;
     while (d2 < -Math.PI) d2 += Math.PI * 2;
     M.yaw += d2 * Math.min(1, dt * 6);
-    mateSetAnim(M, ANIM.aim);
+    mateSetAnim(M, M.stance === 'prone' ? ANIM.prone : M.stance === 'crouch' ? ANIM.crouchAim : ANIM.aim);
     if (now >= M.nextShot) {
       if (M.burstLeft <= 0) M.burstLeft = M.wpn.burst;
       M.burstLeft--;
@@ -1565,15 +1702,16 @@ function updateMate(M, dt, now) {
     }
   } else if (distSlot > 0.55) {
     to.normalize();
-    const speed = distSlot > 5 ? 3.2 : 1.35;
+    const cap = M.stance === 'prone' ? 1.5 : M.stance === 'crouch' ? 2.1 : 99; // he keeps the leader's stance even on the move
+    const speed = Math.min(distSlot > 5 ? 3.2 : 1.35, cap);
     M.pos.addScaledVector(to, speed * dt);
     M.yaw = Math.atan2(to.x, to.z);
-    const clip = speed > 2 ? ANIM.run : ANIM.walk;
+    const clip = M.stance === 'prone' ? ANIM.proneCrawl : M.stance === 'crouch' ? ANIM.crouchWalk : (speed > 2 ? ANIM.run : ANIM.walk);
     mateSetAnim(M, clip);
-    if (M.actions[clip]) M.actions[clip].timeScale = speed / (speed > 2 ? AUTH.run : AUTH.walk);
+    if (M.actions[clip]) M.actions[clip].timeScale = speed / (clip === ANIM.proneCrawl ? 0.55 : clip === ANIM.crouchWalk ? AUTH.crouch : (speed > 2 ? AUTH.run : AUTH.walk));
     M.moving = true;
   } else {
-    mateSetAnim(M, tgt ? ANIM.aim : ANIM.idle);
+    mateSetAnim(M, M.stance === 'prone' ? ANIM.prone : M.stance === 'crouch' ? ANIM.crouchAim : ANIM.idle);
   }
   for (const c of colliders) {
     if (c.top !== undefined && M.pos.y > c.top - 0.45) continue;
@@ -1581,6 +1719,7 @@ function updateMate(M, dt, now) {
     const d = Math.hypot(dx, dz), min = c.r + 0.35;
     if (d > 0.001 && d < min) { M.pos.x = c.x + dx / d * min; M.pos.z = c.z + dz / d * min; }
   }
+  wallPush(M.pos, M.pos.y, 0.38);
   M.pos.y += (groundForY(M.pos) - M.pos.y) * Math.min(1, dt * 9);
   M.obj.position.copy(M.pos);
   M.obj.rotation.y = M.yaw;
@@ -2003,7 +2142,7 @@ addEventListener('keydown', (e) => {
       const M = members[activeIdx];
       const hasC4 = M && M.inv && M.inv.some(s2 => s2.key === 'C4' && (s2.left === undefined || s2.left > 0));
       if (hasC4 && IS_M1 && objIdx === 2 && dist2D(player.pos, bridgePos) < 9) tryPlantC4();
-      else if (IS_M1 && objIdx === 2 && dist2D(player.pos, bridgePos) < 9) showMsg('NO C4 ON YOU', 'RECOVER THE C4 CHARGES FIRST');
+      else if (IS_M1 && objIdx === 2 && dist2D(player.pos, bridgePos) < 9) { const holder = members.find((Mt, i) => i !== activeIdx && Mt.inv && Mt.inv.some(s2 => s2.key === 'C4' && (s2.left === undefined || s2.left > 0))); showMsg('NO C4 ON YOU', holder ? holder.name + ' IS CARRYING THE C4 — SWITCH TO HIM (PGUP / PGDN)' : 'RECOVER THE C4 CHARGES FIRST'); }
       // otherwise nothing to use here — the original stays silent too
     }
   }
@@ -2329,13 +2468,14 @@ function updateEnemy(E, dt, now) {
 
   if (E.state === 'engage') {
     if (canSee) {
+      if (!E.alert) playEnemyVoice(E, Math.random() < 0.55 ? 'spot' : 'attack'); // first sight — he shouts the contact
       E.lastSeen = T.pos.clone(); E.memT = 26; E.alert = 1; E.lostT = 0; E.seenT = now;
       E.stillT = T.moving ? 0 : (E.stillT || 0) + dt;
       if (now > E.alertT) { E.alertT = now + 7; contactAlert(E); }   // shout the contact to nearby guards
     } else {
       E.lostT += dt;
       // he does NOT forget you the second you break line of sight
-      if (E.lostT > 1.2 && E.lastSeen && !E.holdPost) { E.state = 'search'; makeSearch(E); }
+      if (E.lostT > 1.2 && E.lastSeen && !E.holdPost) { E.state = 'search'; makeSearch(E); if (Math.random() < 0.5) playEnemyVoice(E, 'search'); }
       else if (E.holdPost) { E.memT = Math.max(0, E.memT - dt); if (E.memT <= 0) E.state = 'return'; }
       // blind but alerted: turn toward where you last saw/heard him — a
       // soldier does not stare at the wrong wall for a minute
@@ -2414,6 +2554,7 @@ function updateEnemy(E, dt, now) {
         const gd = E.pos.distanceTo(gTarget);
         if (gd > 9 && gd < 31 && (!canSee || (E.stillT || 0) > 2.2)) {
           E.grenadeCd = now + 16 + Math.random() * 12;
+          playEnemyVoice(E, 'attack'); // he yells as the grenade comes over
           E.grenadesLeft--;
           enemyGrenade(E, { pos: gTarget });
           enemySetAnim(E, 'UPRIGHT_RELOAD', true);
@@ -2465,7 +2606,7 @@ function updateEnemy(E, dt, now) {
       if ((E.grenadesLeft ?? 2) > 0 && now > E.grenadeCd && E.lastSeen && (now - E.seenT) < 9 && !canSee) {
         const gd = E.pos.distanceTo(E.lastSeen);
         if (gd > 9 && gd < 31) {
-          E.grenadeCd = now + 16 + Math.random() * 12; E.grenadesLeft--;
+          E.grenadeCd = now + 16 + Math.random() * 12; playEnemyVoice(E, 'attack'); E.grenadesLeft--;
           enemyGrenade(E, { pos: E.lastSeen });
           enemySetAnim(E, 'UPRIGHT_RELOAD', true);
           if (E.actions['UPRIGHT_RELOAD']) E.actions['UPRIGHT_RELOAD'].timeScale = 1.7;
@@ -2569,6 +2710,7 @@ function updateEnemy(E, dt, now) {
     const d2 = dx * dx + dz * dz;
     if (d2 > 0.0001 && d2 < 4.4) { const d = Math.sqrt(d2); E.pos.x += dx / d * (2.1 - d) * 0.5; E.pos.z += dz / d * (2.1 - d) * 0.5; }
   }
+  wallPush(E.pos, E.pos.y, 0.38);
   E.pos.y += (groundForY(E.pos) - E.pos.y) * Math.min(1, dt * 9);
   E.obj.position.copy(E.pos);
   E.obj.rotation.y = E.yaw;
@@ -2697,7 +2839,9 @@ async function load() {
     LOADP = loadStep;
     loadStep(72, 'Placing the base — vehicles, bridge, buildings…');
     await buildStaticWorld();
-    loadStep(84, 'Base loaded — kitting out the squad…');
+    loadStep(85, 'Making the base solid — walls and cover…');
+    buildWallSegments();
+    loadStep(88, 'Base loaded — kitting out the squad…');
     if (ENV.start) player.pos.set(ENV.start.pos[0], 0, ENV.start.pos[2]);
     player.pos.y = groundY(player.pos.x, player.pos.z);
     buildEnemies();
@@ -3088,8 +3232,8 @@ function animate() {
       } else if (!IS_M1 && objIdx === OBJ.length - 1 && O.pos && dist2D(player.pos, O.pos) < O.r) {
         finishMission();
       } else if (objIdx === 0 && dist2D(player.pos, O.pos) < O.r) {
-        objIdx = 1;
-        { const Z = members[3]; if (Z && Z.prisoner) { Z.prisoner = false; const c3 = document.getElementById('card3'); if (c3) c3.style.display = ''; showMsg('ZIANI', '\u201cGOOD TO SEE YOU. WHAT KEPT YOU?\u201d'); } else showMsg('OBJECTIVE COMPLETE', OBJ[1].text); }
+        objIdx = members.some(Mt => Mt.inv && Mt.inv.some(s2 => s2.key === 'C4' && (s2.left === undefined || s2.left > 0))) ? 2 : 1; // C4 may already be recovered — never strand the chain
+        { const Z = members[3]; if (Z && Z.prisoner) { Z.prisoner = false; const c3 = document.getElementById('card3'); if (c3) c3.style.display = ''; showMsg('ZIANI', '\u201cGOOD TO SEE YOU. WHAT KEPT YOU?\u201d'); } else showMsg('OBJECTIVE COMPLETE', OBJ[objIdx].text); }
         setObjectiveText(); updateHUD();
       } else if (objIdx === 3) {
         const allIn = members.every((M, i) => !M.alive || i === activeIdx || dist2D(M.pos, O.pos) < 30);
@@ -3150,6 +3294,7 @@ function animate() {
           player.pos.z = c.z + dz / d * min;
         }
       }
+      wallPush(player.pos, player.pos.y, 0.42); // buildings are solid — no walking through walls
     }
     // facing: aim/fire -> camera direction; otherwise movement direction
     const wantYaw = (aiming || firing)
@@ -3271,7 +3416,8 @@ function animate() {
     if (!heroObj.userData.aimBones) heroObj.userData.aimBones = findAimBones(heroObj);
     if (aiming || firing || current === ANIM.aim) applyAimPitch(heroObj.userData.aimBones, -camPitch * 0.95);   // aim pitch shows while AIMING (spine + head), like the original
   }
-  enemies.forEach(E => { if (E.mixer) { E.mixer.update(dt); if (E.alive && (E.state === 'engage' || E.aimPitch)) applyAimPitch(E.aimBones, E.aimPitch || 0); } positionHeadGear(E); });
+  frameN++;
+  enemies.forEach((E, ei) => { if (E.mixer) { const dc = E.pos.distanceToSquared(player.pos); const step = dc > 12100 ? 4 : dc > 3600 ? 2 : 1; if (step === 1 || ((frameN + ei) % step) === 0) { E.mixer.update(dt * step); if (E.alive && (E.state === 'engage' || E.aimPitch)) applyAimPitch(E.aimBones, E.aimPitch || 0); } } positionHeadGear(E); });
   members.forEach((M, i) => { if (i !== activeIdx && M.mixer) { M.mixer.update(dt); if (M.aimPitch) applyAimPitch(M.aimBones, M.aimPitch); } });
   if (dmgT > 0) {
     dmgT -= dt;
@@ -3343,6 +3489,8 @@ function animate() {
     } else a10Obj.visible = false;
   }
   if (impactT > 0) { impactT -= dt; impact.scale.setScalar(1 + (0.12 - impactT) * 8); if (impactT <= 0) impact.visible = false; }
+  for (const F of fireballs) { if (F.t > 0) { F.t -= dt; const k = 1 - Math.max(0, F.t) / F.life; F.sp.scale.setScalar(F.s0 * (0.35 + k * 1.6)); F.sp.material.opacity = Math.max(0, 1 - k * 1.2); if (F.t <= 0) F.sp.visible = false; } }
+  if (shakeAmp > 0.003) { camera.position.x += (Math.random() - 0.5) * shakeAmp * 0.14; camera.position.y += (Math.random() - 0.5) * shakeAmp * 0.1; shakeAmp *= Math.pow(0.002, dt); } else shakeAmp = 0;
   const cImg = document.getElementById('compassImg');
   if (cImg) cImg.style.transform = `rotate(${(-camYaw * 57.2958).toFixed(1)}deg)`;
   renderer.render(scene, camera);
@@ -3361,12 +3509,15 @@ window.BD_TEST = {
     slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, reserve: s2.reserve, left: s2.left } : null; })(),
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
-    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, x: +E.pos.x.toFixed(1), y: +E.pos.y.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), see: !!E._canSee, hold: !!E.holdPost, yaw: +E.yaw.toFixed(2), gr: E.grenadesLeft ?? 2, ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
+    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, hp: Math.round(E.hp), x: +E.pos.x.toFixed(1), y: +E.pos.y.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), see: !!E._canSee, hold: !!E.holdPost, yaw: +E.yaw.toFixed(2), gr: E.grenadesLeft ?? 2, ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
     corpses: enemies.filter(E => !E.alive).slice(0, 6).map(E => ({ anim: E.current, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1) })),
     grenadesThrown, gate: +gateT.toFixed(2), gateBuilt: !!gateObj,
     pickups: pickups.map(p => ({ t: p.type, x: p.x, z: p.z, d: +Math.hypot(p.x - player.pos.x, p.z - player.pos.z).toFixed(1), taken: p.taken })),
     armor: armor ? { hp: armor.hp, alive: armor.alive, x: +armor.obj.position.x.toFixed(1), y: +armor.obj.position.y.toFixed(1), z: +armor.obj.position.z.toFixed(1) } : null,
-    hasC4: members.some(M => M.inv && M.inv.some(s2 => s2.key === 'C4')) }),
+    hasC4: members.some(M => M.inv && M.inv.some(s2 => s2.key === 'C4')),
+    boomAt: Math.round(lastBoomAt), walls: wallSegCount, voicePlays,
+    mates: members.map((M, i) => ({ i, stance: M.stance || 'stand', tgt: !!(M.tgt && M.tgt.alive), alive: M.alive, absent: !!M.absent })),
+    wpns: members.map(M => M.wpn ? M.wpn.label : null) }),
   teleport(x, z) { player.pos.set(x, groundY(x, z), z); player.vy = 0; player.airborne = false; },
   pitch(v) { camPitch = v; },
   dbg() { return { pos: [player.pos.x, player.pos.y, player.pos.z], safe: player._safePos ? [player._safePos.x, player._safePos.y, player._safePos.z] : null, vy: player.vy, air: player.airborne, moving: player.moving, stance: player.stance }; },
@@ -3385,4 +3536,8 @@ window.BD_TEST = {
   pressE() { dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyE' })); },
   toggleGate() { toggleGate(); return gateTarget; },
   reload() { startReload(); },
+  giveItem(key, n = 1) { const M = members[activeIdx]; if (M && M.inv) { const s = M.inv.find(s2 => s2.key === key); if (s) s.left = (s.left || 0) + n; else M.inv.push({ kind: 'item', key, left: n }); } },
+  wallAt(x, z) { const P = new THREE.Vector3(x, 0, z); wallPush(P, groundY(x, z), 0.42); return Math.hypot(P.x - x, P.z - z) > 0.01; },
+  matePos(i, x, z) { const M = members[i]; if (M) { M.pos.set(x, groundY(x, z), z); if (M.obj) M.obj.position.copy(M.pos); } },
+  setStance(s) { const i = STANCES.indexOf(s); if (i >= 0) { targetStanceIdx = i; stanceIdx = i; player.stance = s; } },
 };

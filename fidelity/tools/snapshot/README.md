@@ -46,6 +46,21 @@ jumps (hold = inventory), and the KIA restart is an instant in-page reset
 - `shot4.mjs 0|1` — all-mission audit in two halves: every mission loads with
   zero page errors, every data-placed prop resolves, in-game enemy counts
   match the mission data (`max(units.enemies, props.enemiesHLOI)`).
+- `probe20.mjs` — v68 squad orders (mission2): four distinct role weapons
+  (BOUDIAF carries the PSG-1, not a second M16A2), the squad mirrors the
+  leader's stance (stand/crouch/prone), a mate acquires and wounds targets
+  at ~33 m, enemy voice lines play in combat.
+- `probe21.mjs` — v68 mission-1 chain: wall segments harvested from the
+  world geometry stop the player walking through buildings (an open-ground
+  control still travels), taking the C4 *before* the rescue no longer
+  deadlocks the objective chain (rescue skips straight to PLANT), the C4
+  plants and detonates at the bridge, and an enemy grenade produces a real
+  explosion. Wall-test note: the bridge is a through-truss — its side
+  trusses are solid, so shot3's old "walk west off the deck" became a
+  watchtower-platform ledge fall.
+- `thumbs.mjs` — captures a mission's live establishing vista (used with an
+  NVG grade) for the mission-select pictures of missions whose bitmaps are
+  not in the archives we have.
 - `../posebake_all.py` + `../skinbake.py` — bake the idle stance into
   data-placed character figures (heroes/NPCs the missions place as scenery);
   the statics system bakes raw geometry, so the pose must live in the

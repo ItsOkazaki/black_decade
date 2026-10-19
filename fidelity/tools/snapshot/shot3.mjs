@@ -202,10 +202,12 @@ await sleep(500);
 }
 // cliff: walk off the plateau edge — must end on the gorge floor, never mid-face
 {
-  await page.evaluate(() => window.BD_TEST.teleport(-225.9, -488));   // on the bridge deck: walk west, off its edge
+  await page.evaluate(() => window.BD_TEST.hurt(-100000)); // guards can't stop the walk test
+  await page.evaluate(() => window.BD_TEST.teleport(-237.8, -439.3));   // the gate watchtower platform
   await sleep(700);
   const y0 = (await S()).pos[1];
-  await page.evaluate(() => { window.BD_TEST.facePlayer(-250, -490); window.BD_TEST.key('KeyW', true); });
+  // walk off the tower platform edge: must fall and land on the ground below
+  await page.evaluate(() => { window.BD_TEST.facePlayer(-237.8, -470); window.BD_TEST.key('KeyW', true); });
   const st3 = await until(s => !s.airborne && s.pos[1] < y0 - 4, 130, 'walk off the plateau');
   await page.evaluate(() => window.BD_TEST.key('KeyW', false));
   check('walking off a cliff lands on real ground below (never stands mid-face)',
