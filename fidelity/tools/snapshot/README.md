@@ -36,3 +36,17 @@ engaged enemies take crouch/prone firing postures, enemies throw grenades,
 losing sight triggers a SEARCH with 26 s memory (not amnesia), SPACE tap
 jumps (hold = inventory), and the KIA restart is an instant in-page reset
 (a window marker proves no reload happened).
+
+## Suites
+- `shot3.mjs` — the mission-1 regression suite (44 state assertions: movement,
+  stance, AI memory/search, posted sentries, death anims, hearing + contact
+  alerts, smart grenades, full weapon audit, working main gate, no
+  center-screen kill banner). Run: `node shot3.mjs` (~10 min, exits non-zero
+  on failure).
+- `shot4.mjs 0|1` — all-mission audit in two halves: every mission loads with
+  zero page errors, every data-placed prop resolves, in-game enemy counts
+  match the mission data (`max(units.enemies, props.enemiesHLOI)`).
+- `../posebake_all.py` + `../skinbake.py` — bake the idle stance into
+  data-placed character figures (heroes/NPCs the missions place as scenery);
+  the statics system bakes raw geometry, so the pose must live in the
+  vertices. Vehicle crew with authored seated bind poses are excluded.

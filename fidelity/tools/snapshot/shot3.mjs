@@ -230,12 +230,17 @@ async function aimAtTank() {
     const err = Math.hypot(c.dir[0] - want[0], c.dir[1] - want[1], c.dir[2] - want[2]);
     if (err < bestE) { bestE = err; bestP = p; }
   }
-  // refine: wait for the camera to settle at the chosen pitch, then verify
+  // refine: track the patrolling tank (re-face + recompute) while the
+  // camera settles at the chosen pitch, then verify
   await page.evaluate(v => window.BD_TEST.pitch(v), bestP);
   for (let i = 0; i < 16; i++) {
     await sleep(700);
+    const t2 = (await S()).armor, p2 = (await S()).pos;
+    const ddx = t2.x - p2[0], ddy = (t2.y + 1.1) - (p2[1] + 1.45), ddz = t2.z - p2[2];
+    const LL = Math.hypot(ddx, ddy, ddz);
+    await page.evaluate(a => window.BD_TEST.facePlayer(a.x, a.z), t2);
     const c = await page.evaluate(() => window.BD_TEST.camDir());
-    const err = Math.hypot(c.dir[0] - want[0], c.dir[1] - want[1], c.dir[2] - want[2]);
+    const err = Math.hypot(c.dir[0] - ddx / LL, c.dir[1] - ddy / LL, c.dir[2] - ddz / LL);
     if (err < 0.055) { console.log('  (aim locked err ' + err.toFixed(3) + ')'); return true; }
   }
   console.log('  (aim never locked; firing anyway)');
@@ -292,6 +297,145 @@ for (let i = 0; i < 50 && !sawAir; i++) { const sj = await S(); if (sj.airborne)
 check('SPACE tap jumps', sawAir);
 st = await until(s2 => !s2.airborne, 60, 'jump lands');
 check('jump lands back on the ground unharmed', !st.airborne && st.hp === 100, `hp ${st.hp}`);
+
+// ---- v67: kill banner gone, gate, hearing, contact, grenades, weapons ----
+{
+  await page.evaluate(() => window.BD_TEST.hurt(-100000));
+  await page.evaluate(() => window.BD_TEST.slay());
+  await sleep(1200);
+  const msg = await page.evaluate(() => document.getElementById('msg').textContent + '|' + document.getElementById('csub').textContent);
+  check('kill shows NO name banner in the game UI (stats only)', !/DOWN|ABU/.test(msg), JSON.stringify(msg));
+}
+{
+  const st0 = await S();
+  check('main gate exists as a working door (not baked shut)', st0.gateBuilt === true);
+  check('main gate starts OPEN (as in the original)', st0.gate > 0.9, 'gate=' + st0.gate);
+  await page.evaluate(() => window.BD_TEST.toggleGate());
+  let st = await until(s => s.gate < 0.1, 40, 'gate closes');
+  check('gate switch closes the gate', st.gate < 0.1, 'gate=' + st.gate);
+  await page.evaluate(() => window.BD_TEST.toggleGate());
+  st = await until(s => s.gate > 0.9, 40, 'gate reopens');
+  check('gate switch reopens the gate', st.gate > 0.9, 'gate=' + st.gate);
+}
+// hearing: firing near a patrol wakes him (he investigates or engages — never ignores it)
+{
+  const st0 = await S();
+  const e = st0.enemies.find(x => !x.hold && x.d > 130) || st0.enemies.find(x => !x.hold);
+  const home = [e.x, e.z];
+  await page.evaluate(h => window.BD_TEST.teleport(h[0] + 42, h[1] + 6), home);
+  await sleep(500);
+  await page.evaluate(() => window.BD_TEST.aim(true));
+  await sleep(2500);
+  await page.evaluate(() => window.BD_TEST.aim(false));
+  let reacted = '';
+  const end = Date.now() + 70000;
+  while (Date.now() < end && !reacted) {
+    const sx = await S();
+    const g = sx.enemies.reduce((a, b) => Math.hypot(b.x - home[0], b.z - home[1]) < Math.hypot(a.x - home[0], a.z - home[1]) ? b : a, sx.enemies[0]);
+    if (g.st !== 'patrol') reacted = g.st;
+    await sleep(2000);
+  }
+  check('nearby enemy reacts to gunfire (hears it / joins the fight)', !!reacted, 'state=' + reacted);
+}
+// contact: when one guard engages, his squadmate comes to the fight
+{
+  const st0 = await S();
+  const mob = st0.enemies.filter(x => !x.hold);
+  let A = null, B = null, bd = 1e9;
+  for (const a of mob) for (const b of mob) { if (a === b) continue; const d = Math.hypot(a.x - b.x, a.z - b.z); if (d > 10 && d < 42 && d < bd) { bd = d; A = a; B = { m: b }; } }
+  if (A && B) {
+    const bHome = [B.m.x, B.m.z];
+    await page.evaluate(a => window.BD_TEST.teleport(a.x + 14, a.z + 10), A);
+    await sleep(400);
+    await page.evaluate(() => window.BD_TEST.aggro());
+    let joined = '';
+    const end = Date.now() + 100000;
+    while (Date.now() < end && !joined) {
+      const sx = await S();
+      const g = sx.enemies.reduce((a2, b2) => Math.hypot(b2.x - bHome[0], b2.z - bHome[1]) < Math.hypot(a2.x - bHome[0], a2.z - bHome[1]) ? b2 : a2, sx.enemies[0]);
+      if (g.st === 'search' || g.st === 'engage' || g.ls) joined = g.st;
+      await sleep(2000);
+    }
+    check('squadmate joins a contact (does not ignore the firefight)', !!joined, 'mate state=' + joined);
+  } else check('squadmate joins a contact (does not ignore the firefight)', false, 'no pair staged');
+}
+// smart grenades: (a) no throw at a moving visible target
+{
+  const st0 = await S();
+  const e = st0.enemies.filter(x => !x.hold).sort((a, b) => Math.hypot(a.x + 160, a.z + 330) - Math.hypot(b.x + 160, b.z + 330))[0];
+  const C = [e.x, e.z];
+  await page.evaluate(c => window.BD_TEST.teleport(c[0] + 18, c[1]), C);
+  await sleep(400);
+  await page.evaluate(() => window.BD_TEST.aggro());
+  const gr0 = (await S()).enemies.reduce((a, b) => Math.hypot(b.x - C[0], b.z - C[1]) < Math.hypot(a.x - C[0], a.z - C[1]) ? b : a, (await S()).enemies[0]).gr;
+  // orbit him at 18 m, turning constantly: always moving, always in the open
+  await page.evaluate(() => window.BD_TEST.key('KeyW', true));
+  const end = Date.now() + 55000;
+  let ang = 0;
+  while (Date.now() < end) {
+    ang += 1.1;
+    await page.evaluate(c => window.BD_TEST.facePlayer(c[0] + Math.sin(c[2]) * 18, c[1] + Math.cos(c[2]) * 18), [C[0], C[1], ang]);
+    await sleep(2500);
+  }
+  await page.evaluate(() => window.BD_TEST.key('KeyW', false));
+  const sx2 = await S();
+  const gA = sx2.enemies.reduce((a, b) => Math.hypot(b.x - C[0], b.z - C[1]) < Math.hypot(a.x - C[0], a.z - C[1]) ? b : a, sx2.enemies[0]);
+  check('no grenade thrown at a moving, visible target', gA.gr === gr0, 'his grenades left: ' + gr0 + ' -> ' + gA.gr);
+}
+// smart grenades: (b) flush-out throw when the player ducks out of sight
+{
+  const st0 = await S();
+  const e = st0.enemies.filter(x => !x.hold).sort((a, b) => Math.hypot(a.x + 204, a.z + 505) - Math.hypot(b.x + 204, b.z + 505))[0];
+  const home = [e.x, e.z];
+  const g0 = (await S()).grenadesThrown;
+  await page.evaluate(h => window.BD_TEST.teleport(h[0] + 3, h[1] + 16), home);
+  await sleep(400);
+  await page.evaluate(() => window.BD_TEST.aggro());
+  // wait until he truly SEES us, then vanish behind the guardhouse block
+  const seenIt = await until(s => { const g = s.enemies.reduce((a, b) => Math.hypot(b.x - home[0], b.z - home[1]) < Math.hypot(a.x - home[0], a.z - home[1]) ? b : a, s.enemies[0]); return g.see === true; }, 60, 'enemy sees player');
+  await page.evaluate(() => window.BD_TEST.teleport(-208, -527));
+  let threw = false;
+  const end = Date.now() + 130000;
+  while (Date.now() < end && !threw) {
+    const sx = await S();
+    if (sx.grenadesThrown > g0) threw = true;
+    await sleep(2500);
+  }
+  check('grenade flushes the player out of cover (thrown at last-seen)', threw, 'thrown ' + g0 + ' -> ' + (await S()).grenadesThrown);
+}
+// every weapon works: fires, spends, has an effect
+for (const k of ['SAW', 'BARRETT', 'SIGP228', 'PSG1', 'RPG7']) {
+  await page.evaluate(k2 => window.BD_TEST.give(k2), k);
+  await sleep(300);
+  await page.evaluate(k2 => window.BD_TEST.select(k2), k);
+  await sleep(300);
+  const before = (await S()).ammo;
+  await page.evaluate(() => window.BD_TEST.aim(true));
+  const stw = await until(s => s.ammo < before || s.rockets > 0, 50, k + ' fires');
+  await page.evaluate(() => window.BD_TEST.aim(false));
+  check('weapon works: ' + k + ' fires', stw.ammo < before || stw.rockets > 0, 'ammo ' + before + ' -> ' + stw.ammo + ', rockets ' + stw.rockets);
+}
+{
+  const c0 = (await S()).corpses.length;
+  const e = (await S()).enemies.filter(x => x.hold)[0] || (await S()).enemies[0];
+  const home = [e.x, e.z];
+  await page.evaluate(() => window.BD_TEST.give('KNIFE'));
+  await page.evaluate(k2 => window.BD_TEST.select(k2), 'KNIFE');
+  await page.evaluate(h => window.BD_TEST.teleport(h[0] + 1.1, h[1] + 1.1), home);
+  await sleep(400);
+  await page.evaluate(h => window.BD_TEST.facePlayer(h[0], h[1]), home);
+  await page.evaluate(() => window.BD_TEST.aim(true));
+  // stay at arm's reach while the blade works
+  let stw = await S();
+  const endK = Date.now() + 45000;
+  while (stw.corpses.length <= c0 && Date.now() < endK) {
+    await page.evaluate(h => window.BD_TEST.teleport(h[0] + 1.1, h[1] + 1.1), home);
+    await sleep(2500);
+    stw = await S();
+  }
+  await page.evaluate(() => window.BD_TEST.aim(false));
+  check('weapon works: KNIFE kills at arm\'s reach', stw.corpses.length > c0, 'corpses ' + c0 + ' -> ' + stw.corpses.length);
+}
 
 // bridge: cross ON the deck, and pass UNDER it in the gorge (refY ground fix)
 await page.evaluate(() => window.BD_TEST.hurt(-100000)); // guards can't stop the walk test

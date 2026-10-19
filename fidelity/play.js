@@ -91,6 +91,7 @@ function slopeAt(x, z, refY) {
   return { steep: (mx - hC) > 0.85 && (hC - mn) > 0.85, downX: dX / L, downZ: dZ / L };
 }
 function canStandAt(nx, nz, dx, dz, refY) {
+  if (gateBlockSeg && gateBlock(nx, nz)) return false;   // a closed gate is a wall
   const h = groundHitCached(nx, nz, refY);
   if (h === null) {
     // nothing in the step window: stepping off a real drop (ground exists
@@ -404,7 +405,7 @@ const E_SIGHT = 95, E_FIRE_RANGE = 72;   // m: guards see, shoot and chase at re
 
 function makeEnemyState(cfg) {
   return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: 70, alive: true,
-    envY: 0, holdPost: false, path: null, pathGoal: null,
+    envY: 0, holdPost: false, path: null, pathGoal: null, grenadesLeft: 2, stillT: 0, seenT: -99,
     yaw: 0, state: 'patrol', wp: 0, spotT: 0, lostT: 0, burstLeft: 0, nextShot: 0,
     headBone: null, headGear: null, label: 'HOSTILE', props: [], faceConn: null, hatConn: null, typeIdx: 0 }, cfg);
 }
@@ -465,7 +466,7 @@ function enemySetAnim(E, name, once = false) {
 }
 
 function resetEnemy(E) {
-  E.hp = 70; E.alive = true; E.state = 'patrol'; E.wp = 0;
+  E.hp = 70; E.alive = true; E.state = 'patrol'; E.wp = 0; E.grenadesLeft = 2; E.stillT = 0; E.seenT = -99; E.path = null;
   E.memT = 0; E.alert = 0; E.lastSeen = null; E.coverPos = null; E.posture = 'stand'; E.searchPts = null; E.role = undefined;
   E.spotT = 0; E.lostT = 0; E.burstLeft = 0; E.invPos = null; E.invT = 0; E.pauseT = 0;
   if (!E.active && E.obj) { scene.remove(E.obj); E.obj = null; E.mixer = null; E.actions = {}; E.current = null; }
@@ -618,7 +619,6 @@ function hurtEnemy(E, dmg) {
     E.alive = false;
     kills++;
     setCanvas('killsCv', GF.text('HOSTILES DOWN ' + kills, { size: 'S', color: '#e8a09a', scale: 1.5 }));
-    if (E.abu) showMsg(E.abu + ' DOWN', 'HOSTILES DOWN ' + kills);
     enemySetAnim(E, Math.random() < 0.5 ? E_ANIM.deathF : E_ANIM.deathB, true);
     if (Math.random() < 0.4) playVoice('enemy_killed', 0.45);
   }
@@ -674,6 +674,7 @@ function computeMissionPoints() {
   c4Pos = trigPos('C4', c4Pos);
   bridgePos = trigPos('BRIDGE_BOOM_GROUND', bridgePos);
   migPos = trigPos('PROXTRIG_MIG', migPos);
+  gateSwitchPos = trigPos('MAIN_GATE_SWITCH', gateSwitchPos);
 }
 const OBJ = [];
 let objIdx = 0;
@@ -946,6 +947,76 @@ function applySky() {
 // they sit on the ground and E takes them, like the original
 const pickups = [], pickupSpawns = [];
 let armor = null, armorSpawn = null;
+let gateObj = null, gateL = null, gateR = null, gateT = 1, gateTarget = 1, gateSpawn = null, gateSceneSrc = null, gateBlockSeg = null, gateSwitchPos = null;
+function buildGate(srcScene, g) {
+  let src = null;
+  srcScene.traverse(o => { if (!src && o.isMesh) src = o; });
+  const geo = src && src.geometry; if (!geo || !geo.index) return;
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox, cxm = (bb.min.x + bb.max.x) / 2;
+  const posA = geo.attributes.position, idx = geo.index.array;
+  const buckets = { post: [], L: [], R: [] };
+  const groups = geo.groups.length ? geo.groups : [{ start: 0, count: idx.length, materialIndex: 0 }];
+  const mats = Array.isArray(src.material) ? src.material : [src.material];
+  for (const gr of groups) for (let i = gr.start; i < gr.start + gr.count; i += 3) {
+    const a = idx[i], b = idx[i + 1], c = idx[i + 2];
+    const cx = (posA.getX(a) + posA.getX(b) + posA.getX(c)) / 3;
+    const dst = (cx < bb.min.x + 0.55 || cx > bb.max.x - 0.55) ? buckets.post : (cx < cxm ? buckets.L : buckets.R);
+    dst.push([a, b, c, gr.materialIndex]);
+  }
+  const buildPart = (tris, shiftX) => {
+    if (!tris.length) return null;
+    const ng = new THREE.BufferGeometry();
+    for (const name of Object.keys(geo.attributes)) ng.setAttribute(name, geo.attributes[name].clone());
+    const nidx = [], nmats = []; let curMat = -1, gstart = 0;
+    tris.forEach((t, i) => {
+      nidx.push(t[0], t[1], t[2]);
+      if (t[3] !== curMat) { if (curMat >= 0) ng.addGroup(gstart, i * 3 - gstart, nmats.length - 1); curMat = t[3]; nmats.push(mats[t[3]] || mats[0]); gstart = i * 3; }
+    });
+    if (tris.length) ng.addGroup(gstart, tris.length * 3 - gstart, nmats.length - 1);
+    ng.setIndex(nidx);
+    ng.translate(shiftX, 0, 0);
+    const m = new THREE.Mesh(ng, nmats.length > 1 ? nmats : nmats[0]);
+    m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false;
+    return m;
+  };
+  gateObj = new THREE.Group();
+  gateObj.position.set(g.x, g.y, g.z); gateObj.rotation.y = g.yaw;
+  const post = buildPart(buckets.post, 0); if (post) gateObj.add(post);
+  gateL = new THREE.Group(); gateL.position.set(bb.min.x + 0.3, 0, 0);
+  const lm = buildPart(buckets.L, -(bb.min.x + 0.3)); if (lm) gateL.add(lm);
+  gateR = new THREE.Group(); gateR.position.set(bb.max.x - 0.3, 0, 0);
+  const rm = buildPart(buckets.R, -(bb.max.x - 0.3)); if (rm) gateR.add(rm);
+  gateObj.add(gateL, gateR);
+  scene.add(gateObj);
+  const cs = Math.cos(g.yaw), sn = Math.sin(g.yaw);
+  for (const lx of [bb.min.x + 0.3, bb.max.x - 0.3]) colliders.push({ x: g.x + lx * cs, z: g.z - lx * sn, r: 0.65, top: g.y + 3.2 });
+  gateBlockSeg = { ax: g.x + (bb.min.x + 0.3) * cs, az: g.z - (bb.min.x + 0.3) * sn, bx: g.x + (bb.max.x - 0.3) * cs, bz: g.z - (bb.max.x - 0.3) * sn };
+  applyGate();
+}
+function applyGate() {
+  if (!gateL || !gateR) return;
+  gateL.rotation.y = -gateT * 1.85;
+  gateR.rotation.y = gateT * 1.85;
+}
+function updateGate(dt) {
+  if (!gateObj || gateT === gateTarget) return;
+  gateT += THREE.MathUtils.clamp(gateTarget - gateT, -dt * 0.5, dt * 0.5);
+  applyGate();
+}
+function toggleGate() {
+  gateTarget = gateTarget > 0.5 ? 0 : 1;
+  playClick();
+  showMsg(gateTarget ? 'MAIN GATE OPEN' : 'MAIN GATE CLOSED');
+}
+function gateBlock(x, z) {
+  if (!gateBlockSeg || gateT > 0.55) return false;
+  const { ax, az, bx, bz } = gateBlockSeg;
+  const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz;
+  let t = L2 ? ((x - ax) * dx + (z - az) * dz) / L2 : 0; t = Math.max(0, Math.min(1, t));
+  const px = ax + dx * t - x, pz = az + dz * t - z;
+  return (px * px + pz * pz) < 0.64;
+}
 const PICKUP_RULES = [
   [/^MEDIKIT/, 'medkit', 'MEDI KIT'],
   [/EXPLOSIVE01_C4/, 'c4', 'C4 CHARGE'],
@@ -1121,20 +1192,32 @@ async function buildStaticWorld() {
   for (const s of PROPS.statics) {
     const sc = cache[s.m]; if (!sc) continue;
     if (/^(MIG29|A10)/.test(s.m)) continue;   // aircraft fly (A-10 passes, the captured MiG is its own objective model) — never bake one frozen into the sky
+    if (s.m === 'MISSION1GATE') { gateSpawn = { x: s.p[0], z: s.p[1], y: s.y, yaw: s.yaw || 0 }; gateSceneSrc = sc; continue; }   // the main gate is a working door, not scenery
     const pr = pickupRule(s.m);
     if (pr) { pickupSpawns.push({ m: s.m, x: s.p[0], z: s.p[1], type: pr[1], label: pr[2] }); continue; }
     if (/^(BMP2|T72|T62)/.test(s.m) && !armorSpawn) { armorSpawn = { m: s.m, x: s.p[0], z: s.p[1], y: s.y || 0, yaw: s.yaw || 0 }; continue; }
-    let sy = s.y;
+    let sy = s.y, vx = 0, vz = 0;
     if (/TRUCK|URAL|JEEP|TANK|APC|BMP|T72/.test(s.m)) {
-      // vehicles sit on their wheels: lift/lower so the model's lowest point meets the terrain
+      // vehicles sit on all their wheels: sample the ground at the footprint
+      // corners and pitch/roll the body onto the slope (no more floating axles)
       const inf0 = info[s.m];
-      if (inf0) sy += THREE.MathUtils.clamp(groundYCached(s.p[0], s.p[1]) - (s.y + inf0.ce.y - inf0.sz.y / 2), -3, 6);
+      if (inf0) {
+        const fx = Math.sin(s.yaw || 0), fz = Math.cos(s.yaw || 0), rx = fz, rz = -fx;
+        const hl = Math.max(1.2, inf0.sz.z * 0.36), hw = Math.max(0.9, inf0.sz.x * 0.36);
+        const gh = (ox, oz) => { const h = groundHitY(s.p[0] + ox, s.p[1] + oz, s.y + 2.5); return h === null ? groundYCached(s.p[0] + ox, s.p[1] + oz) : h; };
+        const hFL = gh(fx * hl + rx * hw, fz * hl + rz * hw), hFR = gh(fx * hl - rx * hw, fz * hl - rz * hw);
+        const hBL = gh(-fx * hl + rx * hw, -fz * hl + rz * hw), hBR = gh(-fx * hl - rx * hw, -fz * hl - rz * hw);
+        sy += THREE.MathUtils.clamp((hFL + hFR + hBL + hBR) / 4 - (s.y + inf0.ce.y - inf0.sz.y / 2), -3, 6);
+        vx = THREE.MathUtils.clamp(Math.atan2(((hBL + hBR) - (hFL + hFR)) / 2, hl * 2), -0.3, 0.3);
+        vz = THREE.MathUtils.clamp(Math.atan2(((hFR + hBR) - (hFL + hBL)) / 2, hw * 2), -0.3, 0.3);
+      }
     }
-    M4.compose(PV.set(s.p[0], sy, s.p[1]), Q.setFromEuler(EU.set(0, s.yaw || 0, 0)), ONE);
+    M4.compose(PV.set(s.p[0], sy, s.p[1]), Q.setFromEuler(EU.set(vx, s.yaw || 0, vz, 'YXZ')), ONE);
     sc.traverse(o => {
       if (!o.isMesh) return;
       o.material.side = THREE.DoubleSide;   // solid from every angle, no void
       const geo = o.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(M4, o.matrixWorld));
+      geo.morphAttributes = {}; geo.morphTargetsRelative = false;   // merge hygiene (some zone props carry morphs)
       for (const a of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv', 'color'].includes(a)) geo.deleteAttribute(a);
       const key = o.material.uuid + '|' + Object.keys(geo.attributes).sort().join(',');
       if (!groups.has(key)) groups.set(key, { mat: o.material, geos: [] });
@@ -1156,6 +1239,7 @@ async function buildStaticWorld() {
       world.add(mesh); _groundMeshes.push(mesh);
     }
   }
+  if (gateSpawn && gateSceneSrc) buildGate(gateSceneSrc, gateSpawn);
   // building interiors (hut/garage/guardhouse scenes at their env roots)
   for (const it of (PROPS.interiors || [])) {
     try {
@@ -1164,6 +1248,22 @@ async function buildStaticWorld() {
       g.scene.traverse(o => { if (o.isMesh) { o.receiveShadow = !SET.lowGfx; o.frustumCulled = false; o.material.side = THREE.DoubleSide; _groundMeshes.push(o); } });
       world.add(g.scene);
     } catch (e) { console.warn('interior failed:', it.m); }
+  }
+  // cutout materials (chain-link, camo netting, barbed wire): true alpha-tested
+  // cutouts — not the dotted semi-transparent sorting shimmer
+  world.traverse(o => {
+    if (!o.isMesh) return;
+    const ms = Array.isArray(o.material) ? o.material : [o.material];
+    ms.forEach(m2 => { if (m2 && m2.transparent && m2.map) { m2.alphaTest = 0.42; m2.transparent = false; m2.side = THREE.DoubleSide; m2.needsUpdate = true; } });
+  });
+  // ground apron under the whole map: no blue void past the terrain edge
+  if (worldBox) {
+    const apron = new THREE.Mesh(new THREE.PlaneGeometry(worldBox.max.x - worldBox.min.x + 700, worldBox.max.z - worldBox.min.z + 700),
+      new THREE.MeshStandardMaterial({ color: 0xb59a6a, roughness: 1 }));
+    apron.rotation.x = -Math.PI / 2;
+    apron.position.set((worldBox.min.x + worldBox.max.x) / 2, worldBox.min.y - 1.5, (worldBox.min.z + worldBox.max.z) / 2);
+    apron.receiveShadow = true;
+    scene.add(apron);
   }
   // the extraction Black Hawk (env placement), rotor turning
   const hawk = PROPS.vehicles && PROPS.vehicles.hawk && PROPS.vehicles.hawk[0];
@@ -1182,7 +1282,7 @@ async function buildStaticWorld() {
     } catch (e) { console.warn('hawk failed'); }
   }
   try {
-    a10Obj = (await loader.loadAsync(MISDIR + 'props/A10_SMALL.glb')).scene;
+    a10Obj = (await loader.loadAsync('models/mission1/props/A10_SMALL.glb')).scene;   // one shared A-10 for every map
     a10Obj.visible = false;
     a10Obj.scale.setScalar(1.7);
     a10Obj.traverse(o => { if (o.isMesh) { o.frustumCulled = false; const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(mm => { mm.metalness = 0; mm.roughness = 0.85; if (!mm.map && mm.color) mm.color.set(0x9aa3a8); }); } });
@@ -1899,6 +1999,7 @@ addEventListener('keydown', (e) => {
     const pk = nearestPickup();
     if (pk) takePickup(pk);
     else {
+      if (IS_M1 && gateSwitchPos && dist2D(player.pos, gateSwitchPos) < 3.2) toggleGate();
       const M = members[activeIdx];
       const hasC4 = M && M.inv && M.inv.some(s2 => s2.key === 'C4' && (s2.left === undefined || s2.left > 0));
       if (hasC4 && IS_M1 && objIdx === 2 && dist2D(player.pos, bridgePos) < 9) tryPlantC4();
@@ -1943,6 +2044,32 @@ scene.add(impact);
 let impactT = 0;
 const raycaster = new THREE.Raycaster();
 
+/* ---- tracers: pooled streaks so every shot reads on screen ---- */
+const tracers = [];
+function spawnTracer(a, b, col = 0xffe2ae, w = 1) {
+  let T = tracers.find(t => t.life <= 0);
+  if (!T) {
+    if (tracers.length > 30) return;
+    T = { obj: new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.022, 1), new THREE.MeshBasicMaterial({ color: 0xffe2ae, transparent: true, opacity: 0 })), life: 0 };
+    T.obj.frustumCulled = false;
+    scene.add(T.obj); tracers.push(T);
+  }
+  const len = a.distanceTo(b); if (len < 2) return;
+  T.obj.material.color.setHex(col);
+  T.obj.position.copy(a).add(b).multiplyScalar(0.5);
+  T.obj.lookAt(b);
+  T.obj.scale.set(w, w, len);
+  T.obj.visible = true;
+  T.life = 0.07;
+}
+function updateTracers(dt) {
+  for (const T of tracers) {
+    if (T.life <= 0) continue;
+    T.life -= dt;
+    T.obj.material.opacity = Math.max(0, T.life / 0.07) * 0.8;
+    if (T.life <= 0) T.obj.visible = false;
+  }
+}
 function doFire(now) {
   const M = members[activeIdx];
   if (!M || !M.inv) return;
@@ -1966,7 +2093,7 @@ function doFire(now) {
   if (!settledFire) return; // guns need the aim raised + settled stance (original rules)
   const _fm = (slot.key === 'M16A2' || slot.key === 'SAW') ? player.fireMode : 'AUTO';
   if (_fm === 'SEMI' && player.semiLatch) return;
-  raiseAlert(player.pos, 30);
+  gunshotNoise(player.pos, slot.key === 'SIGP228' ? 15 : W.rocket ? 95 : 62);
   window.__lastShotT = now;   // enemies duck when your shots start cracking
   player.nextShot = now + W.interval;
   if (player.ammo <= 0) { playClick(); player.nextShot = now + 0.3; return; }
@@ -1994,6 +2121,12 @@ function doFire(now) {
       n = n.parent;
     }
     if (hitE && hitE.alive) hurtEnemy(hitE, W.dmg);
+  }
+  { // visible tracer from the muzzle to the strike (or downrange on a miss)
+    const mz = rifleObj ? flash.position.clone() : new THREE.Vector3(player.pos.x, player.pos.y + 1.42, player.pos.z);
+    const end = hits.length ? hits[0].point : raycaster.ray.at(170, new THREE.Vector3());
+    const big = slot.key === 'BARRETT' || slot.key === 'PSG1';
+    spawnTracer(mz, end, big ? 0xfff3cf : 0xffe0a1, big ? 2.6 : 1);
   }
   updateHUD();
 }
@@ -2052,6 +2185,34 @@ function enemyGrenade(E, T) {
   const d = Math.hypot(dir.x, dir.z);
   dir.normalize();
   projectiles.push({ obj: o, vel: dir.multiplyScalar(13).add(new THREE.Vector3(0, 5.2, 0)), kind: 'FRAG', t: THREE.MathUtils.clamp(d / 12, 0.7, 2.4) });
+}
+// a rifle crack carries: men in earshot move toward it (the silenced pistol
+// barely whispers). Close shots give them the area for free.
+function gunshotNoise(pos, radius) {
+  for (const E of enemies) {
+    if (!E.alive || !E.obj) continue;
+    const d = E.pos.distanceTo(pos);
+    if (d > radius) continue;
+    if (E.holdPost) { E.alert = 1; continue; }
+    if (E.state === 'patrol' || E.state === 'return' || E.state === 'investigate') {
+      E.invPos = new THREE.Vector3(pos.x + (Math.random() - 0.5) * 6, pos.y, pos.z + (Math.random() - 0.5) * 6);
+      E.invT = 6.5; E.spotT = 0; E.state = 'investigate';
+      if (d < 30) E.lastSeen = pos.clone();
+    } else if (E.state === 'search' && d < 42) E.lastSeen = pos.clone();
+  }
+}
+// a man in contact shouts: nearby squadmates who can't see you yet still
+// come to the fight (they must win their own line of sight to shoot)
+function contactAlert(src) {
+  for (const E of enemies) {
+    if (E === src || !E.alive) continue;
+    if (E.pos.distanceTo(src.pos) > 44) continue;
+    if (E.holdPost) { E.alert = Math.max(E.alert, 0.8); continue; }
+    if (E.state === 'patrol' || E.state === 'investigate' || E.state === 'return') {
+      E.lastSeen = src.lastSeen ? src.lastSeen.clone() : src.pos.clone();
+      E.memT = 20; E.state = 'search'; makeSearch(E);
+    } else if (E.state === 'search' && src.lastSeen) { E.lastSeen = src.lastSeen.clone(); E.memT = Math.max(E.memT, 12); }
+  }
 }
 function makeSearch(E) {
   E.searchPts = [];
@@ -2168,8 +2329,9 @@ function updateEnemy(E, dt, now) {
 
   if (E.state === 'engage') {
     if (canSee) {
-      E.lastSeen = T.pos.clone(); E.memT = 26; E.alert = 1; E.lostT = 0;
-      if (now > E.alertT) { E.alertT = now + 7; raiseAlert(E.pos, 20); }   // shout the contact to nearby guards
+      E.lastSeen = T.pos.clone(); E.memT = 26; E.alert = 1; E.lostT = 0; E.seenT = now;
+      E.stillT = T.moving ? 0 : (E.stillT || 0) + dt;
+      if (now > E.alertT) { E.alertT = now + 7; contactAlert(E); }   // shout the contact to nearby guards
     } else {
       E.lostT += dt;
       // he does NOT forget you the second you break line of sight
@@ -2243,10 +2405,21 @@ function updateEnemy(E, dt, now) {
       else enemySetAnim(E, E_ANIM.aim);
     } else if (!E.coverPos && !E._moving) E.posture = 'stand';
     if (canSee) E.yaw += dyaw * Math.min(1, dt * 6);
-    // grenades: flush a target at mid range, every man on his own clock
-    if (canSee && !E._moving && !E.coverPos && dist > 12 && dist < 31 && now > E.grenadeCd) {
-      E.grenadeCd = now + 10 + Math.random() * 9;
-      enemyGrenade(E, T);
+    // grenades are a flush-out weapon, not a greeting: he throws when you
+    // duck out of sight (fresh last-seen) or sit dug-in under his sights —
+    // never just because he can see you moving in the open
+    {
+      const gTarget = canSee ? T.pos : (E.lastSeen && (now - E.seenT) < 6 ? E.lastSeen : null);
+      if (gTarget && !E._moving && !E.coverPos && now > E.grenadeCd && (E.grenadesLeft ?? 2) > 0) {
+        const gd = E.pos.distanceTo(gTarget);
+        if (gd > 9 && gd < 31 && (!canSee || (E.stillT || 0) > 2.2)) {
+          E.grenadeCd = now + 16 + Math.random() * 12;
+          E.grenadesLeft--;
+          enemyGrenade(E, { pos: gTarget });
+          enemySetAnim(E, 'UPRIGHT_RELOAD', true);
+          if (E.actions['UPRIGHT_RELOAD']) E.actions['UPRIGHT_RELOAD'].timeScale = 1.7;
+        }
+      }
     }
     if (canSee && dist <= E_FIRE_RANGE && !E.coverPos && now >= E.nextShot) {
       if (E.burstLeft <= 0) E.burstLeft = 3 + Math.floor(Math.random() * 3);
@@ -2255,6 +2428,7 @@ function updateEnemy(E, dt, now) {
       playAK(dist);
       flash.position.set(E.pos.x + Math.sin(E.yaw) * 0.7, E.pos.y + headH + 0.1, E.pos.z + Math.cos(E.yaw) * 0.7);
       flash.intensity = 40; flashT = 0.05;
+      spawnTracer(flash.position.clone(), new THREE.Vector3(T.pos.x + (Math.random() - 0.5) * 1.4, T.pos.y + 1.15 + (Math.random() - 0.5) * 0.8, T.pos.z + (Math.random() - 0.5) * 1.4), 0xffc9a0, 0.8);
       let p = dist < 12 ? 0.50 : dist < 25 ? 0.36 : dist < 45 ? 0.26 : 0.17;
       if (E._moving) p *= 0.55; else if (E.planted) p *= 1.15;   // running snaps shots off; planted fires true
       if (E.posture === 'prone') p *= 1.12; else if (E.posture === 'crouch') p *= 1.06;
@@ -2287,6 +2461,16 @@ function updateEnemy(E, dt, now) {
     } else E.spotT = Math.max(0, E.spotT - dt);
     if (E.memT <= 0) { E.state = 'return'; E.alert = 0; }
     else {
+      // flushing the last-seen cover on the way in
+      if ((E.grenadesLeft ?? 2) > 0 && now > E.grenadeCd && E.lastSeen && (now - E.seenT) < 9 && !canSee) {
+        const gd = E.pos.distanceTo(E.lastSeen);
+        if (gd > 9 && gd < 31) {
+          E.grenadeCd = now + 16 + Math.random() * 12; E.grenadesLeft--;
+          enemyGrenade(E, { pos: E.lastSeen });
+          enemySetAnim(E, 'UPRIGHT_RELOAD', true);
+          if (E.actions['UPRIGHT_RELOAD']) E.actions['UPRIGHT_RELOAD'].timeScale = 1.7;
+        }
+      }
       const tp = (E.searchPts && E.searchPts[E.searchI]) || E.lastSeen || E.homePos;
       const to = new THREE.Vector3().subVectors(tp, E.pos); to.y = 0;
       if (E.lookT > 0) {
@@ -2778,6 +2962,7 @@ async function load() {
     if (_loadBeat) { clearInterval(_loadBeat); _loadBeat = null; }
     loadStep(100, 'Loaded — ' + enemies.length + ' hostiles placed from the mission data.');
     { const dg = document.getElementById('deployGo'); if (dg) dg.style.display = 'block'; }
+    { const bo = document.getElementById('briefObjs'); if (bo && MIS !== 'mission1' && OBJ.length) bo.innerHTML = OBJ.map((o, i) => (i + 1) + ' · <b>' + o.text + '</b>').join('<br>'); }   // every other mission briefs its OWN objectives, not M1's
     stats.innerHTML = '✔ LOADED — CLICK DEPLOY TO BEGIN (' + enemies.length +
       ' hostiles placed from the mission .env). Full game inventory on TAB.';
     buildItemBar();
@@ -2856,9 +3041,10 @@ function animate() {
     // thrown items, rockets, smoke, healing, C4, objectives
     for (let i = projectiles.length - 1; i >= 0; i--) {
       const P = projectiles[i];
-      P.vel.y -= 9.8 * dt;
+      P.vel.y -= 13 * dt;
       P.obj.position.addScaledVector(P.vel, dt);
-      const gy = groundYCached(P.obj.position.x, P.obj.position.z) + 0.05;
+      const gy0 = groundHitCached(P.obj.position.x, P.obj.position.z, P.obj.position.y + 0.3);
+      const gy = (gy0 === null ? -999 : gy0) + 0.05;
       if (P.obj.position.y <= gy) {
         P.obj.position.y = gy;
         if (P.kind === 'SMOKE') { spawnSmoke(P.obj.position.clone()); scene.remove(P.obj); projectiles.splice(i, 1); continue; }
@@ -2910,9 +3096,10 @@ function animate() {
         if (dist2D(player.pos, O.pos) < O.r && allIn) finishMission();
       }
     }
-    if (objMarker && OBJ[objIdx] && OBJ[objIdx].pos) {
+    if (objMarker) {
       const O = OBJ[objIdx];
-      objMarker.position.set(O.pos.x, groundYCached(O.pos.x, O.pos.z) + 6 + Math.sin(now * 2) * 0.6, O.pos.z);
+      if (O && O.pos) { objMarker.visible = true; objMarker.position.set(O.pos.x, groundYCached(O.pos.x, O.pos.z) + 6 + Math.sin(now * 2) * 0.6, O.pos.z); }
+      else objMarker.visible = false;   // position-less objectives (ELIMINATE) show no floating marker
     }
     if (msgT > 0) { msgT -= dt; if (msgT <= 0) document.getElementById('msg').style.opacity = 0; }
     if (keys.has('Space') && !quickInv && !invOpen && performance.now() - _spaceT > 230) setQuickInv(true);
@@ -3069,6 +3256,9 @@ function animate() {
     updateFootsteps(dt, player.moving ? speed : 0);
     enemies.forEach(E => updateEnemy(E, dt, now));
     updateArmor(dt, now);
+    updateGate(dt);
+    updateTracers(dt);
+    if (IS_M1 && gateSwitchPos) invSay(dist2D(player.pos, gateSwitchPos) < 3.5 ? 'E — GATE SWITCH' : '');
     for (const b of banners) { b.rotation.y = Math.sin(now * 1.25) * 0.38; b.rotation.z = Math.sin(now * 1.7) * 0.05; }
     for (const p of pickups) if (!p.taken && p.obj) p.obj.rotation.y += dt * 0.7;
     members.forEach((M, i) => { if (i !== activeIdx) updateMate(M, dt, now); });
@@ -3171,9 +3361,9 @@ window.BD_TEST = {
     slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, reserve: s2.reserve, left: s2.left } : null; })(),
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
-    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, x: +E.pos.x.toFixed(1), y: +E.pos.y.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), see: !!E._canSee, hold: !!E.holdPost, yaw: +E.yaw.toFixed(2), ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
+    enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, x: +E.pos.x.toFixed(1), y: +E.pos.y.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), see: !!E._canSee, hold: !!E.holdPost, yaw: +E.yaw.toFixed(2), gr: E.grenadesLeft ?? 2, ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),
     corpses: enemies.filter(E => !E.alive).slice(0, 6).map(E => ({ anim: E.current, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1) })),
-    grenadesThrown,
+    grenadesThrown, gate: +gateT.toFixed(2), gateBuilt: !!gateObj,
     pickups: pickups.map(p => ({ t: p.type, x: p.x, z: p.z, d: +Math.hypot(p.x - player.pos.x, p.z - player.pos.z).toFixed(1), taken: p.taken })),
     armor: armor ? { hp: armor.hp, alive: armor.alive, x: +armor.obj.position.x.toFixed(1), y: +armor.obj.position.y.toFixed(1), z: +armor.obj.position.z.toFixed(1) } : null,
     hasC4: members.some(M => M.inv && M.inv.some(s2 => s2.key === 'C4')) }),
@@ -3193,5 +3383,6 @@ window.BD_TEST = {
   aggro() { let n = 0; for (const E of enemies) { if (!E.alive) continue; if (E.pos.distanceTo(player.pos) < 70) { E.state = 'engage'; E.lastSeen = player.pos.clone(); E.memT = 26; E.nextShot = nowSec + 0.5; if (n === 0) E.grenadeCd = nowSec + 0.5; n++; } } },
   slay() { const E = enemies.filter(e2 => e2.alive).sort((a, b) => a.pos.distanceTo(player.pos) - b.pos.distanceTo(player.pos))[0]; if (!E) return null; hurtEnemy(E, 999); return { anim: E.current, x: +E.pos.x.toFixed(1), z: +E.pos.z.toFixed(1) }; },
   pressE() { dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyE' })); },
+  toggleGate() { toggleGate(); return gateTarget; },
   reload() { startReload(); },
 };
