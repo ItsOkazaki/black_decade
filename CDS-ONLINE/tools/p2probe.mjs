@@ -22,7 +22,7 @@ await page.screenshot({ path: '/tmp/snap/p2_main.png' });
 await page.evaluate(() => window.CDS_FE.missions());
 await sleep(500);
 const rows = await page.evaluate(() => document.querySelectorAll('#misList .mrow').length);
-ok('15 missions listed', rows === 15, rows + ' rows');
+ok('15 SP missions + 3 training listed', rows === 18, rows + ' rows');
 await page.screenshot({ path: '/tmp/snap/p2_missions.png' });
 await page.evaluate(() => window.CDS_FE.brief(0));
 await sleep(500);
@@ -44,8 +44,8 @@ st = await page.evaluate(() => window.CDS_FE.state());
 ok('loadout: weapon change sticks', st.loadout.Bradley.primary !== 'US_WPN_M16A2' || st.loadout.Bradley.primary === 'US_WPN_M16A2', st.loadout.Bradley.primary);
 await page.evaluate(() => window.CDS_FE.deploy());
 let dep = false;
-for (let i = 0; i < 30; i++) { await sleep(1000); st = await page.evaluate(() => window.CDS_FE.state()); if (st.screen === 'deployed') { dep = true; break; } }
-ok('loading bar completes -> deployed', dep, st && st.screen);
+for (let i = 0; i < 60; i++) { await sleep(1000); st = await page.evaluate(() => window.CDS_FE.state()); const sim = await page.evaluate(() => window.CDS_SIM && window.CDS_SIM.state()); if (st.screen === 'game' && sim && sim.playing) { dep = true; break; } }
+ok('loading completes -> in-game simulation', dep, st && st.screen);
 ok('no page errors', errs.length === 0, errs.slice(0, 2).join(' | '));
 await browser.close();
 console.log(`p2probe: ${PASS} pass, ${FAIL} fail`);

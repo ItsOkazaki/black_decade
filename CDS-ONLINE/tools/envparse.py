@@ -98,5 +98,6 @@ if __name__ == '__main__':
     print('heroes:', [(h['name'], h['script'], h['pos']) for h in heroes])
     print('hostiles:', len(foes), '| CS actors:', len([u for u in d['units'] if u['script'].startswith('CS')]))
     start = next((h for h in heroes if h['script'] == 'HERO_BRADLEY'), None)
-    assert start and abs(start['pos'][0] + 120.12) < 0.5 and abs(start['pos'][2] + 233.92) < 0.5, start
-    print('start validated:', start['pos'], 'yaw', start['yaw'])
+    if dst.endswith('mission1.json'):
+        assert start and abs(start['pos'][0] + 120.12) < 0.5 and abs(start['pos'][2] + 233.92) < 0.5, start
+        print('start validated:', start['pos'], 'yaw', start['yaw'])

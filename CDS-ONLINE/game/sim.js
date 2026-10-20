@@ -33,10 +33,18 @@ let renderer, scene, camera, clock, raf = 0, running = false, paused = false;
 let WEAPONS = {}, HUMANS = {}, UNITS = {}, UNITWPNS = {}, MISSION = null, LOC_M01 = {};
 let squad = [], enemies = [], prisoner = null, activeIdx = 0, allActors = [];
 let camYaw = 0, camPitch = 0.1, keys = {}, aiming = false, firing = false;
-let objectives = [], objIdx = 0, hasC4 = false, plantT = 0, planted = false;
+let objectives = [], objIdx = 0, hasC4 = false, plantT = 0, planted = false, gapHadHostiles = false, kills = 0;
 let bridgePoint = null, extractRegion = null, c4Region = null, gateRegion = null, c4PropPos = null, pillarRegion = null;
 let SPEEDS = { src: 'PROVISIONAL', walk: 1.6, run: 3.6, kneelWalk: 1.1, crawl: 0.6 };
 let onExitCb = null, curLoadout = {};
+let MISSION_ID = 'mission1', MODEL_DIR = 'assets/models/mission1', MISSION_LABEL = 'MISSION 1';
+let VSTAT = {}, DOORTAB = {}, VEHICLES = [], DOORS = [], driving = null, vehicleRulesText = '', worldGroup = null;
+/* model -> VStat row + vehicle weapon (Catalog Weaps has the IR_VWPN_* rows).
+   Field semantics: numbers[11] = hit points, numbers[12] = armour (BMP2 500,
+   per PLAN); penetration rule dmg > armour, full damage through — PROVISIONAL (R3). */
+const VMAP = { BMP2: { vs: 'BMP2', w: 'IR_VWPN_BMP2_ChainGun' }, BMP1: { vs: 'BMP1', w: 'IR_VWNP_BMP1_MAINCANNON' },
+  T72M1: { vs: 'TankStat_T72', w: 'IR_VWNP_T72_MAINCANNON' }, T62_IRAQTANK: { vs: 'TankStat_T62', w: 'IR_VWPN_T62_MAINCANNON' },
+  URAL375_CLOSED: { vs: 'IR_Truck' }, URAL375_OPEN: { vs: 'IR_Truck' }, FUEL_TRUCK: { vs: 'Fuel_bowser' }, FUEL_TRUCK01: { vs: 'Fuel_bowser' } };
 const loader = new GLTFLoader();
 const glbCache = {};
 const tracers = [];
@@ -96,7 +104,7 @@ class RulesMachine {
     for (const m of text.matchAll(/RULE\t? ?(\S+)\n([\s\S]*?)END_RULE/g)) {
       const trans = new Map();
       for (const row of m[2].matchAll(/"([^"]+)"\s+"([^"]+)"/g)) trans.set(row[1], row[2]);
-      this.rules.push({ cond: m[1], trans });
+      this.rules.push({ cond: m[1].replace(/"/g, ''), trans });
     }
     this.state = 'STATE_STANDING_STILL_PATROL_STANCE';
   }
@@ -113,6 +121,22 @@ class RulesMachine {
   }
   static evalCond(name, c) {
     switch (name) {
+      case 'VMSR_ZERO_SPEED': return c.speed < 0.08;
+      case 'VMSR_ANIM_FINISHED': return !!c.animFinished;
+      case 'VMSR_ALIVE': return !!c.alive;
+      case 'VMSR_DEAD': return !c.alive;
+      case 'VMSR_JOYSTICK_FORWARD': return !!c.joy.f;
+      case 'VMSR_JOYSTICK_NOT_FORWARD': return !c.joy.f;
+      case 'VMSR_JOYSTICK_BACKWARDS': return !!c.joy.b;
+      case 'VMSR_JOYSTICK_NOT_BACKWARDS': return !c.joy.b;
+      case 'VMSR_JOYSTICK_LEFT': return !!c.joy.l;
+      case 'VMSR_JOYSTICK_NOT_LEFT': return !c.joy.l;
+      case 'VMSR_JOYSTICK_RIGHT': return !!c.joy.r;
+      case 'VMSR_JOYSTICK_NOT_RIGHT': return !c.joy.r;
+      case 'VMSR_JOYSTICK_CENTRED': return !c.joy.f && !c.joy.b && !c.joy.l && !c.joy.r;
+      case 'VMSR_AI_STOP_MOVING': return c.aiGo === 'stop';
+      case 'VMSR_AI_FACING_DESTINATION': return !!c.facingDest;
+      case 'VMSR_AI_NOT_FACING_DESTINATION': return !c.facingDest;
       case 'MSR_ZERO_SPEED': return c.speed < 0.08;
       case 'MSR_ZERO_SPEED_AND_MOVEMENT_MODE_KNEEL_RUN': return c.speed < 0.08 && c.mode === 'KNEEL';
       case 'MSR_ZERO_SPEED_AND_MOVEMENT_MODE_CRAWL': return c.speed < 0.08 && c.mode === 'CRAWL';
@@ -235,20 +259,59 @@ function losClear(a, b) {
   }
   return true;
 }
+function regDoor(model, obj) {
+  const d = DOORTAB[(model || '').toLowerCase()]; if (!d) return;
+  if (!(Math.abs(d.slide[0]) + Math.abs(d.slide[1]) + Math.abs(d.slide[2]) > 0)) return;   /* wreck rows share names; only sliding doors register */
+  const off = V3(d.slide[0] || 0, d.slide[1] || 0, d.slide[2] || 0).applyAxisAngle(V3(0, 1, 0), obj.rotation.y);
+  DOORS.push({ name: model, obj, base: obj.position.clone(), off, open: 0, target: 0 });
+}
+function nearestDoor(p, regionName) {
+  // OG pairing is script-side (MAIN_GATE_SWITCH -> Mission1Gate): prefer a
+  // gate-class door when the switch names a gate, else the nearest door.
+  const gateWant = /GATE/.test(regionName || '');
+  let b = null, bd = 1e9;
+  for (const D of DOORS) {
+    const score = D.obj.position.distanceTo(p) + ((gateWant && /GATE/.test(D.name)) ? 0 : 10000);
+    if (score < bd) { bd = score; b = D; }
+  }
+  return b;
+}
+async function makeVehicle(model, vm, pos, yaw, team, group) {
+  const row = VSTAT[vm.vs]; if (!row) return null;
+  let g = await loadGLB(`${MODEL_DIR}/${model}.glb`);
+  if (!g) g = await loadGLB(`assets/models/mission1/${model}.glb`);
+  if (!g) g = await loadGLB(`assets/models/frontend/${model}.glb`);
+  if (!g) return null;
+  const m = g.scene.clone(true);
+  m.position.set(pos[0], pos[1], pos[2]); m.rotation.y = yaw || 0;
+  group.add(m); terrain.push(m); m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
+  const box = new THREE.Box3().setFromObject(m);
+  const V = { model, vsName: vm.vs, obj: m, pos: m.position, yaw: yaw || 0, team, weaponId: vm.w || null,
+    hp: row[11] != null ? row[11] : 1000, maxHp: row[11] != null ? row[11] : 1000, armour: row[12] != null ? row[12] : 0,
+    alive: true, radius: Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2,
+    speed: 0, nextShot: 0, stateName: 'STATE_TANK_STOPPED', joy: { f: false, b: false, l: false, r: false }, aiGo: 'stop',
+    sm: vehicleRulesText ? new RulesMachine(vehicleRulesText) : null, floorY: pos[1] };
+  if (V.sm) V.sm.state = 'STATE_TANK_STOPPED';
+  VEHICLES.push(V);
+  return V;
+}
 async function buildWorld() {
   scene.background = new THREE.Color(0.79, 0.83, 0.85);
   scene.fog = new THREE.Fog(new THREE.Color(0.79, 0.83, 0.85), 140, 950);
   const sun = new THREE.DirectionalLight(0xfff2d8, 2.6); sun.position.set(140, 240, 80); scene.add(sun);
   scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x8a7a5a, 0.95));
-  const group = new THREE.Group(); scene.add(group);
+  const group = new THREE.Group(); scene.add(group); worldGroup = group;
   let placed = 0;
   for (const inst of MISSION.instances) {
     if (!inst.model || inst.model === 'NOTEXTURE') continue;
-    const g = await loadGLB(`assets/models/mission1/${inst.model}.glb`);
+    const vu = (MISSION.vehicleUnits || []).find(v => !v._done && v.model === inst.model && Math.hypot(v.pos[0] - inst.w[0], v.pos[2] - inst.w[2]) < 2);
+    if (vu && VMAP[vu.model.toUpperCase()] || vu && VMAP[vu.model]) { /* placed below as a live vehicle */ }
+    else {
+    const g = await loadGLB(inst.dir ? `assets/models/${inst.dir}/${inst.model}.glb` : `${MODEL_DIR}/${inst.model}.glb`);
     if (!g) continue;
     const m = g.scene.clone(true);
     m.position.set(inst.w[0], inst.w[1], inst.w[2]);
-    m.rotation.y = -(inst.r[1] * Math.PI / 180);
+    m.rotation.y = inst.ry != null ? inst.ry : -(inst.r[1] * Math.PI / 180);
     if (inst.s && (inst.s[0] !== 1 || inst.s[2] !== 1)) m.scale.set(inst.s[0], inst.s[1], inst.s[2]);
     group.add(m); terrain.push(m); placed++;
     m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
@@ -256,26 +319,41 @@ async function buildWorld() {
       const box = new THREE.Box3().setFromObject(m);
       bridgePoint = box.getCenter(V3()); bridgePoint.y = box.max.y;
     }
+    regDoor(inst.model, m);
+    }
   }
-  // the Black Hawk (HLOI vehicle placement)
-  const hawk = MISSION.units.find(u => u.model === 'BLACKHAWK_UH60');
+  for (const vu of MISSION.vehicleUnits || []) {
+    if (vu._done) continue;
+    const vm = VMAP[vu.model] || VMAP[vu.model.toUpperCase()];
+    if (!vm) continue;
+    vu._done = true;
+    await makeVehicle(vu.model, vm, vu.pos, vu.yaw || 0, vu.team || 'iq', group);
+  }
+  // the Black Hawk (HLOI vehicle placement, or props.vehicles for survivors)
+  const hawk = MISSION.units.find(u => u.model === 'BLACKHAWK_UH60') ||
+    ((MISSION.vehicles || []).find(v => v.kind === 'hawk') || {}).pos && { pos: (MISSION.vehicles || []).find(v => v.kind === 'hawk').pos, yaw: (MISSION.vehicles || []).find(v => v.kind === 'hawk').yaw };
   if (hawk) {
     const g = await loadGLB('assets/models/frontend/BLACKHAWK_UH60.glb');
     if (g) { const m = g.scene.clone(true); m.position.set(hawk.pos[0], hawk.pos[1], hawk.pos[2]); m.rotation.y = hawk.yaw; group.add(m); terrain.push(m); m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); }); }
   }
   /* HLOI statics: structures, vehicles, props, pickups (the bridge is one!) */
-  const seenStatic = new Set();
-  for (const u of MISSION.units) {
-    if (/^(HERO|IRAQ|IR_)/.test(u.model)) continue;
-    const key = u.model + '@' + u.pos.map(v => v.toFixed(1)).join(',');
-    if (seenStatic.has(key)) continue;
-    seenStatic.add(key);
-    const g = await loadGLB(`assets/models/mission1/${u.model}.glb`);
-    if (!g) continue;
-    const m = g.scene.clone(true);
-    m.position.set(u.pos[0], u.pos[1], u.pos[2]); m.rotation.y = u.yaw || 0;
-    group.add(m); terrain.push(m);
-    m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
+  if (MISSION_ID === 'mission1' || MISSION_ID === 'training1') {
+    const seenStatic = new Set();
+    for (const u of MISSION.units) {
+      if (/^(HERO|IRAQ|IR_)/.test(u.model)) continue;
+      const key = u.model + '@' + u.pos.map(v => v.toFixed(1)).join(',');
+      if (seenStatic.has(key)) continue;
+      seenStatic.add(key);
+      const vm = VMAP[u.model];
+      if (vm) { await makeVehicle(u.model, vm, u.pos, u.yaw || 0, u.script === 'BRIDGE_BMP' ? 'iq' : 'us', group); continue; }
+      const g = await loadGLB(`assets/models/mission1/${u.model}.glb`);
+      if (!g) continue;
+      const m = g.scene.clone(true);
+      m.position.set(u.pos[0], u.pos[1], u.pos[2]); m.rotation.y = u.yaw || 0;
+      group.add(m); terrain.push(m);
+      m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
+      regDoor(u.model, m);
+    }
   }
   return placed;
 }
@@ -335,13 +413,14 @@ async function spawnActors() {
   const heroGLB = {}, foeGLB = {};
   for (const n of ['HERO01_ARMSTRONG', 'HERO02_RAMIREZ', 'HERO03_JONES', 'HERO04_FOLEY'])
     heroGLB[n] = await loadGLB(`assets/models/characters/${n}.glb`);
-  const start = MISSION.units.find(u => u.script === 'HERO_BRADLEY');
+  const start = MISSION.units.find(u => u.script === 'HERO_BRADLEY') || MISSION.units.find(u => u.hero);
   const foleyU = MISSION.units.find(u => u.script === 'HERO_FOLEY');
   const measured = measureSpeeds(heroGLB.HERO01_ARMSTRONG.animations || []);
   if (measured.run) { SPEEDS = { src: 'clip-root-motion', walk: measured.walk || 1.6, run: measured.run, kneelWalk: measured.kneelWalk || 1.1, crawl: measured.crawl || 0.6 }; }
   const moveText = (await (await fetch('data/tables/movementstaterules.json')).json()).text;
   const heroNames = ['Bradley', 'Ramirez', 'Jones'];
   const heroFiles = ['HERO01_ARMSTRONG', 'HERO02_RAMIREZ', 'HERO03_JONES'];
+  const heroScripts = ['HERO_BRADLEY', 'HERO_RAMIREZ', 'HERO_JONES'];
   for (let i = 0; i < 3; i++) {
     const A = makeActor(heroGLB[heroFiles[i]], heroNames[i], 'us');
     A.sm = new RulesMachine(moveText);
@@ -349,8 +428,9 @@ async function spawnActors() {
     const urow = UNITS[heroNames[i]];
     A.maxHp = A.hp = HUMANS[urow.hstat].numbers[0];
     const off = [[0, 0], [-1.7, -1.3], [1.7, -1.3]][i];
-    A.pos.set(start.pos[0] + off[0], start.pos[1] + 1.5, start.pos[2] + off[1]); A.floorY = start.pos[1];
-    A.yaw = start.yaw;
+    const hu = MISSION.units.find(u => u.script === heroScripts[i]);
+    if (hu && i > 0) { A.pos.set(hu.pos[0], hu.pos[1] + 0.4, hu.pos[2]); A.floorY = hu.pos[1]; A.yaw = hu.yaw || start.yaw; }
+    else { A.pos.set(start.pos[0] + off[0], start.pos[1] + 1.5, start.pos[2] + off[1]); A.floorY = start.pos[1]; A.yaw = start.yaw; }
     const lo = curLoadout[heroNames[i]] || {};
     const kit = UNITWPNS[heroNames[i]] || { wpns: [], items: [] };
     const ids = [lo.primary || 'US_WPN_M16A2', lo.secondary || 'US_WPN_SIGP228', ...kit.wpns];
@@ -358,7 +438,19 @@ async function spawnActors() {
     attachGun(A, wpn(A.inv[0].id));
     squad.push(A);
   }
-  if (foleyU) {
+  if (foleyU && MISSION_ID !== 'mission1') {
+    // survivor missions: Foley's placement is the 4th squad member, not a prisoner
+    const A = makeActor(heroGLB.HERO04_FOLEY, 'Foley', 'us');
+    A.sm = new RulesMachine(moveText);
+    A.sm.state = 'STATE_STANDING_STILL_ACTION_STANCE';
+    A.maxHp = A.hp = HUMANS[UNITS.Foley.hstat].numbers[0];
+    A.pos.set(foleyU.pos[0], foleyU.pos[1] + 0.4, foleyU.pos[2]); A.floorY = foleyU.pos[1];
+    A.yaw = foleyU.yaw || 0;
+    A.inv = ['US_WPN_M16A2', 'US_WPN_SIGP228'].map(id => ({ id, ammo: wpn(id).mag, reserve: wpn(id).mag * 6 }));
+    attachGun(A, wpn(A.inv[0].id));
+    squad.push(A);
+  }
+  if (foleyU && MISSION_ID === 'mission1') {
     const A = makeActor(heroGLB.HERO04_FOLEY, 'Foley', 'pow');
     A.sm = new RulesMachine(moveText);
     A.maxHp = A.hp = HUMANS[UNITS.Foley.hstat].numbers[0];
@@ -367,18 +459,19 @@ async function spawnActors() {
     A.inv = ['US_WPN_M16A2', 'US_WPN_SIGP228'].map(id => ({ id, ammo: wpn(id).mag, reserve: wpn(id).mag * 6 }));
     prisoner = A;
   }
-  // hostiles: exactly the HLOI Iraqi placements (cutscene CS_ actors excluded)
+  // hostiles: exactly the placement list (ENV HLOI, or survivor enemiesHLOI;
+  // cutscene CS_ actors excluded)
   for (const u of MISSION.units) {
-    if (!/^IRAQ|^IR_/.test(u.model) || u.script.startsWith('CS')) continue;
+    if (!u.foe && (!/^IRAQ|^IR_/.test(u.model || '') || (u.script || '').startsWith('CS'))) continue;
     if (!foeGLB[u.model]) foeGLB[u.model] = await loadGLB(`assets/models/characters/${u.model}.glb`) || heroGLB.HERO01_ARMSTRONG;
     const A = makeActor(foeGLB[u.model], u.name, 'iq');
     A.sm = new RulesMachine(moveText);
-    const urow = unitRowForModel(u.model) || UNITS.Iraqi_Conscript;
+    const urow = (u.unitName && UNITS[u.unitName]) || unitRowForModel(u.model) || UNITS.Iraqi_Conscript;
     A.maxHp = A.hp = HUMANS[urow.hstat].numbers[0];
     A.pos.set(u.pos[0], u.pos[1] + 0.4, u.pos[2]); A.floorY = u.pos[1];
     A.yaw = u.yaw; A.post = A.pos.clone(); A.script = u.script;
     const kit = UNITWPNS[urow.name] || { wpns: [] };
-    A.weaponId = kit.wpns[0] || 'IR_WPN_AK47';
+    A.weaponId = u.weapon || kit.wpns[0] || 'IR_WPN_AK47';
     A.state = 'post'; A.memT = 0; A.lastSeen = null; A.think = Math.random() * 0.3;
     A.wpIdx = nearestWaypoint(A.pos);
     attachGun(A, wpn(A.weaponId));
@@ -395,8 +488,17 @@ function nearestWaypoint(p) {
 
 /* ---------------- objectives (REGN triggers + .loc text) ---------------- */
 function setupObjectives() {
-  objectives = []; objIdx = 0; hasC4 = false; planted = false; plantT = 0;
+  objectives = []; objIdx = 0; hasC4 = false; planted = false; plantT = 0; kills = 0;
   const reg = n => MISSION.regions.find(r => r.name === n);
+  if (MISSION.objectivesMode === 'gap') {
+    extractRegion = reg('EXTRACTION') || reg('PICKUP_BLACKHAWK_TRIGGER');
+    gapHadHostiles = enemies.length > 0;
+    objectives = [{ label: MISSION_LABEL.toUpperCase(), gap: true, done: false,
+      text: 'MISSION SCRIPT UNAVAILABLE — IT LIVES IN THE MISSION DLL (RESEARCH R1). FREE COMBAT: CLEAR ALL ' +
+        enemies.length + ' HOSTILES' + (extractRegion ? ' OR REACH THE BLACK Hawk EXTRACTION POINT.' : '.') }];
+    toast('ARCHIVE GAP — FREE COMBAT', objectives[0].text);
+    return;
+  }
   c4Region = reg('C4'); extractRegion = reg('PICKUP_BLACKHAWK_TRIGGER'); gateRegion = reg('MAIN_GATE_SWITCH');
   pillarRegion = reg('BRIDGE_BOOM_PILLAR_REGION');
   const boom = reg('BRIDGE_BOOM_GROUND');
@@ -449,6 +551,7 @@ function hurt(A, dmg, fromPos, head) {
   }
   if (A.hp <= 0) {
     A.alive = false; A.hp = 0;
+    if (A.team === 'iq') kills++;
     A.deathDir = head ? 'headshot' : null;
     A.setClip(clipForState(A.clips, 'STATE_STANDING_HEADSHOT_DEATH', false) || 'DEATH', 0.08, true);
     if (A.team === 'iq' && Math.random() < 0.5) bankPlay('Iraqi_Soldier', 'voice', 0.55);
@@ -468,10 +571,35 @@ function fireHitscan(shooter, targetPoint, dmg, range) {
     const dB = p.distanceTo(chestOf(T));
     if (Math.min(dH, dB) < 0.62 && t < bestT) { bestT = t; best = { T, head: dH < dB, point: p }; }
   }
+  for (const V of VEHICLES) {
+    if (!V.alive || V.team === shooter.team) continue;
+    const c = V3(V.pos.x, V.pos.y + 1.1, V.pos.z);
+    const to = c.clone().sub(org); const t = to.dot(dir);
+    if (t < 1 || t > range) continue;
+    const p = org.clone().add(dir.clone().multiplyScalar(t));
+    if (p.distanceTo(c) < Math.max(1.6, V.radius) && t < bestT) { bestT = t; best = { V, point: p }; }
+  }
   spawnTracer(org, best ? best.point : org.clone().add(dir.multiplyScalar(range * 0.6)), shooter.team === 'us' ? 0xffe2ae : 0xffc9a0);
   flashAt(org, false);
-  if (best) hurt(best.T, dmg * (best.head ? 3 : 1), shooter.pos, best.head);   // headshot x3: PROVISIONAL (R3)
+  if (best) {
+    if (best.V) hurtVehicle(best.V, dmg, best.point);
+    else hurt(best.T, dmg * (best.head ? 3 : 1), shooter.pos, best.head);   // headshot x3: PROVISIONAL (R3)
+  }
   return best;
+}
+function hurtVehicle(V, dmg, point) {
+  if (!V.alive) return { penetrated: false, hp: V.hp };
+  if (dmg <= V.armour) { flashAt(point, false); return { penetrated: false, hp: V.hp }; }
+  V.hp -= dmg;
+  flashAt(point, true);
+  if (V.hp <= 0) { V.hp = 0; V.alive = false; explodeVehicle(V); }
+  return { penetrated: true, hp: V.hp };
+}
+function explodeVehicle(V) {
+  for (let i = 0; i < 4; i++) setTimeout(() => flashAt(V3(V.pos.x, V.pos.y + 1.5, V.pos.z).add(V3(rand(-1, 1), rand(0, 1), rand(-1, 1))), true), i * 160);
+  bankPlay('Explosion', 'boom', 1);
+  V.obj.traverse(o => { if (o.isMesh) { const ms = Array.isArray(o.material) ? o.material : [o.material]; for (const m of ms) if (m && m.color) m.color.multiplyScalar(0.22); } });
+  if (driving === V) exitVehicle();
 }
 function gunNoise(pos, r) {
   for (const E of enemies) if (E.alive && E.pos.distanceTo(pos) < r && E.state === 'post') {
@@ -630,6 +758,73 @@ function driveActor(A, dt) {
   A.update(dt);
 }
 
+function vehicleAct(V, dt, now) {
+  if (!V.alive || driving === V) return;
+  if (V.sm) V.stateName = V.sm.tick({ speed: Math.abs(V.speed || 0), joy: V.joy, aiGo: V.aiGo, alive: V.alive, animFinished: true, facingDest: true });
+  if (V.team !== 'iq' || !V.weaponId) return;
+  let T = null, bd = 240;
+  for (const M of squad) {
+    if (!M.alive) continue;
+    const d = M.pos.distanceTo(V.pos);
+    if (d < bd && losClear(V3(V.pos.x, V.pos.y + 2.2, V.pos.z), chestOf(M))) { T = M; bd = d; }
+  }
+  if (!T) return;
+  const want = Math.atan2(T.pos.x - V.pos.x, T.pos.z - V.pos.z);
+  const dy = ((want - V.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+  V.yaw += clamp(dy, -0.4 * dt, 0.4 * dt); V.obj.rotation.y = V.yaw;
+  if (Math.abs(dy) < 0.12 && now > (V.nextShot || 0)) {
+    const w = wpn(V.weaponId);
+    V.nextShot = now + w.interval * 1000 * rand(1.6, 2.6);
+    bankPlay(w.bank, 'shot', 0, bd);
+    const gunner = { pos: V3(V.pos.x, V.pos.y + 1.6, V.pos.z), yaw: V.yaw, team: 'iq', mode: 'stand' };
+    fireHitscan(gunner, chestOf(T).add(V3(rand(-1, 1) * bd * 0.02, 0, rand(-1, 1) * bd * 0.02)), w.damage, w.range || 900);
+  }
+}
+function enterVehicle(V) {
+  driving = V;
+  const M = squad[activeIdx];
+  if (M) { M.obj.visible = false; M.pos.copy(V.pos); }
+  toast('DRIVING ' + V.model.replace(/_/g, ' '), 'WASD DRIVE · MOUSE FIRE · F EXIT — vehicle speeds PROVISIONAL (.DYN = R3)');
+}
+function exitVehicle() {
+  if (!driving) return;
+  const M = squad[activeIdx];
+  if (M) { M.pos.set(driving.pos.x + 3.2, driving.pos.y + 0.3, driving.pos.z); M.floorY = driving.pos.y; M.obj.visible = true; }
+  driving = null;
+}
+function vehicleFire(V, now) {
+  if (now < (V.nextShot || 0)) return;
+  const w = wpn(V.weaponId); V.nextShot = now + w.interval * 1000;
+  bankPlay(w.bank, 'shot', 0.9);
+  const dirV = V3(-Math.sin(camYaw) * Math.cos(camPitch), Math.sin(camPitch), -Math.cos(camYaw) * Math.cos(camPitch));
+  const gunner = { pos: V3(V.pos.x, V.pos.y + 1.8, V.pos.z), yaw: camYaw + Math.PI, team: 'us', mode: 'stand' };
+  fireHitscan(gunner, gunner.pos.clone().add(dirV.multiplyScalar(w.range || 900)), w.damage, w.range || 900);
+  gunNoise(V.pos, 70);
+}
+function driveVehicle(dt, now) {
+  const V = driving, M = squad[activeIdx];
+  if (!M || !M.alive || !V.alive) { exitVehicle(); return; }
+  V.joy.f = !!keys['KeyW']; V.joy.b = !!keys['KeyS']; V.joy.l = !!keys['KeyA']; V.joy.r = !!keys['KeyD'];
+  if (V.sm) V.stateName = V.sm.tick({ speed: Math.abs(V.speed), joy: V.joy, aiGo: null, alive: true, animFinished: true, facingDest: true });
+  const vmax = /BACKWARDS/.test(V.stateName) ? -3 : /MOVING_FORWARDS/.test(V.stateName) ? 9 : 0;   // PROVISIONAL (.DYN)
+  V.speed += clamp(vmax - V.speed, -6 * dt, 3.2 * dt);
+  const turn = V.joy.l ? 1 : V.joy.r ? -1 : 0;
+  if (turn && (Math.abs(V.speed) > 0.2 || /TURNING/.test(V.stateName))) V.yaw += turn * 0.55 * dt * (V.speed < 0 ? -1 : 1);
+  V.pos.x += Math.sin(V.yaw) * V.speed * dt;
+  V.pos.z += Math.cos(V.yaw) * V.speed * dt;
+  V.pos.y = floorFor(V, V.pos.x, V.pos.z);
+  V.obj.rotation.y = V.yaw;
+  M.pos.copy(V.pos); M.yaw = V.yaw;
+  if (firing && V.weaponId) vehicleFire(V, now);
+  const head = V3(V.pos.x, V.pos.y + 2.7, V.pos.z);
+  const back = V3(Math.sin(camYaw) * Math.cos(camPitch), -Math.sin(camPitch), Math.cos(camYaw) * Math.cos(camPitch));
+  const cd = head.clone().add(back.multiplyScalar(aiming ? 5 : 8.5));
+  cd.y = Math.max(cd.y, groundH(cd.x, cd.z) + 0.4);
+  camera.position.lerp(cd, 1 - Math.pow(0.0001, dt));
+  camera.lookAt(head.clone().add(V3(-Math.sin(camYaw), 0.4, -Math.cos(camYaw)).multiplyScalar(24)));
+  $('hudXhair').style.display = V.weaponId ? 'block' : 'none';
+}
+
 /* ---------------- interaction & objectives progress ---------------- */
 let hudDirty = true;
 function interactTick(dt) {
@@ -637,7 +832,8 @@ function interactTick(dt) {
   const pr = $('hudPrompt');
   if (!M || !M.alive) { pr.style.display = 'none'; return; }
   let prompt = null, act = null;
-  if (objIdx === 0 && prisoner) {
+  if (driving) { prompt = 'F — EXIT ' + driving.model.replace(/_/g, ' '); act = () => exitVehicle(); }
+  else if (objIdx === 0 && prisoner) {
     if (M.pos.distanceTo(prisoner.pos) < 6) { prompt = 'F — RESCUE FOLEY'; act = rescueFoley; }
   } else if (objIdx === 1 && c4Region) {
     const cp = c4PropPos || V3(c4Region.pos[0], c4Region.pos[1], c4Region.pos[2]);
@@ -662,6 +858,21 @@ function interactTick(dt) {
     if (M.pos.distanceTo(c) < Math.max(10, extractRegion.r || 0) || inRegion(M.pos, extractRegion)) {
       if (!foley || foley.pos.distanceTo(c) < 30) { missionEnd(true); return; }
       prompt = 'FOLEY MUST REACH THE LZ';
+    }
+  }
+  if (!prompt && !driving) {
+    for (const r of MISSION.regions) {
+      if (!/SWITCH/.test(r.name)) continue;
+      if (inRegion(M.pos, r) || M.pos.distanceTo(V3(r.pos[0], M.pos[1], r.pos[2])) < Math.max(4, r.r || 0)) {
+        const D = nearestDoor(M.pos, r.name);
+        if (D) { prompt = 'F — OPERATE THE GATE SWITCH'; act = () => { D.target = D.target ? 0 : 1; snd('assets/sounds/frontend/Interface/Interface_line53.wav', 0.6); }; }
+        break;
+      }
+    }
+  }
+  if (!prompt && !driving) {
+    for (const V of VEHICLES) {
+      if (V.alive && M.pos.distanceTo(V.pos) < 6.5) { prompt = 'F — DRIVE ' + V.model.replace(/_/g, ' '); act = () => enterVehicle(V); break; }
     }
   }
   if (prompt) { pr.textContent = prompt; pr.style.display = 'block'; } else pr.style.display = 'none';
@@ -723,6 +934,7 @@ let GWINT_IDX = {};
 function updatePlayer(dt, now) {
   const M = squad[activeIdx];
   if (!M || !M.alive) return;
+  if (driving) { driveVehicle(dt, now); return; }
   M.joy.f = !!keys['KeyW']; M.joy.b = !!keys['KeyS']; M.joy.l = !!keys['KeyA']; M.joy.r = !!keys['KeyD'];
   if (keys['ControlLeft'] || keys['ControlRight']) M.moveMode = 'WALK';
   else if (M.moveMode === 'WALK') M.moveMode = 'RUN';
@@ -761,6 +973,12 @@ function frame() {
     updatePlayer(dt, now);
     for (const M of squad) if (M !== squad[activeIdx]) mateAct(M, dt, now);
     for (const E of enemies) enemyAct(E, dt, now);
+    for (const V of VEHICLES) vehicleAct(V, dt, now);
+    for (const D of DOORS) if (D.open !== D.target) { D.open = clamp(D.open + Math.sign(D.target - D.open) * dt / 2.2, 0, 1); D.obj.position.copy(D.base).addScaledVector(D.off, D.open); }
+    if (objectives[0] && objectives[0].gap && !objectives[0].done) {
+      if (gapHadHostiles && !enemies.some(e => e.alive)) { objectives[0].done = true; missionEnd(true); }
+      else if (kills > 0 && extractRegion && squad.some(s => s.alive && s.pos.distanceTo(V3(extractRegion.pos[0], s.pos[1], extractRegion.pos[2])) < Math.max(extractRegion.r || 0, 12))) { objectives[0].done = true; missionEnd(true); }
+    }
     if (prisoner) { driveActor(prisoner, dt); }
     for (const T of tracers) if (T.life > 0) { T.life -= dt; T.obj.material.opacity = Math.max(0, T.life / 0.07); if (T.life <= 0) T.obj.visible = false; }
     interactTick(dt);
@@ -826,7 +1044,11 @@ function stopSim() { running = false; cancelAnimationFrame(raf); if (musicEl2) {
 let musicEl2 = null;
 
 /* ---------------- entry ---------------- */
-export async function startSim({ loadout, onExit, onStep }) {
+export async function startSim({ loadout, onExit, onStep, missionId, missionLabel }) {
+  MISSION_ID = missionId || 'mission1';
+  MISSION_LABEL = missionLabel || MISSION_ID.toUpperCase();
+  MODEL_DIR = MISSION_ID === 'mission1' ? 'assets/models/mission1'
+    : MISSION_ID === 'training1' ? 'assets/models/training1' : `assets/models-survivors/${MISSION_ID}`;
   curLoadout = {};
   for (const name of ['Bradley', 'Ramirez', 'Jones', 'Foley']) {
     const lo = (loadout || {})[name];
@@ -836,6 +1058,12 @@ export async function startSim({ loadout, onExit, onStep }) {
     curLoadout[name]._kit = kitRows;
   }
   onExitCb = onExit;
+  if (worldGroup) { scene.remove(worldGroup); worldGroup = null; }
+  for (const A of allActors) scene.remove(A.obj);
+  terrain.length = 0; terrainMeshes.length = 0; hCache.clear();
+  VEHICLES = []; DOORS = []; driving = null;
+  squad = []; enemies = []; allActors = []; prisoner = null;
+  bridgePoint = null; extractRegion = null; c4Region = null; c4PropPos = null; pillarRegion = null; gateRegion = null;
   if (!renderer) {
     renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
@@ -853,10 +1081,14 @@ export async function startSim({ loadout, onExit, onStep }) {
   UNITS.Iraqi_Conscript = UNITS.Iraqi_Conscript || { name: 'Iraqi_Conscript', model: 'IRAQINFANTRY01_SANDY', hstat: 'IR_Infantryman00' };
   const uwj = await jget('data/tables/unitwpns.json'); UNITWPNS = {};
   for (const r of uwj) { (UNITWPNS[r.id] = UNITWPNS[r.id] || { wpns: [], items: [] }); (r.cells[2] === 'WEAPON' ? UNITWPNS[r.id].wpns : UNITWPNS[r.id].items).push(r.cells[1]); }
+  const vj = await jget('data/tables/vehicles.json'); VSTAT = {}; for (const r of vj) VSTAT[r.name] = r.numbers;
+  const dj = await jget('data/tables/doors.json'); DOORTAB = {};
+  for (const r of dj) { const c = r.cells; DOORTAB[(c[1] || '').toLowerCase()] = { slide: [parseFloat(c[5]) / 100 || 0, parseFloat(c[6]) / 100 || 0, parseFloat(c[7]) / 100 || 0] }; }
+  vehicleRulesText = (await jget('data/tables/vehiclestaterules.json').catch(() => ({}))).text || '';
   LOC_M01 = await jget('data/loc/black_decade_Mission1_M01Strs_loc.json').catch(() => ({}));
   GWINT_IDX = await jget('assets/ui/gwint/index.json').catch(() => ({}));
   BANK_SAMPLES = await jget('data/bank-samples.json').catch(() => ({}));
-  MISSION = await jget('data/missions/mission1.json');
+  MISSION = await jget(`data/missions/${MISSION_ID}.json`);
   onStep && onStep('BUILDING THE ZONE', 0.35);
   const placed = await buildWorld();
   onStep && onStep('DEPLOYING SQUAD', 0.7);
@@ -876,7 +1108,10 @@ function awaitUnitWpns() { return UNITWPNS; }
 /* ---------------- test hooks ---------------- */
 window.CDS_SIM = {
   state: () => ({
-    playing: running, speeds: SPEEDS,
+    playing: running, mission: MISSION_ID, speeds: SPEEDS,
+    vehicles: VEHICLES.map(v => ({ model: v.model, vs: v.vsName, team: v.team, hp: v.hp, maxHp: v.maxHp, armour: v.armour, alive: v.alive, state: v.stateName, pos: v.pos.toArray().map(x => Math.round(x)) })),
+    gates: DOORS.map(d => ({ name: d.name, open: +d.open.toFixed(2), target: d.target })),
+    driving: driving ? driving.model : null,
     squad: squad.map(s => ({ name: dispName(s.name), state: s.stateName, hp: Math.round(s.hp), alive: s.alive, mode: s.mode, pos: s.pos.toArray().map(v => Math.round(v * 10) / 10), ammo: s.inv[s.held] ? s.inv[s.held].ammo : 0 })),
     active: activeIdx,
     prisoner: prisoner ? { pos: prisoner.pos.toArray(), alive: prisoner.alive } : null,
@@ -892,5 +1127,8 @@ window.CDS_SIM = {
   warpAll: (x, z) => { squad.forEach((M, i) => { M.pos.x = x + i * 1.6; M.pos.z = z + i; M.pos.y = groundH(M.pos.x, M.pos.z) + 0.2; }); },
   ground: (x, z) => groundList(x, z).map(v => +v.toFixed(1)),
   testShot: () => { const M = squad[activeIdx]; let b = null, bd = 1e9; for (const E of enemies) { if (!E.alive || E.hp < E.maxHp) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } if (!b) { for (const E of enemies) { if (!E.alive) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } } if (b) { const before = b.hp; fireHitscan(M, chestOf(b), wpn(M.inv[M.held].id).damage, 900); return { dist: Math.round(bd), before, after: b.hp }; } return null; },
+  testVehicleHit: (wid, team) => { const V = VEHICLES.find(v => v.alive && (team ? v.team === team : v.team === 'iq')) || VEHICLES.find(v => v.alive); if (!V) return null; const before = V.hp; const r = hurtVehicle(V, wpn(wid).damage, V3(V.pos.x, V.pos.y + 1, V.pos.z)); return { model: V.model, armour: V.armour, before, after: V.hp, penetrated: r.penetrated, alive: V.alive }; },
+  enterVehicle: () => { const V = VEHICLES.find(v => v.alive); if (!V || !squad[activeIdx]) return null; const M = squad[activeIdx]; M.pos.set(V.pos.x + 3, V.pos.y + 0.3, V.pos.z); enterVehicle(V); return V.model; },
+  exitVehicle: () => exitVehicle(),
   killNearest: () => { const M = squad[activeIdx]; let b = null, bd = 1e9; for (const E of enemies) { if (!E.alive) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } if (b) hurt(b, 1000, M.pos, false); return bd; }
 };

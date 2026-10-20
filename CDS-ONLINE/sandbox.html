@@ -5,20 +5,11 @@ h1{color:#ffd75e;letter-spacing:.2em;font-size:22px} h2{color:#ffd75e;letter-spa
 a{color:#cfe08a} .card{background:#1f2716;border:1px solid #59653c;border-radius:4px;padding:16px 20px;margin:12px 0;max-width:760px}
 small{color:#9aa27c;line-height:1.6;display:block} li{margin:6px 0;line-height:1.55}</style></head><body>
 <h1>SANDBOX TOOLS</h1>
-<small>Everything from the main title screen is the original game, assembled fresh from its own files.
-This page holds the workbench: downloads, data, and the previous project, kept safe as a fallback.</small>
-<div class="card"><h2>▶ PLAY</h2><a href="index.html">Conflict: Desert Storm — the game itself</a></div>
-<div class="card"><h2>ORIGINAL GAME FILES (UNTOUCHED, FOR WINDOWS)</h2>
-<li><a href="DesertStorm.exe">DesertStorm.exe</a> — needs a Windows PC: the 2003 binary can't run in this Linux sandbox.</li>
-<li><a href="ConflictDesertStorm-Original-Unmodified.zip">Download everything (ZIP, ~156 MB)</a></li></div>
-<div class="card"><h2>REVERSE-ENGINEERED DATA</h2>
-<li><a href="game/data/og-weapons.json">og-weapons.json</a> — all 76 weapons from <i>Weaps.txt</i></li>
-<li><a href="game/data/og-humans.json">og-humans.json</a> — human stats from <i>HStat.txt</i></li>
-<li><a href="game/data/mission-text.json">mission-text.json</a> — original briefing &amp; objectives from <i>M01Strs.loc</i></li></div>
+<small>The game below is Conflict: Desert Storm itself, assembled from its own files — original frontend, Catalog data, ENV placements, state-rule files. BLACK DECADE is kept untouched as the fallback.</small>
+<div class="card"><h2>▶ PLAY</h2><a href="game/">Conflict: Desert Storm</a>
+<small>Phases 1–5 live: original frontend; all 15 SP missions + 3 training (real ENV for M1/T1, converted survivors for the rest); literal Movement/UpperBody/Vehicle state machines; Weaps/VStat-table combat; drivable vehicles; working gate switches. Archive-gap missions run as free combat (scripts = DLL bytecode, Research R1).</small></div>
 <div class="card"><h2>PREVIOUS PROJECT (FALLBACK)</h2>
-<small>The earlier BLACK DECADE build — a reskin experiment with its own data editor — preserved untouched.
-If the from-scratch assembly misbehaves, this keeps working:</small>
-<li><a href="black-decade/index.html">BLACK DECADE (previous build)</a></li>
-<li><a href="black-decade/edit.html">Its data editor</a></li></div>
-<div class="card"><a href="index.html">← back to Conflict: Desert Storm</a></div>
+<small>The BLACK DECADE build — preserved untouched (git tag black-decade-final-v73).</small>
+<li><a href="http://127.0.0.1:5175/">BLACK DECADE (fallback build)</a></li></div>
+<div class="card"><a href="game/">← back to Conflict: Desert Storm</a></div>
 </body></html>

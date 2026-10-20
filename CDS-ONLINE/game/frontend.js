@@ -21,6 +21,7 @@ const MISSIONS = [
   ['mission9', 'MISS9_TITLE'], ['mission10', 'MISS10_TITLE'], ['mission11a', 'MISS11_TITLE'],
   ['mission11b', 'MISS11B_TITLE'], ['mission12a', 'MISS12_TITLE'], ['mission12b', 'MISS12B_TITLE']
 ];
+const TRAINING = [['training1', 'TRAINING 1 — BASIC'], ['training2', 'TRAINING 2 — RANGES'], ['training3', 'TRAINING 3 — ASSAULT COURSE']];
 
 let musicEl = null;
 function music(on) {
@@ -78,6 +79,19 @@ function openMissions() {
       (id !== 'mission1' ? '<div class="tag">BRIEFING TEXT: ARCHIVE GAP — SEE PLAN</div>' : '');
     cds(row.querySelector('.ttl'), title.toUpperCase(), { scale: 1.5, color: '#e8e4cf' });
     row.addEventListener('click', () => { click(); openBrief(id, title, i + 1); });
+    list.appendChild(row);
+  });
+  const sep = document.createElement('div');
+  sep.style.cssText = 'margin:16px 0 6px;color:#f0b429;font-size:11px;letter-spacing:.3em';
+  sep.textContent = 'TRAINING';
+  list.appendChild(sep);
+  TRAINING.forEach(([id, title], i) => {
+    const row = document.createElement('div');
+    row.className = 'mrow';
+    row.innerHTML = `<div class="num">T${i + 1}</div><div class="ttl"></div>` +
+      (id !== 'training1' ? '<div class="tag">BRIEFING TEXT: ARCHIVE GAP — SEE PLAN</div>' : '');
+    cds(row.querySelector('.ttl'), title, { scale: 1.5, color: '#e8e4cf' });
+    row.addEventListener('click', () => { click(); openBrief(id, title, 'T' + (i + 1)); });
     list.appendChild(row);
   });
   show('missions');
@@ -182,16 +196,18 @@ async function openLoading() {
     $('loadStatus').textContent = 'LOADING ' + f.split('/').pop();
   }));
   $('loadStatus').textContent = 'READY';
-  if (mission.id === 'mission1') {
-    music(false);
-    show('game');
+  music(false);
+  show('game');
+  try {
     const sim = await import('./sim.js');
-    await sim.startSim({ loadout, onExit: () => { show('main'); music(true); },
+    await sim.startSim({ loadout, missionId: mission.id, missionLabel: 'MISSION ' + mission.n + ' — ' + mission.title,
+      onExit: () => { show('main'); music(true); },
       onStep: (label, f) => { $('loadBar').style.width = (f * 100) + '%'; $('loadStatus').textContent = label; } });
-  } else {
-    cds($('depTitle'), 'DEPLOYED', { scale: 2.2, color: '#9dc25e' });
+  } catch (e) {
+    console.error('deploy failed', e);
+    cds($('depTitle'), 'DEPLOY FAILED', { scale: 2.2, color: '#e0684e' });
     cds($('depMenu'), 'MAIN MENU', { scale: 1.4 });
-    setTimeout(() => show('deployed'), 500);
+    show('deployed');
   }
 }
 
@@ -237,6 +253,7 @@ window.CDS_FE = {
   state: () => ({ screen, mission: mission && mission.id, loadout: JSON.parse(JSON.stringify(loadout)), curSoldier }),
   go: show, missions: openMissions,
   brief: i => { const [id, key] = MISSIONS[i]; openBrief(id, S('title', key, id), i + 1); },
+  briefT: i => { const [id, title] = TRAINING[i]; openBrief(id, title, 'T' + (i + 1)); },
   loadout: () => openLoadout(),
   setSoldier: i => { curSoldier = i; openLoadout(); },
   deploy: () => openLoading()

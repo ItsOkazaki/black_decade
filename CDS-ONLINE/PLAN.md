@@ -148,9 +148,17 @@ sources. Missions 2–15 assemble from their converted geometry/placements
 - **P4 — Combat & AI complete (M1).** ✅ DONE (same probe: Weaps damage exact 48→34, mag burn, waypoint/post/alert/engage AI, rescue→C4→bridge→extraction chain, mission complete; 25/40 mission1 sound banks recovered by name). All M1 weapons/enemies, perception,
   waypoint AI, objectives chain, Black Hawk extraction, gate switch.
   Exit: full-arc probe green; difficulty = OG Normal table values.
-- **P5 — All missions + vehicles + interactivity.** 15 SP + training;
-  doors/switches/targets; VStat vehicles. Exit: all-missions load probe,
-  per-mission enemy counts match placements exactly.
+- **P5 — All missions + vehicles + interactivity.** ✅ DONE (probe suite:
+  15/15 SP missions boot with placement-exact hostile counts — survivor
+  `enemiesHLOI` as spawn source, unit-matched where instance names survive;
+  training1 from its real ENV + training2/3; VStat vehicles live: BMP2
+  armour 500 / HP 1000 vs LAW66 550 penetration math exact, VehicleStateRules
+  tank machine drives `STATE_TANK_MOVING_FORWARDS`, enemy BMP engages with
+  `IR_VWPN_BMP2_ChainGun`; Doors.txt sliding gates paired to `*_SWITCH`
+  regions (MAIN_GATE_SWITCH → Mission1Gate, 800 cm travel). Survivor-mission
+  objectives are honestly GAP (mission script = DLL, R1): free combat —
+  clear all hostiles, or reach the Black Hawk after contact. Vehicle speeds
+  and player-driving marked PROVISIONAL (`.DYN` semantics = R3).
 - **P6 — Audio & cutscenes.** Banks everywhere, cutscene camera player,
   subtitles. (Music per R2 status.) Exit: audio-event probes, cutscene shots.
 - **P7 — Hardening.** Perf (draw-call budget, instancing), loading times,
