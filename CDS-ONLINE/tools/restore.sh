@@ -25,6 +25,7 @@ python3 /tmp/modkit/cli/ds_extract.py -g "$REPO" -o src-extract catalog chardata
 python3 tools/pipeline.py >/dev/null || true   # DS-*.psf failures are the known R2 block
 python3 tools/envparse.py >/dev/null
 python3 tools/bankrecover.py >/dev/null
+python3 tools/bankrecover.py /home/user/black_decade/training1.sch training1 >/dev/null
 python3 tools/survivors.py >/dev/null
 python3 tools/envparse.py src-extract/training1/TRAINING1.ENV game/data/missions/training1.json >/dev/null || true
 python3 - <<'PYEOF'

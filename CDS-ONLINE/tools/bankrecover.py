@@ -62,7 +62,8 @@ def main(sch, outsub):
     stem = os.path.splitext(os.path.basename(sch))[0]
     json.dump({'banks': hashes, 'names': names},
               open(f'{ROOT}/game/data/{stem}-banks.json', 'w'), indent=1)
-    json.dump(index, open(f'{ROOT}/game/data/bank-samples.json', 'w'), indent=1)
+    index_name = 'bank-samples.json' if outsub == 'mission1' else f'bank-samples-{outsub}.json'
+    json.dump(index, open(f'{ROOT}/game/data/{index_name}', 'w'), indent=1)
     print(f'index: {len(index)} banks with samples')
 
 

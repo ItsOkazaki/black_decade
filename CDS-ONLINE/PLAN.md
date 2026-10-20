@@ -159,8 +159,25 @@ sources. Missions 2–15 assemble from their converted geometry/placements
   objectives are honestly GAP (mission script = DLL, R1): free combat —
   clear all hostiles, or reach the Black Hawk after contact. Vehicle speeds
   and player-driving marked PROVISIONAL (`.DYN` semantics = R3).
-- **P6 — Audio & cutscenes.** Banks everywhere, cutscene camera player,
-  subtitles. (Music per R2 status.) Exit: audio-event probes, cutscene shots.
+- **P6 — Audio & cutscenes.** ✅ DONE (probe: p6probe 16/16; regressions
+  p34 17/17, p5 veh 12/12 + train 7/7 + SP sample). What shipped:
+  `tools/envparse.py` now also parses the ENV `CAMFREE`/`CAMTARGOBJ`
+  camera records (M1: 24 cameras incl. `PLAYERVIEW` + `CS_*` scenes) and
+  the 38 `ENVSND` ambient emitters; survivors carry `props.cutscenes`.
+  The sim plays a skippable intro cutscene from those records (CS_*
+  actors placed for the scene and removed at its end, MOV_TXT1-3 title
+  cards from the mission's own `.loc`, the decoded `CS_MENU_S01.wav`
+  stream under M1's intro). Every sound the sim makes is logged
+  (`CDS_SIM.audio()`); weapon fire, enemy first-contact barks
+  (`Iraqi_Soldier` bank), Foley's rescue line (`Foley …follow_me…`) and
+  HQ radio on the bridge kill (`Mission1` bank) all play the game's own
+  hash-recovered bank samples, picked by the lines' own semantic
+  suffixes. Voice banks are per-mission (`.sch` recovery: mission1 33,
+  training1 14 banks). Known gaps, stated not filled: the `ENVSND`
+  `.psf` stream files are absent from the supplied archives (emitters
+  exposed via `CDS_SIM.envsnd()`, silent); the six `DS-*` music tracks
+  remain R2; survivor-mission cutscenes have cameras but no title cards
+  (their `.loc` files were not supplied).
 - **P7 — Hardening.** Perf (draw-call budget, instancing), loading times,
   control remapping (`default.key`), pause/restart/death flows per GenStrs.
   Exit: full regression suite, performance report stated honestly.

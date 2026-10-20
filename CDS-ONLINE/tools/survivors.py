@@ -129,6 +129,7 @@ def convert(mid):
            'instances': instances, 'units': out_units, 'regions': regions,
            'waypoints': units.get('waypoints') or [], 'vehicles': vehicles,
            'vehicleUnits': vehicle_units, 'objectivesMode': 'gap',
+           'cutscenes': props.get('cutscenes') or [],
            'counts': {'instances': len(instances), 'hostiles': len([u for u in out_units if u.get('foe')]),
                       'hostilesMatched': n_matched, 'waypoints': len(units.get('waypoints') or [])}}
     os.makedirs(OUT, exist_ok=True)

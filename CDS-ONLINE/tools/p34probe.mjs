@@ -16,6 +16,7 @@ await page.evaluate(() => window.CDS_FE.deploy());
 let st = null;
 for (let i = 0; i < 80; i++) { await sleep(3000); st = await page.evaluate(() => window.CDS_SIM && window.CDS_SIM.state()); if (st && st.playing) break; }
 ok('DEPLOY enters the simulation (Mission 1)', !!(st && st.playing), '');
+await page.evaluate(() => window.CDS_SIM.skipCutscene());
 ok('squad: Bradley / CONNORS / Jones', !!st && st.squad.map(s => s.name).join(',') === 'BRADLEY,CONNORS,JONES', st && st.squad.map(s => s.name).join(','));
 ok('Foley is the prisoner', !!st && !!st.prisoner, '');
 ok('27 hostiles from HLOI placements', !!st && st.enemies.total === 27, st && String(st.enemies.total));
@@ -73,14 +74,25 @@ await sleep(600);
 for (let i = 0; i < 40; i++) { const ts = await page.evaluate(() => window.CDS_SIM.testShot()); if (!ts || ts.dist > 30) break; await sleep(100); }
 const shot = await page.evaluate(() => window.CDS_SIM.testShot());
 ok('one M16A2 hit = 14 damage (Weaps.txt)', !!shot && shot.after === shot.before - 14, JSON.stringify(shot));
-// firing burns ammo
-const am0 = (await page.evaluate(() => window.CDS_SIM.state())).squad[0].ammo;
+// firing burns ammo (switch to a living hero first, as a player would)
+async function ensureAlive() {
+  for (let k = 0; k < 4; k++) {
+    const s = await page.evaluate(() => window.CDS_SIM.state());
+    if (s.squad[s.active] && s.squad[s.active].alive) return s;
+    await page.evaluate(n => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Digit' + n })), ((s.active + 1) % s.squad.length) + 1);
+    await sleep(400);
+  }
+  return page.evaluate(() => window.CDS_SIM.state());
+}
+await ensureAlive();
+const am0 = (await page.evaluate(() => { const s = window.CDS_SIM.state(); return s.squad[s.active].ammo; }));
 await page.evaluate(() => window.CDS_SIM.fire(true));
 let am1 = am0;
-for (let i = 0; i < 16; i++) { await sleep(500); am1 = (await page.evaluate(() => window.CDS_SIM.state())).squad[0].ammo; if (am1 < am0) break; }
+for (let i = 0; i < 16; i++) { await sleep(500); am1 = (await page.evaluate(() => { const s = window.CDS_SIM.state(); return s.squad[s.active].ammo; })); if (am1 < am0) break; }
 await page.evaluate(() => window.CDS_SIM.fire(false));
 ok('trigger fire burns magazine', am1 < am0, am0 + '->' + am1);
 // extraction
+await ensureAlive();
 await page.evaluate(e => window.CDS_SIM.warpAll(e[0], e[2]), st2.extract);
 let done = false;
 for (let i = 0; i < 30; i++) { await sleep(1500); const s3 = await page.evaluate(() => window.CDS_SIM.state()); if (!s3.playing) { done = true; break; } }

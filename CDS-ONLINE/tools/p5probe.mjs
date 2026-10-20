@@ -35,7 +35,10 @@ async function deployMission(id, briefFn) {
   for (let i = 0; i < 150; i++) {
     await sleep(2000);
     st = await page.evaluate(() => window.CDS_SIM && window.CDS_SIM.state());
-    if (st && st.playing && st.mission === id) return st;
+    if (st && st.playing && st.mission === id) {
+      await page.evaluate(() => window.CDS_SIM.skipCutscene());
+      return st;
+    }
   }
   return st;
 }

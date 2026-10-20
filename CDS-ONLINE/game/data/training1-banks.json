@@ -1,0 +1,39 @@
+{
+ "banks": [
+  "04B86F5B",
+  "07A45DEB",
+  "0256E28B",
+  "0DFBDAAB",
+  "0AC99E3B",
+  "068F3E8B",
+  "0A4509CB",
+  "0ECE5A4B",
+  "0849070B",
+  "0185890B",
+  "040F5A4B",
+  "03E2369B",
+  "0607CA9B",
+  "060FC5AB",
+  "07A889DB",
+  "0C31873B",
+  "0615A9DB",
+  "0F2C5D3B",
+  "07CE911B"
+ ],
+ "names": {
+  "07A45DEB": "Impact",
+  "07A889DB": "HKPSG1",
+  "0A4509CB": "M16A2",
+  "060FC5AB": "BERATTA92F",
+  "07CE911B": "Interface",
+  "0849070B": "VehicleTankWeaponBradley",
+  "04B86F5B": "Explosion",
+  "0DFBDAAB": "TrainingBradley",
+  "068F3E8B": "US_Soldier",
+  "0185890B": "VehicleWeaponBradley",
+  "0615A9DB": "Chinook",
+  "0AC99E3B": "GRENADELAUNCHER",
+  "0F2C5D3B": "Training1",
+  "0C31873B": "Wheels"
+ }
+}

@@ -31,6 +31,7 @@ const dispName = n => DISPLAY[n] || n.toUpperCase();
 
 let renderer, scene, camera, clock, raf = 0, running = false, paused = false;
 let WEAPONS = {}, HUMANS = {}, UNITS = {}, UNITWPNS = {}, MISSION = null, LOC_M01 = {};
+let MOVTXT = '';
 let squad = [], enemies = [], prisoner = null, activeIdx = 0, allActors = [];
 let camYaw = 0, camPitch = 0.1, keys = {}, aiming = false, firing = false;
 let objectives = [], objIdx = 0, hasC4 = false, plantT = 0, planted = false, gapHadHostiles = false, kills = 0;
@@ -66,7 +67,10 @@ function unitRowForModel(model) {
 /* ---------------- audio (original banks) ---------------- */
 const AC = window.AudioContext ? new (window.AudioContext)() : null;
 const sndBuf = {};
+const AUDIO_LOG = [];           // every sound we would play — the audio-event probe
+let SOUND_SUBDIR = 'mission1';  // bank dir under assets/sounds (per-mission .sch recovery)
 function snd(path, vol = 0.8, rate = 1) {
+  AUDIO_LOG.push(path);
   if (!AC) return;
   if (AC.state === 'suspended') AC.resume();
   if (sndBuf[path]) return blip(sndBuf[path], vol, rate);
@@ -87,7 +91,118 @@ function bankPlay(bank, kind, vol, dist = 0) {
   else if (kind === 'voice') { const lines = files.filter(x => /line/i.test(x)); f = lines.length ? lines[Math.floor(Math.random() * lines.length)] : files[0]; }
   else f = files.find(x => !/click/i.test(x)) || files[0];
   const v = dist ? clamp(1.1 - dist / 85, 0.03, 0.65) : vol;
-  snd(`assets/sounds/mission1/${bank}/${f}`, v, rand(0.95, 1.05));
+  snd(`assets/sounds/${SOUND_SUBDIR}/${bank}/${f}`, v, rand(0.95, 1.05));
+}
+
+/* ---------------- cutscenes & voices (P6) ----------------
+   Cameras come from the ENV CAMFREE/CAMTARGOBJ records (envparse) or the
+   survivor props.cutscenes. CS_* scripted actors are placed for their
+   scene and removed when it ends. Title cards are the mission's MOV_TXT
+   strings. ENVSND stream files (.psf) are absent from the supplied
+   archives — emitters are exposed via CDS_SIM.envsnd() as a known gap. */
+let cutscene = null;         // {shots, i, t, els, actors}
+let CS_AUDIO = null;         // decoded cutscene stream (assets/music)
+function say(bank, hint, vol = 0.85, dist = 0) {
+  const files = BANK_SAMPLES[bank];
+  if (!files || !files.length) return;
+  let pool = files.filter(f => /line/i.test(f));
+  if (hint) { const h = pool.filter(f => f.toLowerCase().includes(hint)); if (h.length) pool = h; }
+  const f = pool[Math.floor(Math.random() * pool.length)] || files[0];
+  const v = dist ? clamp(1.1 - dist / 85, 0.03, 0.65) : vol;
+  snd(`assets/sounds/${SOUND_SUBDIR}/${bank}/${f}`, v, 1);
+}
+function voiceLine(vol = 0.85) { say('Foley', 'follow_me', vol); }       // Foley rejoining after rescue
+function radioLine(vol = 0.6) { say('Mission1', null, vol); }            // HQ / ambient radio bank
+async function startCutscene(shots) {
+  if (!shots || !shots.length) return false;
+  cutscene = { shots, i: 0, t: 0, actors: [] };
+  const token = cutscene;
+  if (!MOVTXT) MOVTXT = (await jget('data/tables/movementstaterules.json').catch(() => ({}))).text || '';
+  const glbCache = {};
+  for (const u of MISSION.units) {
+    if (!/^CS_/.test(u.script || '')) continue;
+    if (!/^(HERO|IRAQ|IR_|US)/.test(u.model || '')) continue;
+    if (!glbCache[u.model]) glbCache[u.model] = await loadGLB(`assets/models/characters/${u.model}.glb`);
+    const g = glbCache[u.model]; if (!g) continue;
+    const a = makeActor(g, u.name || u.script, 'cs');
+    a.sm = new RulesMachine(MOVTXT);
+    a.pos.set(u.pos[0], u.pos[1] + 0.4, u.pos[2]); a.floorY = u.pos[1]; a.yaw = u.yaw || 0;
+    token.actors.push(a);
+    if (cutscene !== token) {   // scene was skipped while actors loaded
+      for (const x of token.actors) scene.remove(x.obj);
+      allActors = allActors.filter(x => x.team !== 'cs');
+      return false;
+    }
+  }
+  if (cutscene !== token) return false;
+  $('hudSub').textContent = '';
+  $('hudSub').style.display = 'block';
+  if (MISSION_ID === 'mission1') {
+    AUDIO_LOG.push('assets/music/CS_MENU_S01.wav');
+    try { CS_AUDIO = new Audio('assets/music/CS_MENU_S01.wav'); CS_AUDIO.volume = 0.5; CS_AUDIO.play().catch(() => {}); } catch (e) { }
+  }
+  return true;
+}
+function endCutscene() {
+  if (!cutscene) return;
+  for (const a of cutscene.actors) { scene.remove(a.obj); a.obj.visible = false; }
+  allActors = allActors.filter(a => a.team !== 'cs');
+  cutscene = null;
+  if (CS_AUDIO) { try { CS_AUDIO.pause(); } catch (e) { } CS_AUDIO = null; }
+  $('hudSub').style.display = 'none';
+  if (objectives[0]) toast(objectives[0].label + ' — ' + objectives[0].text, 4000);
+}
+function shotTarget(shot) {
+  if (shot.lookPoint) return shot.lookPoint;
+  if (shot.look && shot.look.length === 3) return V3(shot.look[0], shot.look[1] + 1, shot.look[2]);
+  if (shot.targ) {
+    const inst = (MISSION.instances || []).find(i => i.inst === shot.targ);
+    if (inst) return V3(inst.w[0], inst.w[1] + 1.2, inst.w[2]);
+    const base = shot.targ.replace(/\d+$/, '');
+    const u = (MISSION.units || []).find(x => x.model.toUpperCase() === base.toUpperCase());
+    if (u) return V3(u.pos[0], u.pos[1] + 1.2, u.pos[2]);
+    if (prisoner && /FOLEY/.test(shot.targ)) return prisoner.pos.clone().setY(prisoner.pos[1] + 1.4);
+  }
+  if (shot.look && shot.look.length === 2) {
+    const yaw = shot.look[0] * Math.PI / 180, pitch = shot.look[1] * Math.PI / 180;
+    return V3(shot.pos[0] + Math.sin(yaw) * 10, shot.pos[1] + Math.tan(pitch) * 10, shot.pos[2] - Math.cos(yaw) * 10);
+  }
+  const P = squad[0];
+  return P ? new THREE.Vector3(P.pos.x, P.pos[1] + 1.4, P.pos[2]) : null;
+}
+function cutShots() {
+  let raw = [];
+  if (MISSION.cameras && MISSION.cameras.length) {
+    raw = MISSION.cameras.filter(c => c.name === 'PLAYERVIEW' || /^CS_|_SCENE|SCENE/i.test(c.name));
+  } else if (MISSION.cutscenes && MISSION.cutscenes.length) raw = MISSION.cutscenes;
+  const cards = [LOC_M01.MOV_TXT1, LOC_M01.MOV_TXT2, LOC_M01.MOV_TXT3].filter(Boolean);
+  return raw.slice(0, 6).map((c, i) => ({
+    name: c.name, kind: c.kind || 'FREE', pos: c.pos,
+    lookPoint: shotTarget(c),
+    ang: c.ang || null,
+    card: cards[i] || null,
+  }));
+}
+function tickCutscene(dt) {
+  if (!cutscene) return;
+  cutscene.t += dt;
+  const shot = cutscene.shots[cutscene.i];
+  const pos = V3(shot.pos[0], shot.pos[1] + 1.6, shot.pos[2]);
+  camera.position.copy(pos);
+  if (shot.kind === 'TARGOBJ' && shot.lookPoint) camera.lookAt(shot.lookPoint);
+  else if (shot.ang) {
+    camera.rotation.order = 'YXZ';
+    camera.rotation.set(-shot.ang[0] * Math.PI / 180, -shot.ang[1] * Math.PI / 180 + Math.PI, 0);
+  }
+  else if (shot.lookPoint) camera.lookAt(shot.lookPoint);
+  camera.fov = 55; camera.updateProjectionMatrix();
+  const card = shot.card;
+  if (AUDIO_LOG.length === 0 || $('hudSub').dataset.shot !== String(cutscene.i)) {
+    $('hudSub').dataset.shot = String(cutscene.i);
+    $('hudSub').textContent = card || '';
+  }
+  for (const A of allActors) driveActor(A, dt);
+  if (cutscene.t > 3.4) { cutscene.i++; cutscene.t = 0; if (cutscene.i >= cutscene.shots.length) endCutscene(); }
 }
 
 /* ---------------- the original state machines, literally ----------------
@@ -418,6 +533,7 @@ async function spawnActors() {
   const measured = measureSpeeds(heroGLB.HERO01_ARMSTRONG.animations || []);
   if (measured.run) { SPEEDS = { src: 'clip-root-motion', walk: measured.walk || 1.6, run: measured.run, kneelWalk: measured.kneelWalk || 1.1, crawl: measured.crawl || 0.6 }; }
   const moveText = (await (await fetch('data/tables/movementstaterules.json')).json()).text;
+  MOVTXT = moveText;
   const heroNames = ['Bradley', 'Ramirez', 'Jones'];
   const heroFiles = ['HERO01_ARMSTRONG', 'HERO02_RAMIREZ', 'HERO03_JONES'];
   const heroScripts = ['HERO_BRADLEY', 'HERO_RAMIREZ', 'HERO_JONES'];
@@ -679,6 +795,7 @@ function enemyAct(E, dt, now) {
   let moving = false;
   if (E.state === 'engage' && E.target && E.target.alive) {
     const T = E.target, d = E.pos.distanceTo(T.pos);
+    if (!E.barked) { E.barked = true; say('Iraqi_Soldier', null, 0, d); }  // first-contact bark (bank Iraqi_Soldier)
     E.yaw = Math.atan2(T.pos.x - E.pos.x, T.pos.z - E.pos.z);
     if (d > 55) { moveActor(E, T.pos.x, T.pos.z, SPEEDS.run, dt); moving = E.speed > 0; }
     else if (losClear(eyeOf(E), chestOf(T)) && now > (E.nextShot || 0)) {
@@ -883,6 +1000,7 @@ function rescueFoley() {
   attachGun(prisoner, wpn(prisoner.inv[0].id));
   squad.push(prisoner); prisoner = null;
   objectives[0].done = true; objIdx = 1;
+  voiceLine(0.9);   // Foley, rescued (bank Speech, hash-recovered lines)
   toast(objectives[1].label, objectives[1].text);
   buildCards(); hudDirty = true;
 }
@@ -890,6 +1008,7 @@ function explodeBridge() {
   planted = true; objectives[2].done = true; objIdx = 3;
   for (let i = 0; i < 5; i++) setTimeout(() => flashAt(bridgePoint.clone().add(V3(rand(-5, 5), rand(0, 4), rand(-5, 5))), true), i * 170);
   bankPlay('Explosion', 'boom', 1);
+  radioLine(0.7);   // HQ radio on objective complete (bank Radio)
   toast(objectives[3].label, objectives[3].text);
   hudDirty = true;
 }
@@ -969,7 +1088,9 @@ function frame() {
   raf = requestAnimationFrame(frame);
   const dt = Math.min(clock.getDelta(), 0.05);
   const now = performance.now();
-  if (!paused) {
+  if (!paused && cutscene) {
+    tickCutscene(dt);
+  } else if (!paused) {
     updatePlayer(dt, now);
     for (const M of squad) if (M !== squad[activeIdx]) mateAct(M, dt, now);
     for (const E of enemies) enemyAct(E, dt, now);
@@ -1017,6 +1138,7 @@ function bindInput() {
   let dragging = false, lx = 0, ly = 0;
   stage.addEventListener('mousedown', e => {
     if (!running || paused) return;
+    if (cutscene) { endCutscene(); return; }
     if (e.button === 0) { firing = true; if (document.pointerLockElement !== renderer.domElement) { dragging = true; lx = e.clientX; ly = e.clientY; } }
     if (e.button === 2) aiming = true;
   });
@@ -1085,9 +1207,10 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   const dj = await jget('data/tables/doors.json'); DOORTAB = {};
   for (const r of dj) { const c = r.cells; DOORTAB[(c[1] || '').toLowerCase()] = { slide: [parseFloat(c[5]) / 100 || 0, parseFloat(c[6]) / 100 || 0, parseFloat(c[7]) / 100 || 0] }; }
   vehicleRulesText = (await jget('data/tables/vehiclestaterules.json').catch(() => ({}))).text || '';
-  LOC_M01 = await jget('data/loc/black_decade_Mission1_M01Strs_loc.json').catch(() => ({}));
+  LOC_M01 = await jget(MISSION_ID === 'training1' ? 'data/loc/black_decade_Training1_T01Strs_loc.json' : 'data/loc/black_decade_Mission1_M01Strs_loc.json').catch(() => ({}));
+  SOUND_SUBDIR = (MISSION_ID === 'mission1' || MISSION_ID === 'training1') ? MISSION_ID : null;
+  BANK_SAMPLES = SOUND_SUBDIR ? await jget(SOUND_SUBDIR === 'mission1' ? 'data/bank-samples.json' : `data/bank-samples-${SOUND_SUBDIR}.json`).catch(() => ({})) : {};
   GWINT_IDX = await jget('assets/ui/gwint/index.json').catch(() => ({}));
-  BANK_SAMPLES = await jget('data/bank-samples.json').catch(() => ({}));
   MISSION = await jget(`data/missions/${MISSION_ID}.json`);
   onStep && onStep('BUILDING THE ZONE', 0.35);
   const placed = await buildWorld();
@@ -1100,6 +1223,7 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   }
   bindInput();
   running = true; paused = false;
+  await startCutscene(cutShots());
   frame();
   return { placed };
 }
@@ -1130,5 +1254,9 @@ window.CDS_SIM = {
   testVehicleHit: (wid, team) => { const V = VEHICLES.find(v => v.alive && (team ? v.team === team : v.team === 'iq')) || VEHICLES.find(v => v.alive); if (!V) return null; const before = V.hp; const r = hurtVehicle(V, wpn(wid).damage, V3(V.pos.x, V.pos.y + 1, V.pos.z)); return { model: V.model, armour: V.armour, before, after: V.hp, penetrated: r.penetrated, alive: V.alive }; },
   enterVehicle: () => { const V = VEHICLES.find(v => v.alive); if (!V || !squad[activeIdx]) return null; const M = squad[activeIdx]; M.pos.set(V.pos.x + 3, V.pos.y + 0.3, V.pos.z); enterVehicle(V); return V.model; },
   exitVehicle: () => exitVehicle(),
-  killNearest: () => { const M = squad[activeIdx]; let b = null, bd = 1e9; for (const E of enemies) { if (!E.alive) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } if (b) hurt(b, 1000, M.pos, false); return bd; }
+  killNearest: () => { const M = squad[activeIdx]; let b = null, bd = 1e9; for (const E of enemies) { if (!E.alive) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } if (b) hurt(b, 1000, M.pos, false); return bd; },
+  audio: () => AUDIO_LOG.slice(-40),
+  cutscene: () => cutscene ? { active: true, shot: cutscene.i, shots: cutscene.shots.length, name: (cutscene.shots[cutscene.i] || {}).name || null, csActors: cutscene.actors.length } : { active: false },
+  skipCutscene: () => { if (cutscene) endCutscene(); },
+  envsnd: () => (MISSION.envsnd || []).map(e => ({ name: e.name, file: e.file, pos: e.pos, rOut: e.rOut, audio: 'GAP: .psf stream absent from supplied archives' }))
 };

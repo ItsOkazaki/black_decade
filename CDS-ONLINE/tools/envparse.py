@@ -14,7 +14,7 @@ def floats(s):
     return out
 
 def parse(path):
-    instances, units, regions, wps = [], [], [], []
+    instances, units, regions, wps, cameras, envsnd = [], [], [], [], [], []
     for line in open(path, encoding='utf-8', errors='replace'):
         line = line.strip('\r\n')
         if line.startswith('ENVI '):
@@ -42,6 +42,26 @@ def parse(path):
             if q and len(nums) >= 9:
                 wps.append({'id': int(nums[0]), 'name': q[0], 'p': nums[2:5],
                             'next': int(nums[-1]) if nums else -1})
+        elif line.startswith('CAMFREE ') or line.startswith('CAMTARGOBJ '):
+            q = QUOTED.findall(line)
+            nums = floats(QUOTED.sub(' ', line))
+            # CAMFREE "NAME" id flags "parent" px py pz pitch yaw roll ...
+            # CAMTARGOBJ "NAME" id flags "parent" px py pz a... "TARGET_INSTANCE" ...
+            if q and len(nums) >= 8:
+                cam = {'name': q[0], 'kind': 'FREE' if line.startswith('CAMFREE') else 'TARGOBJ',
+                       'pos': [round(nums[2] / 100, 2), round(nums[3] / 100, 2), round(-nums[4] / 100, 2)],
+                       'ang': [round(nums[5], 2), round(nums[6], 2)]}
+                if cam['kind'] == 'TARGOBJ' and len(q) > 2:
+                    cam['targ'] = q[2]
+                cameras.append(cam)
+        elif line.startswith('ENVSND '):
+            q = QUOTED.findall(line)
+            nums = floats(QUOTED.sub(' ', line))
+            # ENVSND "<file>.psf" "<NAME>" px py pz 1 0.0 innerR outerR 1.0 ...
+            if len(q) >= 2 and len(nums) >= 7:
+                envsnd.append({'file': q[0], 'name': q[1],
+                               'pos': [round(nums[0] / 100, 2), round(nums[1] / 100, 2), round(-nums[2] / 100, 2)],
+                               'rIn': round(nums[5] / 100, 1), 'rOut': round(nums[6] / 100, 1)})
         elif line.startswith('REGN '):
             q = QUOTED.findall(line)
             rest = QUOTED.sub(' ', line)
@@ -72,6 +92,12 @@ def parse(path):
                 'pos': [round(u['p'][0] / 100, 3), round(u['p'][1] / 100, 3), round(-u['p'][2] / 100, 3)],
                 'yaw': round(-u['r'][1] * 3.14159265 / 180, 4)}
     units = [conv(u) for u in units]
+    # the training ENV scripts the player character plainly as "BRADLEY"
+    # (no HERO_ prefix); the sim keys the player start off HERO_BRADLEY
+    if not any(u['script'] == 'HERO_BRADLEY' for u in units):
+        for u in units:
+            if u['model'] == 'HERO01_ARMSTRONG' and u['script'] == 'BRADLEY':
+                u['script'] = 'HERO_BRADLEY'
     def reg_out(r):
         o = {'name': r['name'], 'pos': [round(r['p'][0] / 100, 2), round(r['p'][1] / 100, 2), round(-r['p'][2] / 100, 2)],
              'r': round(r['r'] / 100, 2)}
@@ -84,7 +110,8 @@ def parse(path):
     waypoints = [{'id': w['id'], 'name': w['name'],
                   'pos': [round(w['p'][0] / 100, 2), round(w['p'][1] / 100, 2), round(-w['p'][2] / 100, 2)],
                   'next': w['next']} for w in wps]
-    return {'instances': instances, 'units': units, 'regions': regions, 'waypoints': waypoints}
+    return {'instances': instances, 'units': units, 'regions': regions, 'waypoints': waypoints,
+            'cameras': cameras, 'envsnd': envsnd}
 
 if __name__ == '__main__':
     src = sys.argv[1] if len(sys.argv) > 1 else 'src-extract/mission1/MISSION1.ENV'
@@ -95,6 +122,7 @@ if __name__ == '__main__':
     heroes = [u for u in d['units'] if u['script'].startswith('HERO')]
     foes = [u for u in d['units'] if u['model'].startswith(('IRAQ', 'IR_')) and not u['script'].startswith('CS')]
     print(f"instances {len(d['instances'])}  units {len(d['units'])}  regions {len(d['regions'])}  waypoints {len(d['waypoints'])}")
+    print(f"cameras {len(d['cameras'])}  envsnd {len(d['envsnd'])}")
     print('heroes:', [(h['name'], h['script'], h['pos']) for h in heroes])
     print('hostiles:', len(foes), '| CS actors:', len([u for u in d['units'] if u['script'].startswith('CS')]))
     start = next((h for h in heroes if h['script'] == 'HERO_BRADLEY'), None)
