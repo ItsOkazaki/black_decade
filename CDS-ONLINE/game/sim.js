@@ -30,7 +30,7 @@ const DISPLAY = { Ramirez: 'CONNORS' };   // Units.txt codename; the shipped gam
 const dispName = n => DISPLAY[n] || n.toUpperCase();
 
 let renderer, scene, camera, clock, raf = 0, running = false, paused = false;
-let WEAPONS = {}, HUMANS = {}, UNITS = {}, UNITWPNS = {}, MISSION = null, LOC_M01 = {};
+let WEAPONS = {}, HUMANS = {}, UNITS = {}, UNITWPNS = {}, INVEN = {}, CONNOBJS = {}, MISSION = null, LOC_M01 = {};
 let MOVTXT = '';
 let PERF = { totalMs: 0, worldMs: 0, actorsMs: 0, cutsceneMs: 0 };
 let squad = [], enemies = [], prisoner = null, activeIdx = 0, allActors = [];
@@ -195,10 +195,24 @@ function toggleObjectives() {
     objectives.map((o, i) => `<div style="margin:6px 0;font-size:14.5px;${o.done ? 'color:#8fbf6a;text-decoration:line-through' : ''}">${i === objIdx ? '▶ ' : ''}<b>${o.label}</b> — ${o.text}</div>`).join('');
   p.style.display = 'block';
 }
+function slotLabel(s) {
+  return (s.id || '').replace(/^(US|IR)_WPN_/, '').replace(/_/g, ' ');
+}
+function slotIconHtml(s) {
+  const spec = heldSpec(s) || wpn(s.id);
+  const gi = GWINT_IDX[(spec && spec.icon) || ''];
+  if (!gi) return '';
+  return `<img src="assets/ui/gwint/${gi.file}" alt="" style="height:28px;width:auto;vertical-align:middle;margin-right:8px;image-rendering:pixelated">`;
+}
 function renderInv() {
   const M = squad[activeIdx]; if (!M) return;
   $('hudPanel').innerHTML = '<h3 style="color:#ffd75e;letter-spacing:.24em;margin-bottom:10px">INVENTORY — ' + keyLabel('INVENTORY_UP') + '/' + keyLabel('INVENTORY_DOWN') + ' SELECT, RELEASE ' + keyLabel('INVENTORY') + ' TO EQUIP</h3>' +
-    M.inv.map((s, i) => { const w = wpn(s.id); return `<div style="margin:6px 0;font-size:15px;${i === invSel ? 'color:#ffd75e' : ''}">${i === invSel ? '▶ ' : ''}<b>${s.id.replace(/^(US|IR)_WPN_/, '')}</b> <span style="color:#9aa27a">${w.wclass || ''}</span> — ${s.ammo} + ${s.reserve}</div>`; }).join('');
+    M.inv.map((s, i) => {
+      const spec = heldSpec(s) || {};
+      const kind = s.kind && s.kind !== 'WEAPON' ? s.kind : (spec.wclass || '');
+      const count = s.kind && s.kind !== 'WEAPON' ? (s.ammo > 0 ? s.ammo : '') : `${s.ammo} + ${s.reserve}`;
+      return `<div style="margin:6px 0;font-size:15px;display:flex;align-items:center;${i === invSel ? 'color:#ffd75e' : ''}">${i === invSel ? '▶ ' : '<span style="display:inline-block;width:1.1em"></span>'}${slotIconHtml(s)}<b>${slotLabel(s)}</b> <span style="color:#9aa27a;margin-left:8px">${kind}</span> <span style="margin-left:auto">${count}</span></div>`;
+    }).join('');
   $('hudPanel').style.display = 'block';
 }
 function openInv() { const M = squad[activeIdx]; if (!M || !M.inv.length) return; invOpen = true; invSel = M.held; renderInv(); }
@@ -206,7 +220,7 @@ function closeInv(equip) {
   if (!invOpen) return;
   invOpen = false; $('hudPanel').style.display = 'none';
   const M = squad[activeIdx];
-  if (equip && M && M.inv[invSel] && invSel !== M.held) { M.held = invSel; attachGun(M, wpn(M.inv[M.held].id)); hudDirty = true; }
+  if (equip && M && M.inv[invSel] && invSel !== M.held) { M.held = invSel; attachHeld(M); hudDirty = true; }
 }
 async function startCutscene(shots) {
   if (!shots || !shots.length) return false;
@@ -409,16 +423,52 @@ const STATE_CLIPS = [
   [/STANDING_STILL/, [/^UPRIGHT_STANCE_WITH_RIFLE$/i, /UPRIGHT_STANCE_WITH_RIFLE_IDLE01/i, /UPRIGHT_STANCE_WITH_RIFLE/i]],
   [/BLENDING_TO_STANDING|BLENDING_TO_KNEELING|BLENDING_TO_CRAWLING/, [/UPRIGHT_STANCE_WITH_RIFLE/i, /STANCE_WITH_RIFLE/i]]
 ];
-function clipForState(clips, state, aimingNow) {
-  if (aimingNow && /STANDING_STILL|KNEELING/.test(state)) {
-    const aim = clips.find(c => /AIM.*RIFLE|UPRIGHT_AIM/i.test(c.name));
-    if (aim) return aim.name;
+function weaponFamily(w) {
+  const aim = ((w && w.aimAnim) || '').toLowerCase();
+  const wc = ((w && w.wclass) || '').toUpperCase();
+  if (aim.includes('pistol') || wc.includes('PISTOL')) return 'PISTOL';
+  if (aim.includes('law') || /ANTI-?TANK|RPG|LAW/.test(wc)) return 'LAW';
+  if (aim.includes('knife') || wc.includes('KNIFE')) return 'KNIFE';
+  return 'RIFLE';
+}
+function clipExact(clips, ...names) {
+  for (const n of names) {
+    if (!n) continue;
+    const hit = clips.find(c => c.name.toLowerCase() === n.toLowerCase());
+    if (hit) return hit.name;
   }
+  return null;
+}
+function clipForState(clips, state, aimingNow, weapon, strafe) {
+  const fam = weaponFamily(weapon || {});
+  // Weaps.txt aimAnim is the clip name. A loose /AIM.*RIFLE/ match hits
+  // PRONE_AIM_RIFLE first and drops a standing soldier into the prone pose.
+  if (aimingNow && weapon && weapon.aimAnim && !/DEATH|DYING|KNOCKED/.test(state || '')) {
+    const aim = clipExact(clips, weapon.aimAnim);
+    if (aim) return aim;
+  }
+  if (strafe && (strafe.l || strafe.r) && !/DEATH|DYING|FALL/.test(state || '')) {
+    const kneel = /KNEEL|CRAWL/.test(state || '');
+    let n = null;
+    if (strafe.f && strafe.l) n = clipExact(clips, kneel ? `CROUCHED_STRAFENW_${fam}` : `UPRIGHT_STRAFENW_WITH_${fam}`, `WALK_STRAFENW_${fam}`);
+    else if (strafe.f && strafe.r) n = clipExact(clips, kneel ? `CROUCHED_STRAFENE_${fam}` : `UPRIGHT_STRAFENE_WITH_${fam}`, `WALK_STRAFENE_${fam}`);
+    else if (strafe.l) n = clipExact(clips, kneel ? `CROUCHED_STRAFEW_WITH_${fam}` : `UPRIGHT_STRAFEW_WITH_${fam}`);
+    else if (strafe.r) n = clipExact(clips, kneel ? `CROUCHED_STRAFEE_WITH_${fam}` : `UPRIGHT_STRAFEE_WITH_${fam}`);
+    if (n) return n;
+  }
+  if (/DEATH|DYING|KNOCKED|HEADSHOT/.test(state || '')) return clipExact(clips, 'DEATH_BY_SHOTGUN_FORWARD') || (clips.find(c => /DEATH/i.test(c.name)) || {}).name || null;
+  if (/CRAWL/.test(state || '')) return clipExact(clips, `PRONE_CRAWL_WITH_${fam}`, 'PRONE_CRAWL_WITH_RIFLE');
+  if (/KNEELING_WALKING/.test(state || '')) return clipExact(clips, `CROUCHED_RELAXED_WALK_WITH_${fam}`, 'CROUCHED_RELAXED_WALK_WITH_RIFLE');
+  if (/KNEEL/.test(state || '')) return clipExact(clips, `KNEELING_STANCE_WITH_${fam}`, 'KNEELING_STANCE_WITH_RIFLE');
+  if (/BACKWARDS/.test(state || '')) return clipExact(clips, `UPRIGHT_WALK_BACKWARDS_WITH_${fam}`, 'UPRIGHT_WALK_BACKWARDS_WITH_RIFLE');
+  if (/RUNNING|JOGGING/.test(state || '')) return clipExact(clips, `UPRIGHT_RELAXED_RUN_WITH_${fam}`, 'UPRIGHT_RELAXED_RUN_WITH_RIFLE');
+  if (/WALKING/.test(state || '')) return clipExact(clips, `UPRIGHT_WALK_WITH_${fam}`, 'UPRIGHT_WALK_WITH_RIFLE');
+  if (/STANDING|BLENDING/.test(state || '')) return clipExact(clips, `UPRIGHT_STANCE_WITH_${fam}`, 'UPRIGHT_STANCE_WITH_RIFLE');
   for (const [re, prefs] of STATE_CLIPS) {
-    if (!re.test(state)) continue;
+    if (!re.test(state || '')) continue;
     for (const p of prefs) { const c = clips.find(c => p.test(c.name)); if (c) return c.name; }
   }
-  return clips.length ? clips[0].name : null;
+  return clipExact(clips, 'UPRIGHT_STANCE_WITH_RIFLE') || (clips[0] && clips[0].name);
 }
 /* locomotion speeds measured from the clips' own root motion (data, not tuning) */
 function measureSpeeds(clips) {
@@ -599,7 +649,7 @@ async function buildWorld() {
     if (mesh.geometry && mesh.geometry.hasAttribute('color')) {
       mesh.geometry.deleteAttribute('color');
       const ms = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      for (const m of ms) if (m) m.vertexColors = false;
+      for (const m of ms) if (m) { m.vertexColors = false; m.side = THREE.DoubleSide; }
     }
     shadeWorld(mesh);
     const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, list.length);
@@ -707,7 +757,15 @@ function makeActor(gltf, name, team) {
   const clips = gltf.animations || [];
   const mixer = new THREE.AnimationMixer(obj);
   const byName = {};
-  for (const c of clips) if (!byName[c.name]) byName[c.name] = mixer.clipAction(c);
+  for (const c of clips) {
+    // the clips carry root translation; playing it AND moving the actor
+    // slides the mesh off its feet. Locomotion is the actor position.
+    if (!c.userData._rootStripped) {
+      c.tracks = c.tracks.filter(t => t.name !== 'BIP01.position');
+      c.userData._rootStripped = true;
+    }
+    if (!byName[c.name]) byName[c.name] = mixer.clipAction(c);
+  }
   const A = {
     obj, mixer, byName, clips, name, team, alive: true, hp: 100, maxHp: 100,
     pos: obj.position, yaw: 0, vy: 0, speed: 0, mode: 'stand', airborne: false,
@@ -728,6 +786,77 @@ function makeActor(gltf, name, team) {
   allActors.push(A);
   return A;
 }
+function prepWorn(root) {
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    if (o.geometry && o.geometry.hasAttribute('color')) o.geometry.deleteAttribute('color');
+    const ms = Array.isArray(o.material) ? o.material : [o.material];
+    for (const m of ms) if (m) m.vertexColors = false;
+  });
+}
+function boneNamed(root, name) {
+  const want = (name || '').toUpperCase().replace(/[^A-Z0-9]+/g, '_');
+  let found = null;
+  root.traverse(o => { if (!found && (o.name || '').toUpperCase().replace(/[^A-Z0-9]+/g, '_') === want) found = o; });
+  return found;
+}
+/* CONNOBJS.TXT: equipment worn by role and faction, on a named connector. */
+function attachGear(A, role) {
+  const rows = (CONNOBJS[role] || []).filter(r => r.faction === 'US');
+  const table = GRIPS[A.modelKey] || GRIPS.HERO01_ARMSTRONG || {};
+  for (const row of rows) {
+    const grip = table[(row.connector || '').toUpperCase()];
+    if (!grip) continue;
+    loadGLB(`assets/models/gear/${row.model}.glb`).then(g => {
+      if (!g) { A.wornMiss = (A.wornMiss || []).concat(row.model); return; }
+      const bone = boneNamed(A.obj, grip.host || grip.parent);
+      if (!bone) { A.wornMiss = (A.wornMiss || []).concat(row.connector); return; }
+      const m = g.scene.clone(true);
+      prepWorn(m);
+      if (grip.t) m.position.set(grip.t[0], grip.t[1], grip.t[2]);
+      if (grip.q) m.quaternion.set(grip.q[0], grip.q[1], grip.q[2], grip.q[3]);
+      bone.add(m);
+      A.worn = (A.worn || 0) + 1;
+    }).catch(e => { A.wornMiss = (A.wornMiss || []).concat(String(e).slice(0, 40)); });
+  }
+}
+function kitSlots(name, lo) {
+  const kit = UNITWPNS[name] || { rows: [], wpns: [], items: [] };
+  const slots = [];
+  const addW = (id, ammo, reserve) => {
+    if (slots.some(s => s.id === id)) return;
+    const w = wpn(id);
+    slots.push({ id, kind: 'WEAPON', ammo: ammo != null ? ammo : (w.mag || 0), reserve: reserve != null ? reserve : (w.mag ? w.mag * 6 : 0), wclass: w.wclass || '' });
+  };
+  addW((lo && lo.primary) || 'US_WPN_M16A2');
+  addW((lo && lo.secondary) || 'US_WPN_SIGP228');
+  for (const row of kit.rows || []) {
+    if (row.kind === 'WEAPON') {
+      const w = wpn(row.id);
+      if (/GRENADE/i.test(w.wclass || '') && row.amount <= 0) continue;
+      if (/GRENADE/i.test(w.wclass || '')) addW(row.id, row.amount, 0);
+      else addW(row.id);
+    } else {
+      // amount 0 is the table's own count (binoculars), not a guessed stack of 1
+      slots.push({ id: row.id, kind: row.kind, ammo: row.amount, reserve: 0, wclass: row.kind, count: row.amount });
+    }
+  }
+  return slots;
+}
+function heldSpec(slot) {
+  if (!slot) return null;
+  if (WEAPONS[slot.id]) return WEAPONS[slot.id];
+  const row = INVEN[slot.id];
+  if (!row) return null;
+  return { id: slot.id, model: row.model, icon: row.icon, raw: row.cells, wclass: row.type, aimAnim: '', damage: 0, mag: 0, range: 0, interval: 1, reload: 1, bank: '' };
+}
+function attachHeld(M) {
+  const slot = M && M.inv[M.held];
+  if (!slot) return;
+  const spec = heldSpec(slot);
+  if (spec && spec.model && spec.model !== '-1') attachGun(M, spec);
+  else if (M.gunObj) { M.gunObj.parent && M.gunObj.parent.remove(M.gunObj); M.gunObj = null; }
+}
 function attachGun(A, w) {
   if (A.gunObj) { A.gunObj.parent && A.gunObj.parent.remove(A.gunObj); A.gunObj = null; }
   if (!w || !w.model) return;
@@ -737,7 +866,7 @@ function attachGun(A, w) {
   // onto the connector's parent bone.
   const want = ((w.raw && w.raw[6] && w.raw[6] !== '-1') ? w.raw[6] : 'Bip01 GunR Connector');
   const norm = s => (s || '').toUpperCase().replace(/[^A-Z0-9]+/g, '_');
-  loadGLB(`assets/models/frontend/${w.model}.glb`).then(g => g || loadGLB(`assets/models/mission1/${w.model}.glb`)).then(g => {
+  loadGLB(`assets/models/frontend/${w.model}.glb`).then(g => g || loadGLB(`assets/models/gear/${w.model}.glb`)).then(g => g || loadGLB(`assets/models/mission1/${w.model}.glb`)).then(g => {
     if (!g) return;
     const table = GRIPS[A.modelKey] || GRIPS.HERO01_ARMSTRONG || {};
     const grip = table[want.toUpperCase()] || table['BIP01 GUNR CONNECTOR'];
@@ -746,12 +875,13 @@ function attachGun(A, w) {
     A.obj.traverse(o => {
       const n = norm(o.name);
       if (!connector && n === norm(want)) connector = o;
-      if (!bone && grip && n === norm(grip.parent)) bone = o;
+      if (!bone && grip && n === norm(grip.host || grip.parent)) bone = o;
       if (!bone && n === 'BIP01_R_HAND') bone = o;
     });
     const host = connector || bone;
     if (!host) return;
     const gun = g.scene.clone(true);
+    prepWorn(gun);
     if (!connector && grip && grip.t) {
       gun.position.set(grip.t[0], grip.t[1], grip.t[2]);
       gun.quaternion.set(grip.q[0], grip.q[1], grip.q[2], grip.q[3]);
@@ -786,10 +916,10 @@ async function spawnActors() {
     if (hu && i > 0) { A.pos.set(hu.pos[0], hu.pos[1] + 0.4, hu.pos[2]); A.floorY = hu.pos[1]; A.yaw = hu.yaw || start.yaw; }
     else { A.pos.set(start.pos[0] + off[0], start.pos[1] + 1.5, start.pos[2] + off[1]); A.floorY = start.pos[1]; A.yaw = start.yaw; }
     const lo = curLoadout[heroNames[i]] || {};
-    const kit = UNITWPNS[heroNames[i]] || { wpns: [], items: [] };
-    const ids = [lo.primary || 'US_WPN_M16A2', lo.secondary || 'US_WPN_SIGP228', ...kit.wpns];
-    A.inv = [...new Set(ids)].map(id => ({ id, ammo: wpn(id).mag, reserve: wpn(id).mag * 6 }));
-    attachGun(A, wpn(A.inv[0].id));
+    A.inv = kitSlots(heroNames[i], lo);
+    A.held = 0;
+    attachHeld(A);
+    attachGear(A, urow.role);
     squad.push(A);
   }
   if (foleyU && MISSION_ID !== 'mission1') {
@@ -801,8 +931,10 @@ async function spawnActors() {
     A.maxHp = A.hp = HUMANS[UNITS.Foley.hstat].numbers[0];
     A.pos.set(foleyU.pos[0], foleyU.pos[1] + 0.4, foleyU.pos[2]); A.floorY = foleyU.pos[1];
     A.yaw = foleyU.yaw || 0;
-    A.inv = ['US_WPN_M16A2', 'US_WPN_SIGP228'].map(id => ({ id, ammo: wpn(id).mag, reserve: wpn(id).mag * 6 }));
-    attachGun(A, wpn(A.inv[0].id));
+    A.inv = kitSlots('Foley', curLoadout.Foley || {});
+    A.held = 0;
+    attachHeld(A);
+    attachGear(A, UNITS.Foley.role);
     squad.push(A);
   }
   if (foleyU && MISSION_ID === 'mission1') {
@@ -812,7 +944,9 @@ async function spawnActors() {
     A.maxHp = A.hp = HUMANS[UNITS.Foley.hstat].numbers[0];
     A.pos.set(foleyU.pos[0], foleyU.pos[1] + 0.3, foleyU.pos[2]); A.floorY = foleyU.pos[1];
     A.yaw = foleyU.yaw; A.mode = 'kneel';
-    A.inv = ['US_WPN_M16A2', 'US_WPN_SIGP228'].map(id => ({ id, ammo: wpn(id).mag, reserve: wpn(id).mag * 6 }));
+    A.inv = kitSlots('Foley', curLoadout.Foley || {});
+    A.held = 0;
+    attachGear(A, UNITS.Foley.role);
     prisoner = A;
   }
   // hostiles: exactly the placement list (ENV HLOI, or survivor enemiesHLOI;
@@ -963,11 +1097,43 @@ function gunNoise(pos, r) {
     E.state = 'alert'; E.lastSeen = pos.clone(); E.memT = 14;
   }
 }
+function useItem(M, slot, now) {
+  if (now < (M.nextShot || 0)) return;
+  const row = INVEN[slot.id];
+  if (!row || (slot.ammo || 0) <= 0) return;
+  if (slot.kind === 'MEDI KIT') {
+    // INVEN field 9 is unnamed in the modkit column map. MediKit's own row is 100; night vision is 0.
+    const heal = parseFloat(row.cells[9]) || 0;
+    const useS = parseFloat(row.cells[10]) || 0.75;
+    if (heal > 0) M.hp = Math.min(M.maxHp, M.hp + heal);
+    slot.ammo--;
+    M.nextShot = now + useS * 1000;
+    hudDirty = true;
+    snd('assets/sounds/frontend/Interface/Interface_line53.wav', 0.5);
+  }
+}
 function heroFire(now) {
   const M = squad[activeIdx];
   if (!M || !M.alive || M.reloading) return;
-  const slot = M.inv[M.held], w = wpn(slot.id);
+  const slot = M.inv[M.held];
+  if (!slot) return;
+  if (slot.kind && slot.kind !== 'WEAPON') { useItem(M, slot, now); return; }
+  const w = wpn(slot.id);
   if (now < (M.nextShot || 0)) return;
+  if ((w.mag || 0) === 0) {
+    // Weaps range is 0 for the knife. 1.5m is a PROVISIONAL reach so the listed damage can land.
+    const reach = 1.5;
+    let best = null, bd = reach;
+    for (const E of enemies) {
+      if (!E.alive) continue;
+      const d = E.pos.distanceTo(M.pos);
+      if (d < bd) { bd = d; best = E; }
+    }
+    if (best) hurt(best, w.damage, chestOf(best), false);
+    M.nextShot = now + (w.interval || 0.6) * 1000;
+    bankPlay(w.bank, 'shot', 0.7);
+    return;
+  }
   if (slot.ammo <= 0) { doReload(M); return; }
   M.nextShot = now + w.interval * 1000;
   slot.ammo--;
@@ -982,9 +1148,8 @@ function doReload(M) {
   const slot = M.inv[M.held], w = wpn(slot.id);
   if (slot.ammo >= w.mag || slot.reserve <= 0 || M.reloading) return;
   M.reloading = true;
-  const rel = (w.reloadAnim || '').toUpperCase();
-  const clip = M.clips.find(c => c.name.toUpperCase().includes(rel.replace(/_/g, '')) || c.name.toUpperCase().includes('RELOAD'));
-  if (clip) M.setClip(clip.name, 0.1, true);
+  const clipName = clipExact(M.clips, w.reloadAnim);
+  if (clipName) M.setClip(clipName, 0.1, true);
   snd('assets/sounds/frontend/Interface/Interface_line54.wav', 0.4);
   setTimeout(() => {
     const take = Math.min(w.mag - slot.ammo, slot.reserve);
@@ -998,21 +1163,43 @@ function switchHero(i) {
 function switchWeapon(d) {
   const M = squad[activeIdx]; if (!M) return;
   M.held = ((M.held + d) % M.inv.length + M.inv.length) % M.inv.length;
-  attachGun(M, wpn(M.inv[M.held].id));
+  attachHeld(M);
   snd('assets/sounds/frontend/Interface/Interface_line53.wav', 0.4);
   hudDirty = true;
 }
 
 /* ---------------- AI ---------------- */
-function moveActor(A, tx, tz, speed, dt) {
+const wallRay = new THREE.Raycaster();
+const _wallN = new THREE.Vector3();
+function wallAhead(A, nx, nz) {
+  const dx = nx - A.pos.x, dz = nz - A.pos.z, d = Math.hypot(dx, dz);
+  if (d < 1e-4 || !terrainMeshes.length) return false;
+  wallRay.set(V3(A.pos.x, A.pos.y + 0.9, A.pos.z), V3(dx / d, 0, dz / d));
+  wallRay.far = d + 0.32;
+  const hits = wallRay.intersectObjects(terrainMeshes, false);
+  for (const h of hits) {
+    if (!h.face || h.object.isInstancedMesh) continue;
+    _wallN.copy(h.face.normal).transformDirection(h.object.matrixWorld);
+    if (_wallN.y < 0.4) return true;
+  }
+  return false;
+}
+function moveActor(A, tx, tz, speed, dt, keepYaw) {
   const dx = tx - A.pos.x, dz = tz - A.pos.z, d = Math.hypot(dx, dz);
   if (d < 0.25) { A.speed = 0; return true; }
   const step = Math.min(d, speed * dt);
   const nx = A.pos.x + dx / d * step, nz = A.pos.z + dz / d * step;
-  if (floorFor(A, nx, nz) - floorFor(A, A.pos.x, A.pos.z) > 1.15 && !A.airborne) { A.speed = 0; return false; }
-  A.pos.x = nx; A.pos.z = nz; A.yaw = Math.atan2(dx, dz);
-  A.speed = speed;
-  return d - step < 0.35;
+  const commit = (x, z) => {
+    if (floorFor(A, x, z) - floorFor(A, A.pos.x, A.pos.z) > 1.15 && !A.airborne) return false;
+    if (wallAhead(A, x, z)) return false;
+    A.pos.x = x; A.pos.z = z;
+    if (!keepYaw) A.yaw = Math.atan2(dx, dz);
+    A.speed = speed;
+    return true;
+  };
+  if (commit(nx, nz) || commit(nx, A.pos.z) || commit(A.pos.x, nz)) return d - step < 0.35;
+  A.speed = 0;
+  return false;
 }
 function sense(E, dt) {
   E.think -= dt; if (E.think > 0) return;
@@ -1106,7 +1293,9 @@ function driveActor(A, dt) {
   A.stateName = A.sm.tick(ctx);
   if (A.stateName !== before) A.stateT = 0;
   A.mode = /CRAWLING/.test(A.stateName) ? 'crawl' : /KNEELING/.test(A.stateName) ? 'kneel' : 'stand';
-  const clip = clipForState(A.clips, A.stateName, A.aimingNow);
+  const held = A.inv && A.inv[A.held];
+  const weapon = held ? (WEAPONS[held.id] || null) : (A.weaponId ? wpn(A.weaponId) : null);
+  const clip = clipForState(A.clips, A.stateName, A.aimingNow, weapon, A.strafe);
   // transition states (START_*, STOPPING, DYING) play their clip once: the
   // OG rules leave them via MSR_ANIM_FINISHED, which can only fire if the
   // clip actually finishes (it never does on a loop)
@@ -1297,9 +1486,9 @@ function updateHud(now) {
   });
   const M = squad[activeIdx];
   if (M && M.inv.length) {
-    const slot = M.inv[M.held], w = wpn(slot.id);
-    $('hudGunName').textContent = slot.id.replace(/^US_WPN_|^IR_WPN_/, '');
-    $('hudAmmo').textContent = `${slot.ammo} / ${slot.reserve}` + (M.reloading ? '  RELOADING' : '');
+    const slot = M.inv[M.held], w = heldSpec(slot) || wpn(slot.id);
+    $('hudGunName').textContent = slotLabel(slot);
+    $('hudAmmo').textContent = (slot.kind && slot.kind !== 'WEAPON' ? String(slot.ammo || 0) : `${slot.ammo} / ${slot.reserve}`) + (M.reloading ? '  RELOADING' : '');
     const gi = GWINT_IDX[w.icon];
     $('hudGunIcon').src = gi ? 'assets/ui/gwint/' + gi.file : '';
     $('hudGunIcon').style.visibility = gi ? 'visible' : 'hidden';
@@ -1323,21 +1512,29 @@ function updatePlayer(dt, now) {
   const M = squad[activeIdx];
   if (!M || !M.alive) return;
   if (driving) { driveVehicle(dt, now); return; }
-  M.joy.f = down('FORWARD'); M.joy.b = down('BACKWARD'); M.joy.l = down('STRAFE_LEFT'); M.joy.r = down('STRAFE_RIGHT');
-  if (invOpen) { M.joy.f = M.joy.b = M.joy.l = M.joy.r = false; }
-  if (down('TURN_LEFT')) camYaw += 1.6 * dt;    // keyboard turn rate: PROVISIONAL (no OG constant found)
-  if (down('TURN_RIGHT')) camYaw -= 1.6 * dt;
+  // A/D are STRAFE (default.key), not the movement-rule joystick. MSR_JOYSTICK_LEFT/RIGHT
+  // only enter turn-on-the-spot. Comma/period are TURN and move the camera; the body follows it.
+  if (down('TURN_LEFT') && !invOpen) camYaw += 1.6 * dt;    // keyboard turn rate: PROVISIONAL
+  if (down('TURN_RIGHT') && !invOpen) camYaw -= 1.6 * dt;
   if (down('WALK')) { if (M.moveMode === 'RUN') M.moveMode = 'WALK'; }
   else if (M.moveMode === 'WALK') M.moveMode = 'RUN';
-  const mx = (M.joy.r ? 1 : 0) - (M.joy.l ? 1 : 0), mz = (M.joy.f ? 1 : 0) - (M.joy.b ? 1 : 0);
-  const moving = mx !== 0 || mz !== 0;
-  if (moving) {
+  const fwdHeld = down('FORWARD') && !invOpen;
+  const backHeld = down('BACKWARD') && !invOpen && !fwdHeld;
+  const strafeL = down('STRAFE_LEFT') && !invOpen;
+  const strafeR = down('STRAFE_RIGHT') && !invOpen && !strafeL;
+  M.joy.f = fwdHeld; M.joy.b = backHeld; M.joy.l = false; M.joy.r = false;
+  const f = (fwdHeld ? 1 : 0) - (backHeld ? 1 : 0);
+  const s = (strafeR ? 1 : 0) - (strafeL ? 1 : 0);   // +s is strafe right, along the camera's right
+  M.strafe = (f || s) ? { f: f > 0, b: f < 0, l: s < 0, r: s > 0 } : null;
+  M.yaw = camYaw + Math.PI;   // visual forward is (sin yaw, cos yaw); camera looks the other way
+  if (f || s) {
     const sin = Math.sin(camYaw), cos = Math.cos(camYaw);
-    const wx = mx * cos - mz * sin, wz = -mz * cos - mx * sin;
-    moveActor(M, M.pos.x + wx * 10, M.pos.z + wz * 10, speedForState(M), dt);
-    if (!aiming) M.yaw = Math.atan2(wx, wz);
+    const wx = s * cos - f * sin, wz = -f * cos - s * sin;
+    const len = Math.hypot(wx, wz) || 1;
+    const spd = (!fwdHeld && !backHeld) ? (M.moveMode === 'CRAWL' ? SPEEDS.crawl : M.moveMode === 'KNEEL' ? SPEEDS.kneelWalk : M.moveMode === 'WALK' ? SPEEDS.walk : SPEEDS.run) : speedForState(M);
+    moveActor(M, M.pos.x + wx / len * 10, M.pos.z + wz / len * 10, spd, dt, true);
+    M.yaw = camYaw + Math.PI;
   } else M.speed = 0;
-  if (aiming) M.yaw = camYaw + Math.PI;
   M.aimingNow = aiming;
   if ((firing || firingKey) && !invOpen) heroFire(now);
   driveActor(M, dt);
@@ -1498,7 +1695,15 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   const uj = await jget('data/tables/units.json'); UNITS = {}; for (const r of uj) UNITS[r.name] = r;
   UNITS.Iraqi_Conscript = UNITS.Iraqi_Conscript || { name: 'Iraqi_Conscript', model: 'IRAQINFANTRY01_SANDY', hstat: 'IR_Infantryman00' };
   const uwj = await jget('data/tables/unitwpns.json'); UNITWPNS = {};
-  for (const r of uwj) { (UNITWPNS[r.id] = UNITWPNS[r.id] || { wpns: [], items: [] }); (r.cells[2] === 'WEAPON' ? UNITWPNS[r.id].wpns : UNITWPNS[r.id].items).push(r.cells[1]); }
+  for (const r of uwj) {
+    const bag = UNITWPNS[r.id] = UNITWPNS[r.id] || { wpns: [], items: [], rows: [] };
+    const row = { id: r.cells[1], kind: r.cells[2], amount: parseInt(r.cells[3], 10) || 0 };
+    bag.rows.push(row);
+    (row.kind === 'WEAPON' ? bag.wpns : bag.items).push(row.id);
+  }
+  const ij = await jget('data/tables/inven.json'); INVEN = {};
+  for (const r of ij) INVEN[r.id] = { id: r.id, type: r.cells[1], model: r.cells[2], icon: r.cells[5], cells: r.cells };
+  CONNOBJS = await jget('data/tables/connobjs.json').catch(() => ({}));
   const vj = await jget('data/tables/vehicles.json'); VSTAT = {}; for (const r of vj) VSTAT[r.name] = r.numbers;
   const dj = await jget('data/tables/doors.json'); DOORTAB = {};
   for (const r of dj) { const c = r.cells; DOORTAB[(c[1] || '').toLowerCase()] = { slide: [parseFloat(c[5]) / 100 || 0, parseFloat(c[6]) / 100 || 0, parseFloat(c[7]) / 100 || 0] }; }
@@ -1540,7 +1745,7 @@ window.CDS_SIM = {
     vehicles: VEHICLES.map(v => ({ model: v.model, vs: v.vsName, team: v.team, hp: v.hp, maxHp: v.maxHp, armour: v.armour, alive: v.alive, state: v.stateName, pos: v.pos.toArray().map(x => Math.round(x)) })),
     gates: DOORS.map(d => ({ name: d.name, open: +d.open.toFixed(2), target: d.target })),
     driving: driving ? driving.model : null,
-    squad: squad.map(s => ({ name: dispName(s.name), state: s.stateName, hp: Math.round(s.hp), alive: s.alive, mode: s.mode, pos: s.pos.toArray().map(v => Math.round(v * 10) / 10), ammo: s.inv[s.held] ? s.inv[s.held].ammo : 0 })),
+    squad: squad.map(s => ({ name: dispName(s.name), state: s.stateName, clip: s.curClip ? s.curClip.getClip().name : '', hp: Math.round(s.hp), alive: s.alive, mode: s.mode, pos: s.pos.toArray().map(v => Math.round(v * 10) / 10), ammo: s.inv[s.held] ? s.inv[s.held].ammo : 0, held: s.inv[s.held] ? s.inv[s.held].id : '', inv: (s.inv || []).map(x => x.id), worn: s.worn || 0, wornMiss: s.wornMiss || [] })),
     active: activeIdx,
     prisoner: prisoner ? { pos: prisoner.pos.toArray(), alive: prisoner.alive } : null,
     enemies: { total: enemies.length, alive: enemies.filter(e => e.alive).length, sample: enemies.filter(e => e.alive).slice(0, 3).map(e => ({ hp: e.hp, state: e.state, pos: e.pos.toArray().map(v => Math.round(v)) })) },
@@ -1555,6 +1760,37 @@ window.CDS_SIM = {
   aim: d => { aiming = d; },
   setMode: m => { if (squad[activeIdx]) squad[activeIdx].moveMode = m; },
   warp: (x, z) => { const M = squad[activeIdx]; if (M) { M.pos.x = x; M.pos.z = z; M.pos.y = groundH(x, z) + 0.2; } },
+  look: (yaw, pitch) => { if (yaw != null) camYaw = yaw; if (pitch != null) camPitch = pitch; snapCamera(); },
+  pause: (d, silent) => { paused = !!d; const el = document.getElementById('hudPause'); if (el) el.style.display = (paused && !silent) ? 'block' : 'none'; },
+  frameActor: (mode) => {
+    const M = squad[activeIdx]; if (!M || !camera) return null;
+    const f = V3(Math.sin(M.yaw), 0, Math.cos(M.yaw));
+    const side = V3(Math.cos(M.yaw), 0, -Math.sin(M.yaw));
+    const p = M.pos.clone();
+    if (mode === 'front') p.add(f.clone().multiplyScalar(3.6));
+    else if (mode === 'side') p.add(side.clone().multiplyScalar(3.2));
+    else p.add(f.clone().multiplyScalar(-4.2));
+    p.y += 1.35;
+    camera.position.copy(p);
+    camera.lookAt(M.pos.x, M.pos.y + 1.15, M.pos.z);
+    camera.fov = 42; camera.updateProjectionMatrix();
+    return { clip: M.curClip ? M.curClip.getClip().name : '', state: M.stateName, worn: M.worn || 0, yaw: +M.yaw.toFixed(2) };
+  },
+  isolate: () => { squad.forEach((M, i) => { if (i !== activeIdx) { M.pos.x = 400 + i * 5; M.pos.z = 400; } }); },
+  gearPos: () => {
+    const M = squad[activeIdx]; if (!M) return [];
+    M.obj.updateWorldMatrix(true, true);
+    const origin = M.obj.getWorldPosition(new THREE.Vector3());
+    const fwd = new THREE.Vector3(Math.sin(M.yaw), 0, Math.cos(M.yaw));
+    const out = [];
+    M.obj.traverse(o => {
+      if (!o.isMesh) return;
+      const p = o.getWorldPosition(new THREE.Vector3()).sub(origin);
+      const along = p.x * fwd.x + p.z * fwd.z;
+      out.push({ n: (o.name || '?').slice(0, 28), parent: (o.parent && o.parent.name || '').slice(0, 22), along: +along.toFixed(2), up: +p.y.toFixed(2) });
+    });
+    return out;
+  },
   warpAll: (x, z) => { squad.forEach((M, i) => { M.pos.x = x + i * 1.6; M.pos.z = z + i; M.pos.y = groundH(M.pos.x, M.pos.z) + 0.2; }); },
   ground: (x, z) => groundList(x, z).map(v => +v.toFixed(1)),
   testShot: () => { const M = squad[activeIdx]; let b = null, bd = 1e9; for (const E of enemies) { if (!E.alive || E.hp < E.maxHp) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } if (!b) { for (const E of enemies) { if (!E.alive) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } } if (b) { const before = b.hp; fireHitscan(M, chestOf(b), wpn(M.inv[M.held].id).damage, 900); return { dist: Math.round(bd), before, after: b.hp }; } return null; },

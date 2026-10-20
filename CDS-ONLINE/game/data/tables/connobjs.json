@@ -1,0 +1,406 @@
+{
+ "HEAVY WEAPONS": [
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "US_BACKPACKLARGE",
+   "faction": "US"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 HIPL CONNECTOR",
+   "model": "US_HIPLPOUCHES",
+   "faction": "US"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "UK_Shemagh04_BlackWhite",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "RU_BackpackLarge",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "IR_BackpackLarge",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "RU_BottlePouch",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "IR_BottlePouch",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 SPINE2R CONNECTOR",
+   "model": "RU_AmmoPouch01",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 HIPR CONNECTOR",
+   "model": "IR_HipHolster",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 FACE CONNECTOR",
+   "model": "AN_CIGAR",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 FACE CONNECTOR",
+   "model": "AN_CIGAR",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "UK_WOOLLYHAT",
+   "faction": "SAS"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "UK_BACKPACKLARGE",
+   "faction": "SAS"
+  },
+  {
+   "role": "HEAVY WEAPONS",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "US_BANDANA_SANDY",
+   "faction": "US"
+  }
+ ],
+ "COMBAT ENGINEER": [
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "US_BACKPACKMEDIUM",
+   "faction": "US"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 HIPL CONNECTOR",
+   "model": "US_HIPSATCHEL",
+   "faction": "US"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 CHESTR CONNECTOR",
+   "model": "US_CHESTTORCH",
+   "faction": "US"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "RU_Helmet_Sandy",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "IR_Helmet_Green",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "RU_BackpackMedium",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "IR_BackpackMedium",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "RU_AmmoPouch01",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "IR_BottlePouch",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE2R CONNECTOR",
+   "model": "RU_BottlePouch",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 HIPR CONNECTOR",
+   "model": "IR_HipHolster",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "UK_Shemagh04_BlackWhite",
+   "faction": "SAS"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "UK_BACKPACKMEDIUM",
+   "faction": "SAS"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE2 CONNECTOR",
+   "model": "UK_BOTTLEPOUCH01",
+   "faction": "SAS"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "UK_AMMOPOUCH01",
+   "faction": "SAS"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 SPINE2R CONNECTOR",
+   "model": "UK_AMMOPOUCH01",
+   "faction": "SAS"
+  },
+  {
+   "role": "COMBAT ENGINEER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "US_HELMET_DESERT",
+   "faction": "US"
+  }
+ ],
+ "RIFLEMAN": [
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "AN_RadioPack",
+   "faction": "US"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 HIPR CONNECTOR",
+   "model": "US_HIPRPOUCH",
+   "faction": "US"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 HIPL CONNECTOR",
+   "model": "US_HIPSATCHEL",
+   "faction": "US"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "IR_Beret_Black",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "AN_RadioPack",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "AN_RadioPack",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "RU_AmmoPouch01",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "IR_BottlePouch",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE2R CONNECTOR",
+   "model": "RU_BottlePouch",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 HIPR CONNECTOR",
+   "model": "IR_HipHolster",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "RU_Beret_Red",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "UK_CAP_GREEN",
+   "faction": "SAS"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "AN_RadioPack",
+   "faction": "SAS"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE2 CONNECTOR",
+   "model": "UK_BOTTLEPOUCH01",
+   "faction": "SAS"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "UK_POUCHMEDIUM01",
+   "faction": "SAS"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 SPINE2R CONNECTOR",
+   "model": "UK_AMMOPOUCH01",
+   "faction": "SAS"
+  },
+  {
+   "role": "RIFLEMAN",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "US_CAP_DESERT",
+   "faction": "US"
+  }
+ ],
+ "SNIPER": [
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "RU_FurHat",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "IR_Beret_Sandy",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "RU_BackpackMedium",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "IR_BackpackMedium",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "RU_AmmoPouch01",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "IR_BottlePouch",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE2R CONNECTOR",
+   "model": "RU_BottlePouch",
+   "faction": "RUSSIAN"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 HIPR CONNECTOR",
+   "model": "IR_HipHolster",
+   "faction": "IRAQI"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "UK_HAT_DESERT",
+   "faction": "SAS"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "UK_BACKPACKMEDIUM",
+   "faction": "SAS"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE2 CONNECTOR",
+   "model": "UK_POUCHMEDIUM01",
+   "faction": "SAS"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE2L CONNECTOR",
+   "model": "UK_AMMOPOUCH01",
+   "faction": "SAS"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE2R CONNECTOR",
+   "model": "UK_BOTTLEPOUCH01",
+   "faction": "SAS"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 HAT CONNECTOR",
+   "model": "US_HAT_DESERT",
+   "faction": "US"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 SPINE1 CONNECTOR",
+   "model": "US_BACKPACKMEDIUM",
+   "faction": "US"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 HIPR CONNECTOR",
+   "model": "US_HIPRPOUCH",
+   "faction": "US"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 HIPL CONNECTOR",
+   "model": "US_HIPLPOUCHES",
+   "faction": "US"
+  },
+  {
+   "role": "SNIPER",
+   "connector": "BIP01 CHESTL CONNECTOR",
+   "model": "US_CHESTTORCH",
+   "faction": "US"
+  }
+ ]
+}

@@ -2,6 +2,7 @@
  "HERO01_ARMSTRONG": {
   "BIP01 GUNR CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.10379,
     0.07875,
@@ -14,8 +15,24 @@
     0.48511
    ]
   },
+  "BIP01 HANDR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    -0.0,
+    0.0,
+    -0.00054
+   ],
+   "q": [
+    0.49438,
+    0.50556,
+    -0.50555,
+    0.49439
+   ]
+  },
   "BIP01 RIFLER CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.08614,
     0.03448,
@@ -28,8 +45,39 @@
     0.61058
    ]
   },
+  "BIP01 R FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 R FOREARM",
+   "host": "BIP01 R FOREARM",
+   "t": [
+    0.23107,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.70691,
+    0.0,
+    0.0,
+    0.70731
+   ]
+  },
+  "BIP01 R SHOULDER CONNECTOR": {
+   "parent": "BIP01 R CLAVICLE",
+   "host": "BIP01 R CLAVICLE",
+   "t": [
+    0.16886,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.3192,
+    -0.18998,
+    0.01054,
+    0.92839
+   ]
+  },
   "BIP01 GUNL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.10379,
     -0.07875,
@@ -42,24 +90,311 @@
     0.50692
    ]
   },
+  "BIP01 HANDL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.0,
+    -0.0,
+    -0.00054
+   ],
+   "q": [
+    -0.50556,
+    -0.49438,
+    -0.49439,
+    0.50555
+   ]
+  },
   "BIP01 RIFLEL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.08614,
     -0.03448,
     -0.01087
    ],
    "q": [
-    -0.66813,
-    -0.32609,
-    -0.61058,
-    0.27285
+    0.66813,
+    0.32609,
+    0.61058,
+    -0.27285
+   ]
+  },
+  "BIP01 L FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 L FOREARM",
+   "host": "BIP01 L FOREARM",
+   "t": [
+    0.23106,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.7159,
+    0.0,
+    0.0,
+    0.69821
+   ]
+  },
+  "BIP01 L SHOULDER CONNECTOR": {
+   "parent": "BIP01 L CLAVICLE",
+   "host": "BIP01 L CLAVICLE",
+   "t": [
+    0.16886,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.08453,
+    0.04209,
+    -0.31002,
+    0.94603
+   ]
+  },
+  "BIP01 FACE CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.12678,
+    0.0,
+    -0.14091
+   ],
+   "q": [
+    -0.70711,
+    0.0,
+    -0.0,
+    0.70711
+   ]
+  },
+  "BIP01 HAT CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 HEAD CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 RIBCAGE CONNECTOR": {
+   "parent": "BIP01 SPINE3",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.12224,
+    0.0,
+    1e-05
+   ],
+   "q": [
+    -0.0,
+    -0.0,
+    0.0,
+    1.0
+   ]
+  },
+  "BIP01 CHESTR CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    -0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.47792,
+    0.47751,
+    -0.52114,
+    0.52152
+   ]
+  },
+  "BIP01 CHESTL CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.52152,
+    0.52114,
+    -0.47751,
+    0.47792
+   ]
+  },
+  "BIP01 SPINE1 CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    0.00485,
+    0.00029,
+    0.12042
+   ],
+   "q": [
+    0.53343,
+    0.53389,
+    0.46406,
+    -0.46375
+   ]
+  },
+  "BIP01 SPINE1L CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    0.15815,
+    0.09837
+   ],
+   "q": [
+    0.56083,
+    0.59654,
+    0.38015,
+    -0.43022
+   ]
+  },
+  "BIP01 SPINE1R CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    -0.15815,
+    0.09837
+   ],
+   "q": [
+    0.59654,
+    0.56083,
+    -0.43022,
+    0.38015
+   ]
+  },
+  "BIP01 L HIP CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.04128,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.06495,
+    0.00398,
+    0.01789,
+    0.99772
+   ]
+  },
+  "BIP01 HIPL CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.13695,
+    -0.09438,
+    -0.00423
+   ],
+   "q": [
+    0.73958,
+    -0.67288,
+    -0.01393,
+    -0.00819
+   ]
+  },
+  "BIP01 R HIP CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.04128,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.09479,
+    -0.03033,
+    -0.03344,
+    0.99447
+   ]
+  },
+  "BIP01 HIPR CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.13695,
+    0.09438,
+    -0.00423
+   ],
+   "q": [
+    -0.00819,
+    0.01392,
+    0.67288,
+    0.73958
+   ]
+  },
+  "BIP01 SPINE2 CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.10467,
+    0.0,
+    0.1698
+   ],
+   "q": [
+    0.5,
+    0.5,
+    0.5,
+    -0.5
+   ]
+  },
+  "BIP01 SPINE2L CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    0.15815,
+    0.12632
+   ],
+   "q": [
+    0.61237,
+    0.61237,
+    0.35355,
+    -0.35355
+   ]
+  },
+  "BIP01 SPINE2R CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    -0.15815,
+    0.12632
+   ],
+   "q": [
+    -0.35355,
+    -0.35355,
+    -0.61237,
+    0.61237
    ]
   }
  },
  "HERO02_RAMIREZ": {
   "BIP01 GUNR CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.10379,
     0.07875,
@@ -72,8 +407,24 @@
     0.48511
    ]
   },
+  "BIP01 HANDR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    -0.0,
+    0.0,
+    -0.00054
+   ],
+   "q": [
+    0.49438,
+    0.50556,
+    -0.50555,
+    0.49439
+   ]
+  },
   "BIP01 RIFLER CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.08614,
     0.03448,
@@ -86,8 +437,39 @@
     0.61058
    ]
   },
+  "BIP01 R FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 R FOREARM",
+   "host": "BIP01 R FOREARM",
+   "t": [
+    0.23107,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.70691,
+    0.0,
+    0.0,
+    0.70731
+   ]
+  },
+  "BIP01 R SHOULDER CONNECTOR": {
+   "parent": "BIP01 R CLAVICLE",
+   "host": "BIP01 R CLAVICLE",
+   "t": [
+    0.16886,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.3192,
+    -0.18998,
+    0.01054,
+    0.92839
+   ]
+  },
   "BIP01 GUNL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.10379,
     -0.07875,
@@ -100,24 +482,311 @@
     0.50692
    ]
   },
+  "BIP01 HANDL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.0,
+    -0.0,
+    -0.00054
+   ],
+   "q": [
+    -0.50556,
+    -0.49438,
+    -0.49439,
+    0.50555
+   ]
+  },
   "BIP01 RIFLEL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.08614,
     -0.03448,
     -0.01087
    ],
    "q": [
-    -0.66813,
-    -0.32609,
-    -0.61058,
-    0.27285
+    0.66813,
+    0.32609,
+    0.61058,
+    -0.27285
+   ]
+  },
+  "BIP01 L FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 L FOREARM",
+   "host": "BIP01 L FOREARM",
+   "t": [
+    0.23106,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.7159,
+    0.0,
+    0.0,
+    0.69821
+   ]
+  },
+  "BIP01 L SHOULDER CONNECTOR": {
+   "parent": "BIP01 L CLAVICLE",
+   "host": "BIP01 L CLAVICLE",
+   "t": [
+    0.16886,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.08453,
+    0.04209,
+    -0.31002,
+    0.94603
+   ]
+  },
+  "BIP01 FACE CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.12678,
+    0.0,
+    -0.14091
+   ],
+   "q": [
+    -0.70711,
+    0.0,
+    -0.0,
+    0.70711
+   ]
+  },
+  "BIP01 HAT CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 HEAD CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 RIBCAGE CONNECTOR": {
+   "parent": "BIP01 SPINE3",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.12224,
+    0.0,
+    1e-05
+   ],
+   "q": [
+    -0.0,
+    -0.0,
+    0.0,
+    1.0
+   ]
+  },
+  "BIP01 CHESTR CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    -0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.47792,
+    0.47751,
+    -0.52114,
+    0.52152
+   ]
+  },
+  "BIP01 CHESTL CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.52152,
+    0.52114,
+    -0.47751,
+    0.47792
+   ]
+  },
+  "BIP01 SPINE1 CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    0.00485,
+    0.00029,
+    0.12042
+   ],
+   "q": [
+    0.53343,
+    0.53389,
+    0.46406,
+    -0.46375
+   ]
+  },
+  "BIP01 SPINE1L CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    0.15815,
+    0.09837
+   ],
+   "q": [
+    0.56083,
+    0.59654,
+    0.38015,
+    -0.43022
+   ]
+  },
+  "BIP01 SPINE1R CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    -0.15815,
+    0.09837
+   ],
+   "q": [
+    0.59654,
+    0.56083,
+    -0.43022,
+    0.38015
+   ]
+  },
+  "BIP01 L HIP CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.04128,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.06495,
+    0.00398,
+    0.01789,
+    0.99772
+   ]
+  },
+  "BIP01 HIPL CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.13695,
+    -0.09438,
+    -0.00423
+   ],
+   "q": [
+    0.73958,
+    -0.67288,
+    -0.01393,
+    -0.00819
+   ]
+  },
+  "BIP01 R HIP CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.04128,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.09479,
+    -0.03033,
+    -0.03344,
+    0.99447
+   ]
+  },
+  "BIP01 HIPR CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.13695,
+    0.09438,
+    -0.00423
+   ],
+   "q": [
+    -0.00819,
+    0.01392,
+    0.67288,
+    0.73958
+   ]
+  },
+  "BIP01 SPINE2 CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.10467,
+    0.0,
+    0.1698
+   ],
+   "q": [
+    0.5,
+    0.5,
+    0.5,
+    -0.5
+   ]
+  },
+  "BIP01 SPINE2L CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    0.15815,
+    0.12632
+   ],
+   "q": [
+    0.61237,
+    0.61237,
+    0.35355,
+    -0.35355
+   ]
+  },
+  "BIP01 SPINE2R CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    -0.15815,
+    0.12632
+   ],
+   "q": [
+    -0.35355,
+    -0.35355,
+    -0.61237,
+    0.61237
    ]
   }
  },
  "HERO03_JONES": {
   "BIP01 GUNR CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.10379,
     0.07875,
@@ -130,8 +799,24 @@
     0.48511
    ]
   },
+  "BIP01 HANDR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    -0.0,
+    0.0,
+    -0.00054
+   ],
+   "q": [
+    0.49438,
+    0.50556,
+    -0.50555,
+    0.49439
+   ]
+  },
   "BIP01 RIFLER CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.08614,
     0.03448,
@@ -144,8 +829,39 @@
     0.61058
    ]
   },
+  "BIP01 R FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 R FOREARM",
+   "host": "BIP01 R FOREARM",
+   "t": [
+    0.23107,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.70691,
+    0.0,
+    0.0,
+    0.70731
+   ]
+  },
+  "BIP01 R SHOULDER CONNECTOR": {
+   "parent": "BIP01 R CLAVICLE",
+   "host": "BIP01 R CLAVICLE",
+   "t": [
+    0.16886,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.3192,
+    -0.18998,
+    0.01054,
+    0.92839
+   ]
+  },
   "BIP01 GUNL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.10379,
     -0.07875,
@@ -158,24 +874,311 @@
     0.50692
    ]
   },
+  "BIP01 HANDL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.0,
+    -0.0,
+    -0.00054
+   ],
+   "q": [
+    -0.50556,
+    -0.49438,
+    -0.49439,
+    0.50555
+   ]
+  },
   "BIP01 RIFLEL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.08614,
     -0.03448,
     -0.01087
    ],
    "q": [
-    -0.66813,
-    -0.32609,
-    -0.61058,
-    0.27285
+    0.66813,
+    0.32609,
+    0.61058,
+    -0.27285
+   ]
+  },
+  "BIP01 L FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 L FOREARM",
+   "host": "BIP01 L FOREARM",
+   "t": [
+    0.23106,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.7159,
+    0.0,
+    0.0,
+    0.69821
+   ]
+  },
+  "BIP01 L SHOULDER CONNECTOR": {
+   "parent": "BIP01 L CLAVICLE",
+   "host": "BIP01 L CLAVICLE",
+   "t": [
+    0.16886,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.08453,
+    0.04209,
+    -0.31002,
+    0.94603
+   ]
+  },
+  "BIP01 FACE CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.12678,
+    0.0,
+    -0.14091
+   ],
+   "q": [
+    -0.70711,
+    0.0,
+    -0.0,
+    0.70711
+   ]
+  },
+  "BIP01 HAT CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 HEAD CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 RIBCAGE CONNECTOR": {
+   "parent": "BIP01 SPINE3",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.12224,
+    0.0,
+    1e-05
+   ],
+   "q": [
+    -0.0,
+    -0.0,
+    0.0,
+    1.0
+   ]
+  },
+  "BIP01 CHESTR CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    -0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.47792,
+    0.47751,
+    -0.52114,
+    0.52152
+   ]
+  },
+  "BIP01 CHESTL CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.52152,
+    0.52114,
+    -0.47751,
+    0.47792
+   ]
+  },
+  "BIP01 SPINE1 CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    0.00485,
+    0.00029,
+    0.12042
+   ],
+   "q": [
+    0.53343,
+    0.53389,
+    0.46406,
+    -0.46375
+   ]
+  },
+  "BIP01 SPINE1L CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    0.15815,
+    0.09837
+   ],
+   "q": [
+    0.56083,
+    0.59654,
+    0.38015,
+    -0.43022
+   ]
+  },
+  "BIP01 SPINE1R CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    -0.15815,
+    0.09837
+   ],
+   "q": [
+    0.59654,
+    0.56083,
+    -0.43022,
+    0.38015
+   ]
+  },
+  "BIP01 L HIP CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.04128,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.06495,
+    0.00398,
+    0.01789,
+    0.99772
+   ]
+  },
+  "BIP01 HIPL CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.13695,
+    -0.09438,
+    -0.00423
+   ],
+   "q": [
+    0.73958,
+    -0.67288,
+    -0.01393,
+    -0.00819
+   ]
+  },
+  "BIP01 R HIP CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.04128,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.09479,
+    -0.03033,
+    -0.03344,
+    0.99447
+   ]
+  },
+  "BIP01 HIPR CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.13695,
+    0.09438,
+    -0.00423
+   ],
+   "q": [
+    -0.00819,
+    0.01392,
+    0.67288,
+    0.73958
+   ]
+  },
+  "BIP01 SPINE2 CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.10467,
+    0.0,
+    0.1698
+   ],
+   "q": [
+    0.5,
+    0.5,
+    0.5,
+    -0.5
+   ]
+  },
+  "BIP01 SPINE2L CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    0.15815,
+    0.12632
+   ],
+   "q": [
+    0.61237,
+    0.61237,
+    0.35355,
+    -0.35355
+   ]
+  },
+  "BIP01 SPINE2R CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    -0.15815,
+    0.12632
+   ],
+   "q": [
+    -0.35355,
+    -0.35355,
+    -0.61237,
+    0.61237
    ]
   }
  },
  "HERO04_FOLEY": {
   "BIP01 GUNR CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.10379,
     0.07875,
@@ -188,8 +1191,24 @@
     0.48511
    ]
   },
+  "BIP01 HANDR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    -0.0,
+    0.0,
+    -0.00054
+   ],
+   "q": [
+    0.49438,
+    0.50556,
+    -0.50555,
+    0.49439
+   ]
+  },
   "BIP01 RIFLER CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.08614,
     0.03448,
@@ -202,8 +1221,39 @@
     0.61058
    ]
   },
+  "BIP01 R FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 R FOREARM",
+   "host": "BIP01 R FOREARM",
+   "t": [
+    0.23107,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.70691,
+    0.0,
+    0.0,
+    0.70731
+   ]
+  },
+  "BIP01 R SHOULDER CONNECTOR": {
+   "parent": "BIP01 R CLAVICLE",
+   "host": "BIP01 R CLAVICLE",
+   "t": [
+    0.16886,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.3192,
+    -0.18998,
+    0.01054,
+    0.92839
+   ]
+  },
   "BIP01 GUNL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.10379,
     -0.07875,
@@ -216,140 +1266,311 @@
     0.50692
    ]
   },
+  "BIP01 HANDL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.0,
+    -0.0,
+    -0.00054
+   ],
+   "q": [
+    -0.50556,
+    -0.49438,
+    -0.49439,
+    0.50555
+   ]
+  },
   "BIP01 RIFLEL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.08614,
     -0.03448,
     -0.01087
    ],
    "q": [
-    -0.66813,
-    -0.32609,
-    -0.61058,
-    0.27285
-   ]
-  }
- },
- "IRAQERG01_DESERTCAMOPETE": {
-  "BIP01 GUNR CONNECTOR": {
-   "parent": "BIP01 R HAND",
-   "t": [
-    0.10379,
-    0.07875,
-    -0.01065
-   ],
-   "q": [
-    0.49362,
-    0.51385,
-    -0.50692,
-    0.48511
-   ]
-  },
-  "BIP01 RIFLER CONNECTOR": {
-   "parent": "BIP01 R HAND",
-   "t": [
-    0.08614,
-    0.03448,
-    -0.01087
-   ],
-   "q": [
-    0.32609,
     0.66813,
-    -0.27285,
-    0.61058
-   ]
-  },
-  "BIP01 GUNL CONNECTOR": {
-   "parent": "BIP01 L HAND",
-   "t": [
-    0.10379,
-    -0.07875,
-    -0.01065
-   ],
-   "q": [
-    -0.51385,
-    -0.49362,
-    -0.48511,
-    0.50692
-   ]
-  },
-  "BIP01 RIFLEL CONNECTOR": {
-   "parent": "BIP01 L HAND",
-   "t": [
-    0.08614,
-    -0.03448,
-    -0.01087
-   ],
-   "q": [
-    -0.66813,
-    -0.32609,
-    -0.61058,
-    0.27285
-   ]
-  }
- },
- "IRAQERG02_OFFICER": {
-  "BIP01 GUNR CONNECTOR": {
-   "parent": "BIP01 R HAND",
-   "t": [
-    0.10379,
-    0.07875,
-    -0.01065
-   ],
-   "q": [
-    0.49362,
-    0.51385,
-    -0.50692,
-    0.48511
-   ]
-  },
-  "BIP01 RIFLER CONNECTOR": {
-   "parent": "BIP01 R HAND",
-   "t": [
-    0.08614,
-    0.03448,
-    -0.01087
-   ],
-   "q": [
     0.32609,
-    0.66813,
-    -0.27285,
-    0.61058
+    0.61058,
+    -0.27285
    ]
   },
-  "BIP01 GUNL CONNECTOR": {
-   "parent": "BIP01 L HAND",
+  "BIP01 L FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 L FOREARM",
+   "host": "BIP01 L FOREARM",
    "t": [
-    0.10379,
-    -0.07875,
-    -0.01065
+    0.23106,
+    0.0,
+    -0.0
    ],
    "q": [
-    -0.51385,
-    -0.49362,
-    -0.48511,
-    0.50692
+    -0.7159,
+    0.0,
+    0.0,
+    0.69821
    ]
   },
-  "BIP01 RIFLEL CONNECTOR": {
-   "parent": "BIP01 L HAND",
+  "BIP01 L SHOULDER CONNECTOR": {
+   "parent": "BIP01 L CLAVICLE",
+   "host": "BIP01 L CLAVICLE",
    "t": [
-    0.08614,
-    -0.03448,
-    -0.01087
+    0.16886,
+    -0.0,
+    0.0
    ],
    "q": [
-    -0.66813,
-    -0.32609,
-    -0.61058,
-    0.27285
+    0.08453,
+    0.04209,
+    -0.31002,
+    0.94603
+   ]
+  },
+  "BIP01 FACE CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.12678,
+    0.0,
+    -0.14091
+   ],
+   "q": [
+    -0.70711,
+    0.0,
+    -0.0,
+    0.70711
+   ]
+  },
+  "BIP01 HAT CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 HEAD CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 RIBCAGE CONNECTOR": {
+   "parent": "BIP01 SPINE3",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.12224,
+    0.0,
+    1e-05
+   ],
+   "q": [
+    -0.0,
+    -0.0,
+    0.0,
+    1.0
+   ]
+  },
+  "BIP01 CHESTR CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    -0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.47792,
+    0.47751,
+    -0.52114,
+    0.52152
+   ]
+  },
+  "BIP01 CHESTL CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.52152,
+    0.52114,
+    -0.47751,
+    0.47792
+   ]
+  },
+  "BIP01 SPINE1 CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    0.00485,
+    0.00029,
+    0.12042
+   ],
+   "q": [
+    0.53343,
+    0.53389,
+    0.46406,
+    -0.46375
+   ]
+  },
+  "BIP01 SPINE1L CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    0.15815,
+    0.09837
+   ],
+   "q": [
+    0.56083,
+    0.59654,
+    0.38015,
+    -0.43022
+   ]
+  },
+  "BIP01 SPINE1R CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    -0.15815,
+    0.09837
+   ],
+   "q": [
+    0.59654,
+    0.56083,
+    -0.43022,
+    0.38015
+   ]
+  },
+  "BIP01 L HIP CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.04128,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.06495,
+    0.00398,
+    0.01789,
+    0.99772
+   ]
+  },
+  "BIP01 HIPL CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.13695,
+    -0.09438,
+    -0.00423
+   ],
+   "q": [
+    0.73958,
+    -0.67288,
+    -0.01393,
+    -0.00819
+   ]
+  },
+  "BIP01 R HIP CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.04128,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.09479,
+    -0.03033,
+    -0.03344,
+    0.99447
+   ]
+  },
+  "BIP01 HIPR CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.13695,
+    0.09438,
+    -0.00423
+   ],
+   "q": [
+    -0.00819,
+    0.01392,
+    0.67288,
+    0.73958
+   ]
+  },
+  "BIP01 SPINE2 CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.10467,
+    0.0,
+    0.1698
+   ],
+   "q": [
+    0.5,
+    0.5,
+    0.5,
+    -0.5
+   ]
+  },
+  "BIP01 SPINE2L CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    0.15815,
+    0.12632
+   ],
+   "q": [
+    0.61237,
+    0.61237,
+    0.35355,
+    -0.35355
+   ]
+  },
+  "BIP01 SPINE2R CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    -0.15815,
+    0.12632
+   ],
+   "q": [
+    -0.35355,
+    -0.35355,
+    -0.61237,
+    0.61237
    ]
   }
  },
  "IRAQINFANTRY01_SANDY": {
   "BIP01 GUNR CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.10379,
     0.07875,
@@ -362,8 +1583,24 @@
     0.48511
    ]
   },
+  "BIP01 HANDR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    -0.0,
+    0.0,
+    -0.00054
+   ],
+   "q": [
+    0.49438,
+    0.50556,
+    -0.50555,
+    0.49439
+   ]
+  },
   "BIP01 RIFLER CONNECTOR": {
    "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
    "t": [
     0.08614,
     0.03448,
@@ -376,8 +1613,39 @@
     0.61058
    ]
   },
+  "BIP01 R FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 R FOREARM",
+   "host": "BIP01 R FOREARM",
+   "t": [
+    0.23107,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.70691,
+    0.0,
+    0.0,
+    0.70731
+   ]
+  },
+  "BIP01 R SHOULDER CONNECTOR": {
+   "parent": "BIP01 R CLAVICLE",
+   "host": "BIP01 R CLAVICLE",
+   "t": [
+    0.16886,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.3192,
+    -0.18998,
+    0.01054,
+    0.92839
+   ]
+  },
   "BIP01 GUNL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.10379,
     -0.07875,
@@ -390,18 +1658,1088 @@
     0.50692
    ]
   },
+  "BIP01 HANDL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.0,
+    -0.0,
+    -0.00054
+   ],
+   "q": [
+    -0.50556,
+    -0.49438,
+    -0.49439,
+    0.50555
+   ]
+  },
   "BIP01 RIFLEL CONNECTOR": {
    "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
    "t": [
     0.08614,
     -0.03448,
     -0.01087
    ],
    "q": [
-    -0.66813,
-    -0.32609,
-    -0.61058,
-    0.27285
+    0.66813,
+    0.32609,
+    0.61058,
+    -0.27285
+   ]
+  },
+  "BIP01 L FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 L FOREARM",
+   "host": "BIP01 L FOREARM",
+   "t": [
+    0.23106,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.7159,
+    0.0,
+    0.0,
+    0.69821
+   ]
+  },
+  "BIP01 L SHOULDER CONNECTOR": {
+   "parent": "BIP01 L CLAVICLE",
+   "host": "BIP01 L CLAVICLE",
+   "t": [
+    0.16886,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.08453,
+    0.04209,
+    -0.31002,
+    0.94603
+   ]
+  },
+  "BIP01 FACE CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.12678,
+    0.0,
+    -0.14091
+   ],
+   "q": [
+    -0.70711,
+    0.0,
+    -0.0,
+    0.70711
+   ]
+  },
+  "BIP01 HAT CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 HEAD CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 RIBCAGE CONNECTOR": {
+   "parent": "BIP01 SPINE3",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.12224,
+    0.0,
+    1e-05
+   ],
+   "q": [
+    -0.0,
+    -0.0,
+    0.0,
+    1.0
+   ]
+  },
+  "BIP01 CHESTR CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    -0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.47792,
+    0.47751,
+    -0.52114,
+    0.52152
+   ]
+  },
+  "BIP01 CHESTL CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.52152,
+    0.52114,
+    -0.47751,
+    0.47792
+   ]
+  },
+  "BIP01 SPINE1 CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    0.00485,
+    0.00029,
+    0.12042
+   ],
+   "q": [
+    0.53343,
+    0.53389,
+    0.46406,
+    -0.46375
+   ]
+  },
+  "BIP01 SPINE1L CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    0.15815,
+    0.09837
+   ],
+   "q": [
+    0.56083,
+    0.59654,
+    0.38015,
+    -0.43022
+   ]
+  },
+  "BIP01 SPINE1R CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    -0.15815,
+    0.09837
+   ],
+   "q": [
+    0.59654,
+    0.56083,
+    -0.43022,
+    0.38015
+   ]
+  },
+  "BIP01 L HIP CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.04128,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.06495,
+    0.00398,
+    0.01789,
+    0.99772
+   ]
+  },
+  "BIP01 HIPL CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.13695,
+    -0.09438,
+    -0.00423
+   ],
+   "q": [
+    0.73958,
+    -0.67288,
+    -0.01393,
+    -0.00819
+   ]
+  },
+  "BIP01 R HIP CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.04128,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.09479,
+    -0.03033,
+    -0.03344,
+    0.99447
+   ]
+  },
+  "BIP01 HIPR CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.13695,
+    0.09438,
+    -0.00423
+   ],
+   "q": [
+    -0.00819,
+    0.01392,
+    0.67288,
+    0.73958
+   ]
+  },
+  "BIP01 SPINE2 CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.10467,
+    0.0,
+    0.1698
+   ],
+   "q": [
+    0.5,
+    0.5,
+    0.5,
+    -0.5
+   ]
+  },
+  "BIP01 SPINE2L CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    0.15815,
+    0.12632
+   ],
+   "q": [
+    0.61237,
+    0.61237,
+    0.35355,
+    -0.35355
+   ]
+  },
+  "BIP01 SPINE2R CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    -0.15815,
+    0.12632
+   ],
+   "q": [
+    -0.35355,
+    -0.35355,
+    -0.61237,
+    0.61237
+   ]
+  }
+ },
+ "IRAQERG01_DESERTCAMOPETE": {
+  "BIP01 GUNR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    0.10379,
+    0.07875,
+    -0.01065
+   ],
+   "q": [
+    0.49362,
+    0.51385,
+    -0.50692,
+    0.48511
+   ]
+  },
+  "BIP01 HANDR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    -0.0,
+    0.0,
+    -0.00054
+   ],
+   "q": [
+    0.49438,
+    0.50556,
+    -0.50555,
+    0.49439
+   ]
+  },
+  "BIP01 RIFLER CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    0.08614,
+    0.03448,
+    -0.01087
+   ],
+   "q": [
+    0.32609,
+    0.66813,
+    -0.27285,
+    0.61058
+   ]
+  },
+  "BIP01 R FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 R FOREARM",
+   "host": "BIP01 R FOREARM",
+   "t": [
+    0.23107,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.70691,
+    0.0,
+    0.0,
+    0.70731
+   ]
+  },
+  "BIP01 R SHOULDER CONNECTOR": {
+   "parent": "BIP01 R CLAVICLE",
+   "host": "BIP01 R CLAVICLE",
+   "t": [
+    0.16886,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.3192,
+    -0.18998,
+    0.01054,
+    0.92839
+   ]
+  },
+  "BIP01 GUNL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.10379,
+    -0.07875,
+    -0.01065
+   ],
+   "q": [
+    -0.51385,
+    -0.49362,
+    -0.48511,
+    0.50692
+   ]
+  },
+  "BIP01 HANDL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.0,
+    -0.0,
+    -0.00054
+   ],
+   "q": [
+    -0.50556,
+    -0.49438,
+    -0.49439,
+    0.50555
+   ]
+  },
+  "BIP01 RIFLEL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.08614,
+    -0.03448,
+    -0.01087
+   ],
+   "q": [
+    0.66813,
+    0.32609,
+    0.61058,
+    -0.27285
+   ]
+  },
+  "BIP01 L FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 L FOREARM",
+   "host": "BIP01 L FOREARM",
+   "t": [
+    0.23106,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.7159,
+    0.0,
+    0.0,
+    0.69821
+   ]
+  },
+  "BIP01 L SHOULDER CONNECTOR": {
+   "parent": "BIP01 L CLAVICLE",
+   "host": "BIP01 L CLAVICLE",
+   "t": [
+    0.16886,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.08453,
+    0.04209,
+    -0.31002,
+    0.94603
+   ]
+  },
+  "BIP01 FACE CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.12678,
+    0.0,
+    -0.14091
+   ],
+   "q": [
+    -0.70711,
+    0.0,
+    -0.0,
+    0.70711
+   ]
+  },
+  "BIP01 HAT CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 HEAD CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 RIBCAGE CONNECTOR": {
+   "parent": "BIP01 SPINE3",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.12224,
+    0.0,
+    1e-05
+   ],
+   "q": [
+    -0.0,
+    -0.0,
+    0.0,
+    1.0
+   ]
+  },
+  "BIP01 CHESTR CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    -0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.47792,
+    0.47751,
+    -0.52114,
+    0.52152
+   ]
+  },
+  "BIP01 CHESTL CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.52152,
+    0.52114,
+    -0.47751,
+    0.47792
+   ]
+  },
+  "BIP01 SPINE1 CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    0.00485,
+    0.00029,
+    0.12042
+   ],
+   "q": [
+    0.53343,
+    0.53389,
+    0.46406,
+    -0.46375
+   ]
+  },
+  "BIP01 SPINE1L CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    0.15815,
+    0.09837
+   ],
+   "q": [
+    0.56083,
+    0.59654,
+    0.38015,
+    -0.43022
+   ]
+  },
+  "BIP01 SPINE1R CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    -0.15815,
+    0.09837
+   ],
+   "q": [
+    0.59654,
+    0.56083,
+    -0.43022,
+    0.38015
+   ]
+  },
+  "BIP01 L HIP CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.04128,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.06495,
+    0.00398,
+    0.01789,
+    0.99772
+   ]
+  },
+  "BIP01 HIPL CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.13695,
+    -0.09438,
+    -0.00423
+   ],
+   "q": [
+    0.73958,
+    -0.67288,
+    -0.01393,
+    -0.00819
+   ]
+  },
+  "BIP01 R HIP CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.04128,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.09479,
+    -0.03033,
+    -0.03344,
+    0.99447
+   ]
+  },
+  "BIP01 HIPR CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.13695,
+    0.09438,
+    -0.00423
+   ],
+   "q": [
+    -0.00819,
+    0.01392,
+    0.67288,
+    0.73958
+   ]
+  },
+  "BIP01 SPINE2 CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.10467,
+    0.0,
+    0.1698
+   ],
+   "q": [
+    0.5,
+    0.5,
+    0.5,
+    -0.5
+   ]
+  },
+  "BIP01 SPINE2L CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    0.15815,
+    0.12632
+   ],
+   "q": [
+    0.61237,
+    0.61237,
+    0.35355,
+    -0.35355
+   ]
+  },
+  "BIP01 SPINE2R CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    -0.15815,
+    0.12632
+   ],
+   "q": [
+    -0.35355,
+    -0.35355,
+    -0.61237,
+    0.61237
+   ]
+  }
+ },
+ "IRAQERG02_OFFICER": {
+  "BIP01 GUNR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    0.10379,
+    0.07875,
+    -0.01065
+   ],
+   "q": [
+    0.49362,
+    0.51385,
+    -0.50692,
+    0.48511
+   ]
+  },
+  "BIP01 HANDR CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    -0.0,
+    0.0,
+    -0.00054
+   ],
+   "q": [
+    0.49438,
+    0.50556,
+    -0.50555,
+    0.49439
+   ]
+  },
+  "BIP01 RIFLER CONNECTOR": {
+   "parent": "BIP01 R HAND",
+   "host": "BIP01 R HAND",
+   "t": [
+    0.08614,
+    0.03448,
+    -0.01087
+   ],
+   "q": [
+    0.32609,
+    0.66813,
+    -0.27285,
+    0.61058
+   ]
+  },
+  "BIP01 R FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 R FOREARM",
+   "host": "BIP01 R FOREARM",
+   "t": [
+    0.23107,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.70691,
+    0.0,
+    0.0,
+    0.70731
+   ]
+  },
+  "BIP01 R SHOULDER CONNECTOR": {
+   "parent": "BIP01 R CLAVICLE",
+   "host": "BIP01 R CLAVICLE",
+   "t": [
+    0.16886,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    0.3192,
+    -0.18998,
+    0.01054,
+    0.92839
+   ]
+  },
+  "BIP01 GUNL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.10379,
+    -0.07875,
+    -0.01065
+   ],
+   "q": [
+    -0.51385,
+    -0.49362,
+    -0.48511,
+    0.50692
+   ]
+  },
+  "BIP01 HANDL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.0,
+    -0.0,
+    -0.00054
+   ],
+   "q": [
+    -0.50556,
+    -0.49438,
+    -0.49439,
+    0.50555
+   ]
+  },
+  "BIP01 RIFLEL CONNECTOR": {
+   "parent": "BIP01 L HAND",
+   "host": "BIP01 L HAND",
+   "t": [
+    0.08614,
+    -0.03448,
+    -0.01087
+   ],
+   "q": [
+    0.66813,
+    0.32609,
+    0.61058,
+    -0.27285
+   ]
+  },
+  "BIP01 L FOREARM_4 CONNECTOR": {
+   "parent": "BIP01 L FOREARM",
+   "host": "BIP01 L FOREARM",
+   "t": [
+    0.23106,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.7159,
+    0.0,
+    0.0,
+    0.69821
+   ]
+  },
+  "BIP01 L SHOULDER CONNECTOR": {
+   "parent": "BIP01 L CLAVICLE",
+   "host": "BIP01 L CLAVICLE",
+   "t": [
+    0.16886,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.08453,
+    0.04209,
+    -0.31002,
+    0.94603
+   ]
+  },
+  "BIP01 FACE CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.12678,
+    0.0,
+    -0.14091
+   ],
+   "q": [
+    -0.70711,
+    0.0,
+    -0.0,
+    0.70711
+   ]
+  },
+  "BIP01 HAT CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 HEAD CONNECTOR": {
+   "parent": "BIP01 HEAD",
+   "host": "BIP01 HEAD",
+   "t": [
+    0.23844,
+    0.0,
+    -0.00685
+   ],
+   "q": [
+    0.70442,
+    0.70441,
+    0.06159,
+    0.06167
+   ]
+  },
+  "BIP01 RIBCAGE CONNECTOR": {
+   "parent": "BIP01 SPINE3",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.12224,
+    0.0,
+    1e-05
+   ],
+   "q": [
+    -0.0,
+    -0.0,
+    0.0,
+    1.0
+   ]
+  },
+  "BIP01 CHESTR CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    -0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.47792,
+    0.47751,
+    -0.52114,
+    0.52152
+   ]
+  },
+  "BIP01 CHESTL CONNECTOR": {
+   "parent": "BIP01 RIBCAGE CONNECTOR",
+   "host": "BIP01 SPINE3",
+   "t": [
+    0.04123,
+    0.11105,
+    -0.17345
+   ],
+   "q": [
+    0.52152,
+    0.52114,
+    -0.47751,
+    0.47792
+   ]
+  },
+  "BIP01 SPINE1 CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    0.00485,
+    0.00029,
+    0.12042
+   ],
+   "q": [
+    0.53343,
+    0.53389,
+    0.46406,
+    -0.46375
+   ]
+  },
+  "BIP01 SPINE1L CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    0.15815,
+    0.09837
+   ],
+   "q": [
+    0.56083,
+    0.59654,
+    0.38015,
+    -0.43022
+   ]
+  },
+  "BIP01 SPINE1R CONNECTOR": {
+   "parent": "BIP01 SPINE2",
+   "host": "BIP01 SPINE2",
+   "t": [
+    -0.00235,
+    -0.15815,
+    0.09837
+   ],
+   "q": [
+    0.59654,
+    0.56083,
+    -0.43022,
+    0.38015
+   ]
+  },
+  "BIP01 L HIP CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.04128,
+    -0.0,
+    0.0
+   ],
+   "q": [
+    0.06495,
+    0.00398,
+    0.01789,
+    0.99772
+   ]
+  },
+  "BIP01 HIPL CONNECTOR": {
+   "parent": "BIP01 L THIGH",
+   "host": "BIP01 L THIGH",
+   "t": [
+    0.13695,
+    -0.09438,
+    -0.00423
+   ],
+   "q": [
+    0.73958,
+    -0.67288,
+    -0.01393,
+    -0.00819
+   ]
+  },
+  "BIP01 R HIP CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.04128,
+    0.0,
+    -0.0
+   ],
+   "q": [
+    -0.09479,
+    -0.03033,
+    -0.03344,
+    0.99447
+   ]
+  },
+  "BIP01 HIPR CONNECTOR": {
+   "parent": "BIP01 R THIGH",
+   "host": "BIP01 R THIGH",
+   "t": [
+    0.13695,
+    0.09438,
+    -0.00423
+   ],
+   "q": [
+    -0.00819,
+    0.01392,
+    0.67288,
+    0.73958
+   ]
+  },
+  "BIP01 SPINE2 CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.10467,
+    0.0,
+    0.1698
+   ],
+   "q": [
+    0.5,
+    0.5,
+    0.5,
+    -0.5
+   ]
+  },
+  "BIP01 SPINE2L CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    0.15815,
+    0.12632
+   ],
+   "q": [
+    0.61237,
+    0.61237,
+    0.35355,
+    -0.35355
+   ]
+  },
+  "BIP01 SPINE2R CONNECTOR": {
+   "parent": "BIP01 PELVIS",
+   "host": "BIP01 PELVIS",
+   "t": [
+    0.11111,
+    -0.15815,
+    0.12632
+   ],
+   "q": [
+    -0.35355,
+    -0.35355,
+    -0.61237,
+    0.61237
    ]
   }
  }
