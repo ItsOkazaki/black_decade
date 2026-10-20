@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conflict: Desert Storm</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:100%; height:100%; overflow:hidden; background:#000; font-family:"Trebuchet MS",Verdana,sans-serif; color:#e8e4cf; }
+  .screen { position:fixed; inset:0; display:none; }
+  .screen.on { display:block; }
+  /* ---------- TITLE ---------- */
+  #title { background:#000; cursor:pointer; }
+  #title img.art { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  #title .press { position:absolute; left:0; right:0; bottom:7%; text-align:center; font-size:clamp(15px,2.2vw,24px);
+    letter-spacing:.35em; color:#fff; text-shadow:0 0 14px #000,0 2px 3px #000; animation:pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100%{opacity:.25} 50%{opacity:1} }
+  #sandboxLink { position:absolute; right:14px; bottom:10px; z-index:5; color:#cfd2b8; opacity:.55; font-size:12px;
+    letter-spacing:.18em; text-decoration:none; border:1px solid #6a7052; padding:5px 10px; border-radius:3px; background:rgba(10,12,6,.55); }
+  #sandboxLink:hover { opacity:1; }
+  /* ---------- MENU ---------- */
+  .olive { background:radial-gradient(120% 100% at 50% 0%, #3a4028 0%, #23281800 60%), linear-gradient(#20261a,#141a10); }
+  .panel { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(680px,92vw);
+    background:rgba(24,30,16,.88); border:1px solid #77804f; outline:1px solid #12160a; border-radius:4px; padding:26px 34px 30px;
+    box-shadow:0 18px 60px rgba(0,0,0,.7); }
+  .panel h1 { text-align:center; color:#ffd75e; font-size:30px; letter-spacing:.22em; margin-bottom:4px; text-shadow:0 2px 0 #000; }
+  .panel .sub { text-align:center; color:#b9be96; letter-spacing:.3em; font-size:12px; margin-bottom:22px; }
+  .mitem { display:block; width:100%; margin:9px 0; padding:11px 14px; text-align:center; cursor:pointer;
+    background:linear-gradient(#39412a,#2a311e); border:1px solid #59653c; border-radius:3px; color:#e8e4cf;
+    font-size:17px; letter-spacing:.24em; }
+  .mitem:hover,.mitem.sel { background:linear-gradient(#4b5733,#39452a); color:#fff; outline:2px solid #e8e4cf; }
+  .foot { margin-top:18px; text-align:center; font-size:11px; color:#8f957a; letter-spacing:.14em; }
+  /* ---------- MISSIONS ---------- */
+  #missionGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; max-height:52vh; overflow:auto; padding:2px; }
+  .mcard { cursor:pointer; border:1px solid #59653c; border-radius:3px; overflow:hidden; background:#171d10; }
+  .mcard img { width:100%; height:84px; object-fit:cover; display:block; }
+  .mcard div { padding:6px 8px; font-size:12px; letter-spacing:.08em; color:#dcd8bd; text-align:center; }
+  .mcard:hover,.mcard.sel { outline:2px solid #ffd75e; }
+  /* ---------- BRIEFING ---------- */
+  #brief { background:#000; color:#fff; }
+  #brief .paper { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(760px,94vw); max-height:92vh; overflow:auto; padding:10px 6px; }
+  #brief h2 { font-size:15px; letter-spacing:.3em; color:#9fb08a; }
+  #brief h1 { font-size:44px; letter-spacing:.18em; margin:4px 0 2px; }
+  #brief .date { color:#c9c9c9; letter-spacing:.2em; margin-bottom:18px; }
+  #brief p.brief { font-size:16.5px; line-height:1.55; color:#eee; margin-bottom:20px; }
+  #brief h3 { color:#ffd75e; letter-spacing:.26em; font-size:14px; margin-bottom:8px; }
+  #brief li { margin:5px 0 5px 20px; font-size:15px; line-height:1.45; }
+  #briefLoad { margin:22px 0 6px; height:14px; border:1px solid #666; display:none; }
+  #briefBar { height:100%; width:0%; background:#cfe08a; transition:width .2s; }
+  #briefStatus { font-size:12.5px; color:#bbb; letter-spacing:.12em; min-height:16px; }
+  .row { display:flex; gap:12px; margin-top:20px; }
+  .btn { flex:1; padding:13px; text-align:center; cursor:pointer; letter-spacing:.26em; font-size:16px; border-radius:3px;
+    background:linear-gradient(#39412a,#2a311e); border:1px solid #59653c; color:#e8e4cf; }
+  .btn:hover { outline:2px solid #e8e4cf; color:#fff; }
+  .btn.go { background:linear-gradient(#5a6b35,#42531f); color:#fff; font-weight:bold; }
+  .btn.dim { opacity:.45; pointer-events:none; }
+  /* ---------- GAME / HUD ---------- */
+  #game canvas { position:absolute; inset:0; }
+  .hud { position:absolute; pointer-events:none; z-index:3; }
+  #squadCards { left:14px; bottom:12px; display:flex; gap:8px; }
+  .scard { width:86px; background:rgba(12,16,8,.72); border:1px solid #5c663f; border-radius:3px; padding:4px; text-align:center; }
+  .scard.act { outline:2px solid #ffd75e; }
+  .scard img { width:44px; height:44px; object-fit:cover; border:1px solid #39412a; }
+  .scard .nm { font-size:10.5px; letter-spacing:.12em; color:#e8e4cf; margin-top:2px; }
+  .scard .hpbar { height:5px; background:#30160f; margin-top:3px; }
+  .scard .hpbar i { display:block; height:100%; background:#9dc25e; }
+  .scard.dead { opacity:.35; filter:grayscale(1); }
+  #gunBox { right:16px; bottom:12px; text-align:right; color:#dfe8c8; text-shadow:0 1px 2px #000; }
+  #gunName { font-size:19px; letter-spacing:.14em; color:#fff; }
+  #gunAmmo { font-size:30px; font-weight:bold; color:#cfe08a; }
+  #gunAmmo small { font-size:15px; color:#aeb894; }
+  #objToast { top:16px; left:50%; transform:translateX(-50%); max-width:76vw; text-align:center; background:rgba(12,16,8,.78);
+    border:1px solid #77804f; padding:9px 22px; border-radius:3px; font-size:15.5px; letter-spacing:.06em; opacity:0; transition:opacity .4s; }
+  #objToast b { color:#ffd75e; letter-spacing:.2em; display:block; font-size:12.5px; margin-bottom:3px; }
+  #prompt { left:50%; bottom:24%; transform:translateX(-50%); font-size:16px; letter-spacing:.14em; color:#fff;
+    text-shadow:0 0 8px #000; background:rgba(12,16,8,.65); padding:7px 16px; border-radius:3px; display:none; }
+  #xhair { left:50%; top:50%; width:22px; height:22px; transform:translate(-50%,-50%); display:none; }
+  #xhair:before,#xhair:after { content:""; position:absolute; background:#ffe9a8; box-shadow:0 0 3px #000; }
+  #xhair:before { left:50%; top:0; width:2px; height:100%; transform:translateX(-50%); }
+  #xhair:after { top:50%; left:0; height:2px; width:100%; transform:translateY(-50%); }
+  #hitm { left:50%; top:50%; transform:translate(-50%,-50%); color:#ffd75e; font-size:22px; display:none; }
+  #objPanel { left:50%; top:44%; transform:translate(-50%,-50%); width:min(560px,90vw); background:rgba(10,13,6,.92);
+    border:1px solid #77804f; padding:20px 26px; display:none; z-index:6; }
+  #objPanel h3 { color:#ffd75e; letter-spacing:.24em; margin-bottom:10px; }
+  #objPanel li { margin:6px 0 6px 18px; font-size:14.5px; }
+  #objPanel li.done { color:#8fbf6a; text-decoration:line-through; }
+  .cine { position:absolute; left:0; right:0; height:11vh; background:#000; z-index:4; display:none; }
+  #cineT { top:0; } #cineB { bottom:0; }
+  #cineTxt { position:absolute; left:0; right:0; top:12.5vh; text-align:center; z-index:5; display:none;
+    font-size:clamp(18px,3vw,30px); letter-spacing:.3em; color:#fff; text-shadow:0 2px 6px #000; }
+  .overlay { position:absolute; inset:0; background:rgba(5,8,3,.82); display:none; z-index:8; }
+  .overlay .panel { top:44%; }
+  #vignette { position:absolute; inset:0; pointer-events:none; z-index:2; box-shadow:inset 0 0 180px rgba(0,0,0,.55); }
+  #help { position:absolute; left:14px; top:12px; z-index:3; font-size:11.5px; line-height:1.7; color:#cfd2b8;
+    text-shadow:0 1px 2px #000; letter-spacing:.06em; opacity:.85; }
+</style>
+</head>
+<body>
+<!-- TITLE: the original Conflict: Desert Storm artwork, from the game itself -->
+<div id="title" class="screen on">
+  <img class="art" src="game/assets/textures/ui/defload_us.png" alt="Conflict: Desert Storm">
+  <div class="press">PRESS ENTER OR CLICK TO START</div>
+  <a id="sandboxLink" href="sandbox.html" onclick="event.stopPropagation()">SANDBOX TOOLS</a>
+</div>
+
+<!-- MAIN MENU -->
+<div id="menu" class="screen olive">
+  <div class="panel">
+    <h1>CONFLICT</h1><h1 style="margin-top:-8px">DESERT STORM</h1>
+    <div class="sub">PIVOTAL GAMES &nbsp;·&nbsp; SCi &nbsp;·&nbsp; GOTHAM GAMES</div>
+    <div class="mitem" id="miCampaign">SINGLE PLAYER</div>
+    <div class="mitem" id="miQuick">QUICK START — MISSION 1: RESCUE</div>
+    <div class="mitem" id="miHow">CONTROLS</div>
+    <div class="foot">ORIGINAL GAME ASSEMBLED FOR THE BROWSER · KUWAIT, 1990–91</div>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div id="how" class="screen olive">
+  <div class="panel">
+    <h1>CONTROLS</h1><div class="sub">FIELD MANUAL</div>
+    <div style="font-size:15px; line-height:2; letter-spacing:.05em">
+      W A S D — move &nbsp;·&nbsp; MOUSE (drag / click canvas for pointer lock) — look<br>
+      LEFT MOUSE — fire &nbsp;·&nbsp; RIGHT MOUSE (hold) — aim<br>
+      SHIFT — sprint &nbsp;·&nbsp; C — crouch &nbsp;·&nbsp; R — reload<br>
+      1–4 / TAB — switch soldier &nbsp;·&nbsp; F — interact (rescue · C4 · plant)<br>
+      F1 — objectives &nbsp;·&nbsp; ESC — pause
+    </div>
+    <div class="mitem" id="howBack" style="margin-top:18px">BACK</div>
+  </div>
+</div>
+
+<!-- MISSION SELECT -->
+<div id="missions" class="screen olive">
+  <div class="panel" style="width:min(860px,94vw)">
+    <h1>SINGLE PLAYER</h1><div class="sub">SELECT MISSION</div>
+    <div id="missionGrid"></div>
+    <div class="mitem" id="misBack" style="margin-top:16px">BACK</div>
+  </div>
+</div>
+
+<!-- BRIEFING -->
+<div id="brief" class="screen">
+  <div class="paper">
+    <h2 id="brMission">MISSION 1</h2>
+    <h1 id="brHead">RESCUE</h1>
+    <div class="date" id="brDate">August 2, 1990</div>
+    <p class="brief" id="brText"></p>
+    <h3>OBJECTIVES</h3>
+    <ul id="brObjs"></ul>
+    <div id="briefLoad"><div id="briefBar"></div></div>
+    <div id="briefStatus"></div>
+    <div class="row">
+      <div class="btn" id="brBack">BACK</div>
+      <div class="btn go" id="brDeploy">DEPLOY</div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+  <div id="vignette"></div>
+  <div id="help">WASD move · mouse look · LMB fire · RMB aim · C crouch · R reload<br>1–4 switch soldier · F interact · F1 objectives · ESC pause</div>
+  <div class="hud" id="squadCards"></div>
+  <div class="hud" id="gunBox"><div id="gunName">M16A2</div><div id="gunAmmo">30 <small>/ 180</small></div></div>
+  <div class="hud" id="objToast"></div>
+  <div class="hud" id="prompt"></div>
+  <div class="hud" id="xhair"></div>
+  <div class="hud" id="hitm">✕</div>
+  <div class="hud" id="objPanel"><h3>OBJECTIVES</h3><ul id="objList"></ul></div>
+  <div class="cine" id="cineT"></div><div class="cine" id="cineB"></div>
+  <div id="cineTxt"></div>
+  <div class="overlay" id="pauseOv"><div class="panel">
+    <h1>PAUSED</h1><div class="sub">CONFLICT: DESERT STORM</div>
+    <div class="mitem" id="pzResume">RESUME</div>
+    <div class="mitem" id="pzRestart">RESTART MISSION</div>
+    <div class="mitem" id="pzQuit">QUIT TO MAIN MENU</div>
+  </div></div>
+  <div class="overlay" id="endOv"><div class="panel">
+    <h1 id="endTitle">MISSION COMPLETE</h1><div class="sub" id="endSub"></div>
+    <div class="mitem" id="endNext">CONTINUE</div>
+    <div class="mitem" id="endMenu">MAIN MENU</div>
+  </div></div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "./game/vendor/three.module.js",
+  "three/addons/": "./game/vendor/addons/"
+} }
+</script>
+<script type="module" src="game/cds.js"></script>
+</body>
+</html>

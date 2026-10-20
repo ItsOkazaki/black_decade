@@ -1,0 +1,30 @@
+{
+ "mission1": {
+  "date": "August 2, 1990",
+  "heading": "RESCUE",
+  "brief": "Paul 'Eagle-eye' Foley, one of our best snipers, was captured while trying to destroy one of the bridges along the Kuwait-Iraq border. This bridge must be destroyed to slow down the Iraqi advance.  We can't spare enough men for a full-scale assault, but one man should be able to penetrate the defenses, locate and rescue Foley, then destroy the bridge. Once the mission has been completed, return to the LZ for helicopter extraction.",
+  "objectives": [
+   {
+    "id": "Rescue",
+    "text": "Foley is being held in a small building, north-east of the bridge. Secure the position, then rescue Foley."
+   },
+   {
+    "id": "OBJECTIVE2A",
+    "text": "When Foley was captured, the guards took his C4 plastic explosive charge. Find the C4, then use it to blow the bridge."
+   },
+   {
+    "id": "Bridge",
+    "text": "Use the C4 to destroy the upper central struts of the bridge."
+   },
+   {
+    "id": "Extraction",
+    "text": "Return to the landing zone with Foley for helicopter extraction."
+   }
+  ],
+  "intro": [
+   "23:00, August 2, 1990",
+   "Kuwait-Iraqi Border",
+   "The Next Day"
+  ]
+ }
+}
