@@ -178,9 +178,34 @@ sources. Missions 2–15 assemble from their converted geometry/placements
   exposed via `CDS_SIM.envsnd()`, silent); the six `DS-*` music tracks
   remain R2; survivor-mission cutscenes have cameras but no title cards
   (their `.loc` files were not supplied).
-- **P7 — Hardening.** Perf (draw-call budget, instancing), loading times,
-  control remapping (`default.key`), pause/restart/death flows per GenStrs.
-  Exit: full regression suite, performance report stated honestly.
+- **P7 — Hardening.** ✅ DONE (exit gate green: p7probe 28/28, p34 17/17,
+  p6 16/16, p5 veh 12/12 + train 7/7 + SP 46/46, p2 10/10, zero page
+  errors). Controls are now the game's own `default.key` (74 actions,
+  `tools/pipeline.py` -> `data/tables/defaultkey.json`): FORWARD/BACKWARD/
+  STRAFE (W/S/A/D), TURN (comma/period; rate PROVISIONAL), WALK hold
+  (LCTRL), STANCE cycle (SPACE), GRUNT_1..4 (1-4), NEXT/PREV_GRUNT
+  (PAGEUP/PAGEDOWN), ACTION (R — the OG use key; with no prompt showing
+  it reloads, as the OG has no separate reload key), FIRE (MOUSE 0 /
+  KP_0), OBJECTIVES (F1), PAUSE (ESC), MOVIE_CANCEL (ESC/MOUSE 0), and
+  the hold-SHIFT inventory (W/S navigate, release equips) that replaces
+  the invented Q/E/wheel weapon switching. JOY_* bindings are parsed
+  but have no browser analogue. Pause/restart/death flows speak GenStrs
+  (Catalog_0001): "GAME PAUSED", "RESTART LEVEL", QUITTER->"RESUME",
+  "MISSION FAILED", "MAIN MENU"; the failure screen gained its
+  RESTART LEVEL flow. Perf, measured headless (SwiftShader CPU —
+  a real GPU machine does far better; stated, not spun): Mission 1
+  build is 1,952 placements / 3,356 terrain meshes after single-mesh
+  instancing merged the repeated props (445 placements, e.g. 138 trees;
+  worst-vantage draw calls 1,730 -> 1,684 at ~53-60k triangles — the
+  trade is fewer calls for coarser culling, recorded as such), 4,632
+  static world matrices frozen (doors/vehicles excluded), and all
+  distinct models preload concurrently instead of serialized awaits
+  (sim-side load ~4.6 s here, GLB-parse bound). One genuine bug fell
+  out: transition clips (START_*/STOPPING/DYING) looped forever, so
+  MSR_ANIM_FINISHED could never fire and a prone soldier could never
+  stand — they now play once, per the rules file's own semantics.
+  Remaining honest gaps: full R1 script VM (survivor objectives),
+  R2 music layout, R3 exe constants (speeds/turn rate PROVISIONAL).
 - **R-tracks run in parallel**; their outputs land as data updates (no rewrites).
 
 ## 6. Kill list & boundaries

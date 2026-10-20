@@ -232,6 +232,22 @@ def sounds():
             print(f'   music {name}: {dur:.1f}s')
             note(out, f'Data/Sound/{os.path.basename(psf)}', 'ds_sound.py stream')
 
+def default_key():
+    # the game's own key config (repo-root default.key): ACTION,slot=DEVICE_KEY
+    print('== default.key -> game/data/tables/defaultkey.json')
+    binds = {}
+    for line in open('/home/user/black_decade/default.key', encoding='utf-8', errors='replace'):
+        line = line.strip()
+        if not line or '=' not in line: continue
+        lhs, tok = line.split('=', 1)
+        if ',' not in lhs: continue
+        act, slot = lhs.rsplit(',', 1)
+        binds.setdefault(act, []).append(tok)
+    outdir = os.path.join(GAME, 'data', 'tables'); os.makedirs(outdir, exist_ok=True)
+    json.dump(binds, open(os.path.join(outdir, 'defaultkey.json'), 'w'), indent=1)
+    note(os.path.join(outdir, 'defaultkey.json'), 'black_decade/default.key', 'pipeline.default_key')
+    print(f'   {len(binds)} actions')
+
 def loc_copy():
     print('== loc strings -> game/data/loc')
     import shutil
@@ -243,6 +259,6 @@ def loc_copy():
 
 if __name__ == '__main__':
     os.makedirs(os.path.join(GAME, 'data'), exist_ok=True)
-    tables(); models(); img_banks(); ui_art(); sounds(); loc_copy()
+    tables(); default_key(); models(); img_banks(); ui_art(); sounds(); loc_copy()
     json.dump(manifest, open(os.path.join(GAME, 'data', 'manifest.json'), 'w'), indent=1)
     print(f'\nP1 pipeline done: manifest {len(manifest)} entries')

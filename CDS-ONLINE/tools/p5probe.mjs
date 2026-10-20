@@ -65,9 +65,9 @@ if (mode === 'veh') {
   // gate switch (MAIN_GATE_SWITCH region at -237.55, 9.47, -449.36)
   await page.evaluate(() => window.CDS_SIM.warpAll(-237.5, -449.3));
   await sleep(800);
-  await page.evaluate(() => window.CDS_SIM.key('KeyF'));
+  await page.evaluate(() => window.CDS_SIM.tap('KeyR'));
   let gst = null;
-  for (let i = 0; i < 20; i++) { await sleep(800); gst = await page.evaluate(() => window.CDS_SIM.state()); if (gst.gates.some(g => g.target === 1)) break; await page.evaluate(() => window.CDS_SIM.key('KeyF')); }
+  for (let i = 0; i < 20; i++) { await sleep(800); gst = await page.evaluate(() => window.CDS_SIM.state()); if (gst.gates.some(g => g.target === 1)) break; await page.evaluate(() => window.CDS_SIM.tap('KeyR')); }
   ok('gate switch operates the gate (Doors.txt Mission1Gate)', (gst.gates || []).some(g => g.name === 'MISSION1GATE' && g.target === 1), JSON.stringify((gst.gates || []).filter(g => g.name === 'MISSION1GATE')));
   for (let i = 0; i < 12; i++) { await sleep(700); gst = await page.evaluate(() => window.CDS_SIM.state()); if (gst.gates.some(g => g.open > 0.8)) break; }
   ok('gate slides open (800cm Doors.txt travel)', (gst.gates || []).some(g => g.name === 'MISSION1GATE' && g.open > 0.8), JSON.stringify((gst.gates || []).filter(g => g.name === 'MISSION1GATE')));

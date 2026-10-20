@@ -32,8 +32,10 @@ const dispName = n => DISPLAY[n] || n.toUpperCase();
 let renderer, scene, camera, clock, raf = 0, running = false, paused = false;
 let WEAPONS = {}, HUMANS = {}, UNITS = {}, UNITWPNS = {}, MISSION = null, LOC_M01 = {};
 let MOVTXT = '';
+let PERF = { totalMs: 0, worldMs: 0, actorsMs: 0, cutsceneMs: 0 };
 let squad = [], enemies = [], prisoner = null, activeIdx = 0, allActors = [];
 let camYaw = 0, camPitch = 0.1, keys = {}, aiming = false, firing = false;
+let firingKey = false;
 let objectives = [], objIdx = 0, hasC4 = false, plantT = 0, planted = false, gapHadHostiles = false, kills = 0;
 let bridgePoint = null, extractRegion = null, c4Region = null, gateRegion = null, c4PropPos = null, pillarRegion = null;
 let SPEEDS = { src: 'PROVISIONAL', walk: 1.6, run: 3.6, kneelWalk: 1.1, crawl: 0.6 };
@@ -113,6 +115,76 @@ function say(bank, hint, vol = 0.85, dist = 0) {
 }
 function voiceLine(vol = 0.85) { say('Foley', 'follow_me', vol); }       // Foley rejoining after rescue
 function radioLine(vol = 0.6) { say('Mission1', null, vol); }            // HQ / ambient radio bank
+
+/* ---------------- controls & strings: the game's own files ----------------
+   Bindings come from default.key (74 actions, pipeline -> defaultkey.json).
+   KEY_* tokens map to KeyboardEvent.code; JOY_* has no browser analogue
+   (parsed, unbound); MOUSE_BUTTON_0/1 ride the existing mouse flags.
+   Strings come from GenStrs (Catalog_0001) with marked fallbacks. */
+let BIND = {}, GEN = {};
+function tok2code(t) {
+  if (!t || t.startsWith('JOY_')) return null;
+  if (t === 'MOUSE_BUTTON_0') return 'MOUSE0';
+  if (t === 'MOUSE_BUTTON_1') return 'MOUSE1';
+  const k = t.replace(/^KEY_/, '');
+  const named = { ESC: 'Escape', SPACE: 'Space', LCTRL: 'ControlLeft', RCTRL: 'ControlRight',
+    LSHIFT: 'ShiftLeft', RSHIFT: 'ShiftRight', LALT: 'AltLeft', RALT: 'AltRight',
+    PAGEUP: 'PageUp', PAGEDOWN: 'PageDown', COMMA: 'Comma', FULLSTOP: 'Period',
+    SEMICOLON: 'Semicolon', QUOTE: 'Quote', RETURN: 'Enter',
+    UPARROW: 'ArrowUp', DOWNARROW: 'ArrowDown', LEFTARROW: 'ArrowLeft', RIGHTARROW: 'ArrowRight' };
+  if (named[k]) return named[k];
+  if (/^KP_\d$/.test(k)) return 'Numpad' + k.slice(3);
+  if (k === 'KP_PLUS') return 'NumpadAdd';
+  if (k === 'KP_MINUS') return 'NumpadSubtract';
+  if (/^F\d+$/.test(k)) return k;
+  if (/^\d$/.test(k)) return 'Digit' + k;
+  if (/^[A-Z]$/.test(k)) return 'Key' + k;
+  return null;
+}
+function down(act) {
+  const cs = BIND[act]; if (!cs) return false;
+  for (const c of cs) { if (c === 'MOUSE0' ? firing : c === 'MOUSE1' ? aiming : keys[c]) return true; }
+  return false;
+}
+function keyLabel(act) {
+  const cs = (BIND[act] || []).filter(c => c !== 'MOUSE0' && c !== 'MOUSE1');
+  if (!cs.length) return '';
+  return cs[0].replace(/^Key/, '').replace(/^Digit/, '').replace('Space', 'SPACE')
+    .replace('PageUp', 'PAGE UP').replace('PageDown', 'PAGE DOWN').replace('ControlLeft', 'CTRL').replace('ShiftLeft', 'SHIFT');
+}
+function S(k, fb) { return GEN[k] || fb; }
+let invOpen = false, invSel = 0;
+function cycleHero(dir) {
+  if (!squad.length) return;
+  let n = activeIdx;
+  do { n = (n + dir + squad.length) % squad.length; } while (!squad[n].alive && n !== activeIdx);
+  switchHero(n);
+}
+function cycleStance() {
+  const M = squad[activeIdx]; if (!M) return;
+  M.moveMode = M.moveMode === 'RUN' || M.moveMode === 'WALK' ? 'KNEEL' : M.moveMode === 'KNEEL' ? 'CRAWL' : 'RUN';
+}
+function toggleObjectives() {
+  const p = $('hudPanel');
+  if (p.style.display === 'block') { p.style.display = 'none'; return; }
+  invOpen = false;
+  p.innerHTML = `<h3 style="color:#ffd75e;letter-spacing:.24em;margin-bottom:10px">${S('OBJECTIVE', 'OBJECTIVES')}</h3>` +
+    objectives.map((o, i) => `<div style="margin:6px 0;font-size:14.5px;${o.done ? 'color:#8fbf6a;text-decoration:line-through' : ''}">${i === objIdx ? '▶ ' : ''}<b>${o.label}</b> — ${o.text}</div>`).join('');
+  p.style.display = 'block';
+}
+function renderInv() {
+  const M = squad[activeIdx]; if (!M) return;
+  $('hudPanel').innerHTML = '<h3 style="color:#ffd75e;letter-spacing:.24em;margin-bottom:10px">INVENTORY — ' + keyLabel('INVENTORY_UP') + '/' + keyLabel('INVENTORY_DOWN') + ' SELECT, RELEASE ' + keyLabel('INVENTORY') + ' TO EQUIP</h3>' +
+    M.inv.map((s, i) => { const w = wpn(s.id); return `<div style="margin:6px 0;font-size:15px;${i === invSel ? 'color:#ffd75e' : ''}">${i === invSel ? '▶ ' : ''}<b>${s.id.replace(/^(US|IR)_WPN_/, '')}</b> <span style="color:#9aa27a">${w.wclass || ''}</span> — ${s.ammo} + ${s.reserve}</div>`; }).join('');
+  $('hudPanel').style.display = 'block';
+}
+function openInv() { const M = squad[activeIdx]; if (!M || !M.inv.length) return; invOpen = true; invSel = M.held; renderInv(); }
+function closeInv(equip) {
+  if (!invOpen) return;
+  invOpen = false; $('hudPanel').style.display = 'none';
+  const M = squad[activeIdx];
+  if (equip && M && M.inv[invSel] && invSel !== M.held) { M.held = invSel; attachGun(M, wpn(M.inv[M.held].id)); hudDirty = true; }
+}
 async function startCutscene(shots) {
   if (!shots || !shots.length) return false;
   cutscene = { shots, i: 0, t: 0, actors: [] };
@@ -345,6 +417,7 @@ function measureSpeeds(clips) {
 }
 
 /* ---------------- world ---------------- */
+let STATIC_FROZEN = 0;
 const terrain = [];
 const terrainMeshes = [];
 const hCache = new Map();
@@ -417,16 +490,35 @@ async function buildWorld() {
   scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x8a7a5a, 0.95));
   const group = new THREE.Group(); scene.add(group); worldGroup = group;
   let placed = 0;
+  /* P7: preload every distinct model concurrently (was: serialized awaits),
+     then instance the single-mesh repeats (trees, rocks, furniture) as
+     InstancedMesh — one draw call per model instead of per placement.
+     Anything multi-mesh, skinned, animated, a door model, or the bridge
+     keeps the clone path below. */
+  const urlOf = inst => inst.dir ? `assets/models/${inst.dir}/${inst.model}.glb` : `${MODEL_DIR}/${inst.model}.glb`;
+  await Promise.all([...new Set(MISSION.instances.filter(i => i.model && i.model !== 'NOTEXTURE').map(urlOf))].map(u => loadGLB(u)));
+  const instGroups = new Map();
+  const yawOf = inst => inst.ry != null ? inst.ry : -(inst.r[1] * Math.PI / 180);
   for (const inst of MISSION.instances) {
     if (!inst.model || inst.model === 'NOTEXTURE') continue;
     const vu = (MISSION.vehicleUnits || []).find(v => !v._done && v.model === inst.model && Math.hypot(v.pos[0] - inst.w[0], v.pos[2] - inst.w[2]) < 2);
     if (vu && VMAP[vu.model.toUpperCase()] || vu && VMAP[vu.model]) { /* placed below as a live vehicle */ }
     else {
-    const g = await loadGLB(inst.dir ? `assets/models/${inst.dir}/${inst.model}.glb` : `${MODEL_DIR}/${inst.model}.glb`);
+    const g = await loadGLB(urlOf(inst));
     if (!g) continue;
+    let meshCount = 0, soleMesh = null, skinned = false;
+    g.scene.traverse(o => { if (o.isMesh) { meshCount++; soleMesh = o; if (o.isSkinnedMesh) skinned = true; } });
+    const canInstance = meshCount === 1 && !skinned && !(g.animations && g.animations.length)
+      && !DOORTAB[(inst.model || '').toLowerCase()] && inst.model !== 'MIS1_ZONE1_BRIDGE';
+    if (canInstance) {
+      const key = urlOf(inst);
+      if (!instGroups.has(key)) instGroups.set(key, { g, mesh: soleMesh, list: [] });
+      instGroups.get(key).list.push(inst);
+      continue;
+    }
     const m = g.scene.clone(true);
     m.position.set(inst.w[0], inst.w[1], inst.w[2]);
-    m.rotation.y = inst.ry != null ? inst.ry : -(inst.r[1] * Math.PI / 180);
+    m.rotation.y = yawOf(inst);
     if (inst.s && (inst.s[0] !== 1 || inst.s[2] !== 1)) m.scale.set(inst.s[0], inst.s[1], inst.s[2]);
     group.add(m); terrain.push(m); placed++;
     m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
@@ -436,6 +528,33 @@ async function buildWorld() {
     }
     regDoor(inst.model, m);
     }
+  }
+  for (const { g, mesh, list } of instGroups.values()) {
+    if (list.length === 1) {   // no saving: clone path for singles
+      const inst = list[0];
+      const m = g.scene.clone(true);
+      m.position.set(inst.w[0], inst.w[1], inst.w[2]);
+      m.rotation.y = yawOf(inst);
+      if (inst.s && (inst.s[0] !== 1 || inst.s[2] !== 1)) m.scale.set(inst.s[0], inst.s[1], inst.s[2]);
+      group.add(m); terrain.push(m); placed++;
+      m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
+      regDoor(inst.model, m);
+      continue;
+    }
+    mesh.updateMatrix();
+    const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, list.length);
+    const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), S = V3(), P = V3();
+    list.forEach((inst, i) => {
+      E.set(0, yawOf(inst), 0); Q.setFromEuler(E);
+      P.set(inst.w[0], inst.w[1], inst.w[2]);
+      S.set(inst.s ? inst.s[0] : 1, inst.s ? inst.s[1] : 1, inst.s ? inst.s[2] : 1);
+      M.compose(P, Q, S).multiply(mesh.matrix);
+      im.setMatrixAt(i, M);
+    });
+    im.instanceMatrix.needsUpdate = true;
+    if (im.computeBoundingSphere) im.computeBoundingSphere();
+    im.matrixAutoUpdate = false;
+    group.add(im); terrain.push(im); terrainMeshes.push(im); placed += list.length;
   }
   for (const vu of MISSION.vehicleUnits || []) {
     if (vu._done) continue;
@@ -469,6 +588,20 @@ async function buildWorld() {
       m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
       regDoor(u.model, m);
     }
+  }
+  /* P7: freeze every static world matrix (doors and vehicles keep theirs —
+     they move). three.js then skips ~4k matrixWorld recomputes per frame. */
+  {
+    const movers = new Set();
+    for (const D of DOORS) movers.add(D.obj);
+    for (const V of VEHICLES) movers.add(V.obj);
+    STATIC_FROZEN = 0;
+    worldGroup.traverse(o => {
+      if (movers.has(o)) return;
+      o.updateMatrix();
+      if (o.matrixAutoUpdate) { o.matrixAutoUpdate = false; STATIC_FROZEN++; }
+      o.matrixWorldNeedsUpdate = true;
+    });
   }
   return placed;
 }
@@ -866,7 +999,10 @@ function driveActor(A, dt) {
   if (A.stateName !== before) A.stateT = 0;
   A.mode = /CRAWLING/.test(A.stateName) ? 'crawl' : /KNEELING/.test(A.stateName) ? 'kneel' : 'stand';
   const clip = clipForState(A.clips, A.stateName, A.aimingNow);
-  if (clip) A.setClip(clip);
+  // transition states (START_*, STOPPING, DYING) play their clip once: the
+  // OG rules leave them via MSR_ANIM_FINISHED, which can only fire if the
+  // clip actually finishes (it never does on a loop)
+  if (clip) A.setClip(clip, 0.16, /^STATE_(START|BLENDING)|STOPPING|DYING|DEATH/.test(A.stateName));
   let gy = floorFor(A, A.pos.x, A.pos.z);
   if (!groundList(A.pos.x, A.pos.z).length && A.floorY != null) gy = A.floorY;   /* HLOI placement height is the floor where geometry has none */
   if (A.pos.y > gy + 0.3) { A.vy -= 22 * dt; A.pos.y = Math.max(gy, A.pos.y + A.vy * dt); A.airborne = A.pos.y > gy + 0.3; if (!A.airborne) A.vy = 0; }
@@ -921,7 +1057,7 @@ function vehicleFire(V, now) {
 function driveVehicle(dt, now) {
   const V = driving, M = squad[activeIdx];
   if (!M || !M.alive || !V.alive) { exitVehicle(); return; }
-  V.joy.f = !!keys['KeyW']; V.joy.b = !!keys['KeyS']; V.joy.l = !!keys['KeyA']; V.joy.r = !!keys['KeyD'];
+  V.joy.f = down('FORWARD'); V.joy.b = down('BACKWARD'); V.joy.l = down('STRAFE_LEFT'); V.joy.r = down('STRAFE_RIGHT');
   if (V.sm) V.stateName = V.sm.tick({ speed: Math.abs(V.speed), joy: V.joy, aiGo: null, alive: true, animFinished: true, facingDest: true });
   const vmax = /BACKWARDS/.test(V.stateName) ? -3 : /MOVING_FORWARDS/.test(V.stateName) ? 9 : 0;   // PROVISIONAL (.DYN)
   V.speed += clamp(vmax - V.speed, -6 * dt, 3.2 * dt);
@@ -949,12 +1085,12 @@ function interactTick(dt) {
   const pr = $('hudPrompt');
   if (!M || !M.alive) { pr.style.display = 'none'; return; }
   let prompt = null, act = null;
-  if (driving) { prompt = 'F — EXIT ' + driving.model.replace(/_/g, ' '); act = () => exitVehicle(); }
+  if (driving) { prompt = keyLabel('ACTION') + ' — EXIT ' + driving.model.replace(/_/g, ' '); act = () => exitVehicle(); }
   else if (objIdx === 0 && prisoner) {
-    if (M.pos.distanceTo(prisoner.pos) < 6) { prompt = 'F — RESCUE FOLEY'; act = rescueFoley; }
+    if (M.pos.distanceTo(prisoner.pos) < 6) { prompt = keyLabel('ACTION') + ' — RESCUE FOLEY'; act = rescueFoley; }
   } else if (objIdx === 1 && c4Region) {
     const cp = c4PropPos || V3(c4Region.pos[0], c4Region.pos[1], c4Region.pos[2]);
-    if (M.pos.distanceTo(cp) < 6 || (!c4PropPos && inRegion(M.pos, c4Region))) { prompt = 'F — TAKE THE C4'; act = () => {
+    if (M.pos.distanceTo(cp) < 6 || (!c4PropPos && inRegion(M.pos, c4Region))) { prompt = keyLabel('ACTION') + ' — TAKE THE C4'; act = () => {
       hasC4 = true; objectives[1].done = true; objIdx = 2;
       toast(objectives[2].label, objectives[2].text); snd('assets/sounds/frontend/Interface/Interface_line53.wav', 0.6);
       hudDirty = true;
@@ -967,7 +1103,7 @@ function interactTick(dt) {
         prompt = 'PLANTING THE C4…';
         plantT -= dt; M.moveMode = 'KNEEL';
         if (plantT <= 0) explodeBridge();
-      } else { prompt = 'F — PLANT THE C4 ON THE STRUT'; act = () => { plantT = 2.6; }; }
+      } else { prompt = keyLabel('ACTION') + ' — PLANT THE C4 ON THE STRUT'; act = () => { plantT = 2.6; }; }
     }
   } else if (objIdx === 3 && extractRegion) {
     const c = V3(extractRegion.pos[0], extractRegion.pos[1], extractRegion.pos[2]);
@@ -982,18 +1118,24 @@ function interactTick(dt) {
       if (!/SWITCH/.test(r.name)) continue;
       if (inRegion(M.pos, r) || M.pos.distanceTo(V3(r.pos[0], M.pos[1], r.pos[2])) < Math.max(4, r.r || 0)) {
         const D = nearestDoor(M.pos, r.name);
-        if (D) { prompt = 'F — OPERATE THE GATE SWITCH'; act = () => { D.target = D.target ? 0 : 1; snd('assets/sounds/frontend/Interface/Interface_line53.wav', 0.6); }; }
+        if (D) { prompt = keyLabel('ACTION') + ' — OPERATE THE GATE SWITCH'; act = () => { D.target = D.target ? 0 : 1; snd('assets/sounds/frontend/Interface/Interface_line53.wav', 0.6); }; }
         break;
       }
     }
   }
   if (!prompt && !driving) {
     for (const V of VEHICLES) {
-      if (V.alive && M.pos.distanceTo(V.pos) < 6.5) { prompt = 'F — DRIVE ' + V.model.replace(/_/g, ' '); act = () => enterVehicle(V); break; }
+      if (V.alive && M.pos.distanceTo(V.pos) < 6.5) { prompt = keyLabel('ACTION') + ' — DRIVE ' + V.model.replace(/_/g, ' '); act = () => enterVehicle(V); break; }
     }
   }
   if (prompt) { pr.textContent = prompt; pr.style.display = 'block'; } else pr.style.display = 'none';
-  if (act && keys['KeyF']) { keys['KeyF'] = false; act(); }
+  const actDown = down('ACTION');
+  if (actDown && !interactTick.latch) {
+    interactTick.latch = true;
+    if (act) act();
+    else if (!driving) doReload(M);
+  }
+  if (!actDown) interactTick.latch = false;
 }
 function rescueFoley() {
   prisoner.team = 'us';
@@ -1015,9 +1157,11 @@ function explodeBridge() {
 function missionEnd(won, why = '') {
   running = false;
   $('endTitle').innerHTML = '';
-  $('endTitle').appendChild(cdsText(won ? 'MISSION COMPLETE' : 'MISSION FAILED', { scale: 2.4, color: won ? '#9dc25e' : '#e0684e' }));
+  $('endTitle').appendChild(cdsText(won ? 'MISSION COMPLETE' : S('FAILURE', 'MISSION FAILED'), { scale: 2.4, color: won ? '#9dc25e' : '#e0684e' }));
   $('endSub').textContent = won ? 'All objectives achieved — extraction complete' : why;
-  $('endMenu').innerHTML = ''; $('endMenu').appendChild(cdsText('MAIN MENU', { scale: 1.4 }));
+  $('endMenu').innerHTML = ''; $('endMenu').appendChild(cdsText(S('QUIT_TO_FE', 'MAIN MENU'), { scale: 1.4 }));
+  const er = $('endRestart');
+  if (er) { er.innerHTML = ''; er.appendChild(cdsText(S('RESTART', 'RESTART LEVEL'), { scale: 1.4 })); }
   $('hudEnd').style.display = 'block';
 }
 
@@ -1054,8 +1198,11 @@ function updatePlayer(dt, now) {
   const M = squad[activeIdx];
   if (!M || !M.alive) return;
   if (driving) { driveVehicle(dt, now); return; }
-  M.joy.f = !!keys['KeyW']; M.joy.b = !!keys['KeyS']; M.joy.l = !!keys['KeyA']; M.joy.r = !!keys['KeyD'];
-  if (keys['ControlLeft'] || keys['ControlRight']) M.moveMode = 'WALK';
+  M.joy.f = down('FORWARD'); M.joy.b = down('BACKWARD'); M.joy.l = down('STRAFE_LEFT'); M.joy.r = down('STRAFE_RIGHT');
+  if (invOpen) { M.joy.f = M.joy.b = M.joy.l = M.joy.r = false; }
+  if (down('TURN_LEFT')) camYaw += 1.6 * dt;    // keyboard turn rate: PROVISIONAL (no OG constant found)
+  if (down('TURN_RIGHT')) camYaw -= 1.6 * dt;
+  if (down('WALK')) { if (M.moveMode === 'RUN') M.moveMode = 'WALK'; }
   else if (M.moveMode === 'WALK') M.moveMode = 'RUN';
   const mx = (M.joy.r ? 1 : 0) - (M.joy.l ? 1 : 0), mz = (M.joy.f ? 1 : 0) - (M.joy.b ? 1 : 0);
   const moving = mx !== 0 || mz !== 0;
@@ -1067,7 +1214,7 @@ function updatePlayer(dt, now) {
   } else M.speed = 0;
   if (aiming) M.yaw = camYaw + Math.PI;
   M.aimingNow = aiming;
-  if (firing) heroFire(now);
+  if ((firing || firingKey) && !invOpen) heroFire(now);
   driveActor(M, dt);
   const dist = aiming ? 2.0 : 4.4;
   const back = V3(Math.sin(camYaw) * Math.cos(camPitch), -Math.sin(camPitch), Math.cos(camYaw) * Math.cos(camPitch));
@@ -1117,28 +1264,36 @@ function bindInput() {
   addEventListener('keydown', e => {
     if (!running) return;
     keys[e.code] = true;
-    if (paused && e.code !== 'Escape') return;
-    if (e.code === 'Digit1') switchHero(0);
-    if (e.code === 'Digit2') switchHero(1);
-    if (e.code === 'Digit3') switchHero(2);
-    if (e.code === 'Digit4') switchHero(3);
-    if (e.code === 'Tab') { e.preventDefault(); let n = activeIdx; do { n = (n + 1) % squad.length; } while (!squad[n].alive && n !== activeIdx); switchHero(n); }
-    if (e.code === 'KeyR') doReload(squad[activeIdx]);
-    if (e.code === 'KeyC') { const M = squad[activeIdx]; M.moveMode = M.moveMode === 'KNEEL' ? 'RUN' : 'KNEEL'; }
-    if (e.code === 'KeyX') { const M = squad[activeIdx]; M.moveMode = M.moveMode === 'CRAWL' ? 'RUN' : 'CRAWL'; }
-    if (e.code === 'KeyQ') switchWeapon(-1);
-    if (e.code === 'KeyE') switchWeapon(1);
-    if (e.code === 'F1') { e.preventDefault(); const p = $('hudPanel');
-      if (p.style.display === 'block') p.style.display = 'none';
-      else { p.innerHTML = '<h3 style="color:#ffd75e;letter-spacing:.24em;margin-bottom:10px">OBJECTIVES</h3>' + objectives.map((o, i) => `<div style="margin:6px 0;font-size:14.5px;${o.done ? 'color:#8fbf6a;text-decoration:line-through' : ''}">${i === objIdx ? '▶ ' : ''}<b>${o.label}</b> — ${o.text}</div>`).join(''); p.style.display = 'block'; } }
-    if (e.code === 'Escape') { paused = !paused; $('hudPause').style.display = paused ? 'block' : 'none'; }
+    if (cutscene) { if ((BIND.MOVIE_CANCEL || []).includes(e.code)) endCutscene(); return; }
+    if (invOpen) {
+      const M = squad[activeIdx];
+      if (M && (BIND.INVENTORY_UP || []).includes(e.code)) { invSel = (invSel + M.inv.length - 1) % M.inv.length; renderInv(); }
+      if (M && (BIND.INVENTORY_DOWN || []).includes(e.code)) { invSel = (invSel + 1) % M.inv.length; renderInv(); }
+      return;
+    }
+    if (paused && !(BIND.PAUSE || []).includes(e.code)) return;
+    if ((BIND.GRUNT_1 || []).includes(e.code)) switchHero(0);
+    if ((BIND.GRUNT_2 || []).includes(e.code)) switchHero(1);
+    if ((BIND.GRUNT_3 || []).includes(e.code)) switchHero(2);
+    if ((BIND.GRUNT_4 || []).includes(e.code)) switchHero(3);
+    if ((BIND.NEXT_GRUNT || []).includes(e.code)) { e.preventDefault(); cycleHero(1); }
+    if ((BIND.PREV_GRUNT || []).includes(e.code)) { e.preventDefault(); cycleHero(-1); }
+    if ((BIND.STANCE || []).includes(e.code)) { e.preventDefault(); cycleStance(); }
+    if ((BIND.FIRE || []).includes(e.code)) firingKey = true;
+    if ((BIND.INVENTORY || []).includes(e.code)) openInv();
+    if ((BIND.OBJECTIVES || []).includes(e.code)) { e.preventDefault(); toggleObjectives(); }
+    if ((BIND.PAUSE || []).includes(e.code)) { paused = !paused; $('hudPause').style.display = paused ? 'block' : 'none'; }
   });
-  addEventListener('keyup', e => keys[e.code] = false);
+  addEventListener('keyup', e => {
+    keys[e.code] = false;
+    if ((BIND.FIRE || []).includes(e.code)) firingKey = false;
+    if ((BIND.INVENTORY || []).includes(e.code)) closeInv(true);
+  });
   const stage = $('gameStage');
   let dragging = false, lx = 0, ly = 0;
   stage.addEventListener('mousedown', e => {
     if (!running || paused) return;
-    if (cutscene) { endCutscene(); return; }
+    if (cutscene) { if (e.button === 0) endCutscene(); return; }
     if (e.button === 0) { firing = true; if (document.pointerLockElement !== renderer.domElement) { dragging = true; lx = e.clientX; ly = e.clientY; } }
     if (e.button === 2) aiming = true;
   });
@@ -1150,11 +1305,12 @@ function bindInput() {
     else if (dragging) { camYaw -= (e.clientX - lx) * 0.005; camPitch = clamp(camPitch + (e.clientY - ly) * 0.004, -0.9, 1.1); lx = e.clientX; ly = e.clientY; }
   });
   stage.addEventListener('contextmenu', e => e.preventDefault());
-  addEventListener('wheel', e => { if (running && !paused) switchWeapon(e.deltaY > 0 ? 1 : -1); });
   $('pzResume').addEventListener('click', () => { paused = false; $('hudPause').style.display = 'none'; });
   $('pzRestart').addEventListener('click', async () => { $('hudPause').style.display = 'none'; paused = false; await restart(); });
   $('pzQuit').addEventListener('click', () => { stopSim(); onExitCb && onExitCb(); });
   $('endMenu').addEventListener('click', () => { stopSim(); onExitCb && onExitCb(); });
+  const erEl = $('endRestart');
+  if (erEl) erEl.addEventListener('click', async () => { $('hudEnd').style.display = 'none'; await restart(); running = true; frame(); });
 }
 async function restart() {
   for (const A of allActors) { scene.remove(A.obj); }
@@ -1167,6 +1323,7 @@ let musicEl2 = null;
 
 /* ---------------- entry ---------------- */
 export async function startSim({ loadout, onExit, onStep, missionId, missionLabel }) {
+  const perfT0 = performance.now();
   MISSION_ID = missionId || 'mission1';
   MISSION_LABEL = missionLabel || MISSION_ID.toUpperCase();
   MODEL_DIR = MISSION_ID === 'mission1' ? 'assets/models/mission1'
@@ -1207,6 +1364,9 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   const dj = await jget('data/tables/doors.json'); DOORTAB = {};
   for (const r of dj) { const c = r.cells; DOORTAB[(c[1] || '').toLowerCase()] = { slide: [parseFloat(c[5]) / 100 || 0, parseFloat(c[6]) / 100 || 0, parseFloat(c[7]) / 100 || 0] }; }
   vehicleRulesText = (await jget('data/tables/vehiclestaterules.json').catch(() => ({}))).text || '';
+  const dk = await jget('data/tables/defaultkey.json').catch(() => ({}));
+  BIND = {}; for (const a in dk) BIND[a] = dk[a].map(tok2code).filter(Boolean);
+  GEN = await jget('data/loc/black_decade_Catalog_0001_GenStrs_loc.json').catch(() => ({}));
   LOC_M01 = await jget(MISSION_ID === 'training1' ? 'data/loc/black_decade_Training1_T01Strs_loc.json' : 'data/loc/black_decade_Mission1_M01Strs_loc.json').catch(() => ({}));
   SOUND_SUBDIR = (MISSION_ID === 'mission1' || MISSION_ID === 'training1') ? MISSION_ID : null;
   BANK_SAMPLES = SOUND_SUBDIR ? await jget(SOUND_SUBDIR === 'mission1' ? 'data/bank-samples.json' : `data/bank-samples-${SOUND_SUBDIR}.json`).catch(() => ({})) : {};
@@ -1214,16 +1374,19 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   MISSION = await jget(`data/missions/${MISSION_ID}.json`);
   onStep && onStep('BUILDING THE ZONE', 0.35);
   const placed = await buildWorld();
+  PERF.worldMs = Math.round(performance.now() - perfT0);
   onStep && onStep('DEPLOYING SQUAD', 0.7);
   await spawnActors();
+  PERF.actorsMs = Math.round(performance.now() - perfT0 - PERF.worldMs);
   setupObjectives(); buildCards(); hudDirty = true;
   for (const id of ['pzTitle', 'pzResume', 'pzRestart', 'pzQuit']) {
     const el = $(id); el.innerHTML = '';
-    el.appendChild(cdsText({ pzTitle: 'PAUSED', pzResume: 'RESUME', pzRestart: 'RESTART MISSION', pzQuit: 'QUIT TO MAIN MENU' }[id], { scale: 1.5 }));
+    el.appendChild(cdsText({ pzTitle: S('PAUSE', 'PAUSED'), pzResume: S('QUITTER', 'RESUME'), pzRestart: S('RESTART', 'RESTART LEVEL'), pzQuit: S('QUIT_TO_FE', 'MAIN MENU') }[id], { scale: 1.5 }));
   }
   bindInput();
   running = true; paused = false;
   await startCutscene(cutShots());
+  PERF.totalMs = Math.round(performance.now() - perfT0);
   frame();
   return { placed };
 }
@@ -1244,6 +1407,7 @@ window.CDS_SIM = {
     extract: extractRegion ? extractRegion.pos : null, c4: c4PropPos ? c4PropPos.toArray() : (c4Region ? c4Region.pos : null)
   }),
   key: (c, d = true) => { keys[c] = d; },
+  tap: (c) => { keys[c] = true; setTimeout(() => { keys[c] = false; }, 150); },
   fire: d => { firing = d; },
   aim: d => { aiming = d; },
   setMode: m => { if (squad[activeIdx]) squad[activeIdx].moveMode = m; },
@@ -1256,6 +1420,12 @@ window.CDS_SIM = {
   exitVehicle: () => exitVehicle(),
   killNearest: () => { const M = squad[activeIdx]; let b = null, bd = 1e9; for (const E of enemies) { if (!E.alive) continue; const d = E.pos.distanceTo(M.pos); if (d < bd) { bd = d; b = E; } } if (b) hurt(b, 1000, M.pos, false); return bd; },
   audio: () => AUDIO_LOG.slice(-40),
+  bindings: () => ({ ...BIND }),
+  strings: () => ({ PAUSE: S('PAUSE', 'PAUSED'), RESUME: S('QUITTER', 'RESUME'), RESTART: S('RESTART', 'RESTART LEVEL'), QUIT: S('QUIT_TO_FE', 'MAIN MENU'), FAILURE: S('FAILURE', 'MISSION FAILED'), OBJECTIVE: S('OBJECTIVE', 'OBJECTIVES') }),
+  perf: () => ({ drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
+    geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
+    terrainMeshes: terrainMeshes.length, actors: allActors.length, vehicles: VEHICLES.length,
+    timings: { ...PERF }, staticFrozen: STATIC_FROZEN }),
   cutscene: () => cutscene ? { active: true, shot: cutscene.i, shots: cutscene.shots.length, name: (cutscene.shots[cutscene.i] || {}).name || null, csActors: cutscene.actors.length } : { active: false },
   skipCutscene: () => { if (cutscene) endCutscene(); },
   envsnd: () => (MISSION.envsnd || []).map(e => ({ name: e.name, file: e.file, pos: e.pos, rOut: e.rOut, audio: 'GAP: .psf stream absent from supplied archives' }))

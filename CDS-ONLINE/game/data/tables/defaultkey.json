@@ -1,0 +1,277 @@
+{
+ "FIRE": [
+  "KEY_KP_0",
+  "JOY_BUTTON_7",
+  "MOUSE_BUTTON_0"
+ ],
+ "ACTION": [
+  "KEY_R",
+  "JOY_BUTTON_2"
+ ],
+ "NEXT_GRUNT": [
+  "KEY_PAGEUP",
+  "JOY_BUTTON_12"
+ ],
+ "PREV_GRUNT": [
+  "KEY_PAGEDOWN",
+  "JOY_BUTTON_14"
+ ],
+ "GO": [
+  "KEY_G",
+  "JOY_BUTTON_3"
+ ],
+ "STANCE": [
+  "KEY_SPACE",
+  "JOY_BUTTON_1"
+ ],
+ "PAUSE": [
+  "KEY_ESC",
+  "JOY_BUTTON_11"
+ ],
+ "OBJECTIVES": [
+  "KEY_F1",
+  "JOY_BUTTON_8"
+ ],
+ "STRAFE_LEFT": [
+  "KEY_A",
+  "JOY_AXIS_3"
+ ],
+ "STRAFE_RIGHT": [
+  "KEY_D",
+  "JOY_AXIS_4"
+ ],
+ "TURN_LEFT": [
+  "JOY_AXIS_9",
+  "KEY_COMMA"
+ ],
+ "TURN_RIGHT": [
+  "JOY_AXIS_10",
+  "KEY_FULLSTOP"
+ ],
+ "FORWARD": [
+  "KEY_W",
+  "JOY_AXIS_0"
+ ],
+ "BACKWARD": [
+  "KEY_S",
+  "JOY_AXIS_1"
+ ],
+ "AIM_PITCH_AXIS": [
+  "JOY_AXIS_8"
+ ],
+ "TARGET_LEFT": [
+  "KEY_SEMICOLON",
+  "JOY_BUTTON_4"
+ ],
+ "TARGET_RIGHT": [
+  "KEY_QUOTE",
+  "JOY_BUTTON_5"
+ ],
+ "TARGET_NEXT": [
+  "KEY_LALT"
+ ],
+ "WALK": [
+  "KEY_LCTRL"
+ ],
+ "HEAD_TOGGLE": [
+  "JOY_BUTTON_10",
+  "MOUSE_BUTTON_1"
+ ],
+ "HEAD_YAW_AXIS": [
+  "JOY_AXIS_11"
+ ],
+ "HEAD_PITCH_AXIS": [
+  "JOY_AXIS_8"
+ ],
+ "HEAD_ZOOM_IN": [
+  "KEY_KP_PLUS"
+ ],
+ "HEAD_ZOOM_OUT": [
+  "KEY_KP_MINUS"
+ ],
+ "HEAD_ZOON_NEXT": [
+  "JOY_BUTTON_9"
+ ],
+ "ORDER": [
+  "KEY_LALT",
+  "JOY_BUTTON_6"
+ ],
+ "ORDER_UP": [
+  "KEY_W",
+  "JOY_BUTTON_12"
+ ],
+ "ORDER_DOWN": [
+  "KEY_S",
+  "JOY_BUTTON_14"
+ ],
+ "ORDER_FOLLOW": [
+  "KEY_F",
+  "JOY_BUTTON_2"
+ ],
+ "ORDER_HOLD": [
+  "KEY_H",
+  "JOY_BUTTON_0"
+ ],
+ "ORDER_ADVANCE": [
+  "KEY_A",
+  "JOY_BUTTON_1"
+ ],
+ "ORDER_ALL_FOLLOW_TOGGLE": [
+  "KEY_D",
+  "JOY_BUTTON_5"
+ ],
+ "ORDER_ALL_PRONE": [
+  "KEY_C",
+  "JOY_BUTTON_7"
+ ],
+ "ORDER_FIRE_AT_WILL_TOGGLE": [
+  "KEY_G",
+  "JOY_BUTTON_3"
+ ],
+ "ORDER_ADVANCE_YAW_AXIS": [
+  "JOY_AXIS_11"
+ ],
+ "ORDER_ADVANCE_PITCH_AXIS": [
+  "JOY_AXIS_8"
+ ],
+ "ORDER_ADVANCE_DIRVEC_X_AXIS": [
+  "JOY_AXIS_5"
+ ],
+ "ORDER_ADVANCE_DIRVEC_Y_AXIS": [
+  "JOY_AXIS_2"
+ ],
+ "ORDER_ADVANCE_ROTATE_LEFT": [
+  "KEY_Q"
+ ],
+ "ORDER_ADVANCE_ROTATE_RIGHT": [
+  "KEY_E"
+ ],
+ "INVENTORY": [
+  "KEY_LSHIFT",
+  "JOY_BUTTON_0"
+ ],
+ "INVENTORY_UP": [
+  "KEY_W",
+  "JOY_BUTTON_12"
+ ],
+ "INVENTORY_DOWN": [
+  "KEY_S",
+  "JOY_BUTTON_14"
+ ],
+ "INVENTORY_USE": [
+  "JOY_BUTTON_7",
+  "MOUSE_BUTTON_0"
+ ],
+ "INVENTORY_MODE_LEFT": [
+  "KEY_A"
+ ],
+ "INVENTORY_MODE_RIGHT": [
+  "KEY_D"
+ ],
+ "INVENTORY_DROP": [
+  "KEY_J",
+  "JOY_BUTTON_3"
+ ],
+ "GIVE_TAKE_WEAPON_AMMO": [
+  "KEY_FULLSTOP",
+  "JOY_BUTTON_7"
+ ],
+ "GIVE_TAKE_AMMO": [
+  "KEY_COMMA",
+  "JOY_BUTTON_5"
+ ],
+ "MOVIE_CANCEL": [
+  "KEY_ESC",
+  "JOY_BUTTON_0",
+  "MOUSE_BUTTON_0"
+ ],
+ "OBJECTIVE_NEXT": [
+  "KEY_N",
+  "JOY_BUTTON_13"
+ ],
+ "OBJECTIVE_PREV": [
+  "KEY_P",
+  "JOY_BUTTON_15"
+ ],
+ "OBJECTIVE_SCROLL_UP": [
+  "KEY_UPARROW",
+  "JOY_AXIS_6"
+ ],
+ "OBJECTIVE_SCROLL_DOWN": [
+  "KEY_DOWNARROW",
+  "JOY_AXIS_7"
+ ],
+ "OBJECTIVE_SCROLL_LEFT": [
+  "KEY_LEFTARROW",
+  "JOY_AXIS_9"
+ ],
+ "OBJECTIVE_SCROLL_RIGHT": [
+  "KEY_RIGHTARROW",
+  "JOY_AXIS_10"
+ ],
+ "MENU_UP": [
+  "KEY_UPARROW",
+  "JOY_BUTTON_12",
+  "JOY_AXIS_0"
+ ],
+ "MENU_DOWN": [
+  "KEY_DOWNARROW",
+  "JOY_BUTTON_14",
+  "JOY_AXIS_1"
+ ],
+ "MENU_LEFT": [
+  "KEY_LEFTARROW",
+  "JOY_BUTTON_15",
+  "JOY_AXIS_3"
+ ],
+ "MENU_RIGHT": [
+  "KEY_RIGHTARROW",
+  "JOY_BUTTON_13",
+  "JOY_AXIS_4"
+ ],
+ "MENU_BACK": [
+  "KEY_ESC",
+  "JOY_BUTTON_0",
+  "MOUSE_BUTTON_1"
+ ],
+ "MENU_FORWARD": [
+  "KEY_RETURN",
+  "JOY_BUTTON_2"
+ ],
+ "GRUNT_1": [
+  "KEY_1"
+ ],
+ "GRUNT_2": [
+  "KEY_2"
+ ],
+ "GRUNT_3": [
+  "KEY_3"
+ ],
+ "GRUNT_4": [
+  "KEY_4"
+ ],
+ "GRUNT_FOLLOW_HALT_1": [
+  "KEY_1"
+ ],
+ "GRUNT_FOLLOW_HALT_2": [
+  "KEY_2"
+ ],
+ "GRUNT_FOLLOW_HALT_3": [
+  "KEY_3"
+ ],
+ "GRUNT_FOLLOW_HALT_4": [
+  "KEY_4"
+ ],
+ "TOGGLE_CHASE_TARGET": [
+  "KEY_SPACE"
+ ],
+ "SHOW_SCORES": [
+  "KEY_TAB"
+ ],
+ "SEND_GLOBAL_MSG": [
+  "KEY_T"
+ ],
+ "SEND_TEAM_MSG": [
+  "KEY_Y"
+ ]
+}

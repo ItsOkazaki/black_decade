@@ -46,7 +46,7 @@ await page.evaluate(() => window.CDS_SIM.setMode('RUN'));
 const pr = (await page.evaluate(() => window.CDS_SIM.state())).prisoner.pos;
 await page.evaluate(p => window.CDS_SIM.warp(p[0] + 2, p[2] + 2), pr);
 await sleep(500);
-for (let i = 0; i < 24; i++) { await page.evaluate(() => window.CDS_SIM.key('KeyF')); await sleep(800); st2 = await page.evaluate(() => window.CDS_SIM.state()); if (st2.objIdx === 1) break; await page.evaluate(p => window.CDS_SIM.warp(p[0] + 2, p[2] + 2), st2.prisoner.pos); }
+for (let i = 0; i < 24; i++) { await page.evaluate(() => window.CDS_SIM.tap('KeyR')); await sleep(800); st2 = await page.evaluate(() => window.CDS_SIM.state()); if (st2.objIdx === 1) break; await page.evaluate(p => window.CDS_SIM.warp(p[0] + 2, p[2] + 2), st2.prisoner.pos); }
 ok('rescue: Foley joins, objective advances', st2.objIdx === 1 && st2.squad.length === 4, `obj=${st2.objIdx} squad=${st2.squad.map(s => s.name).join(',')}`);
 // C4
 const c4spot = await page.evaluate(c => {
@@ -61,12 +61,12 @@ const c4spot = await page.evaluate(c => {
 }, st2.c4);
 await page.evaluate(p => window.CDS_SIM.warpAll(p[0], p[1]), c4spot);
 for (let i = 0; i < 50; i++) { const ts = await page.evaluate(() => window.CDS_SIM.testShot()); if (!ts || ts.dist > 26) break; await sleep(120); }
-for (let i = 0; i < 30; i++) { await page.evaluate(() => window.CDS_SIM.key('KeyF')); await sleep(1200); st2 = await page.evaluate(() => window.CDS_SIM.state()); if (st2.objIdx === 2 || !st2.squad[0].alive) break; }
+for (let i = 0; i < 30; i++) { await page.evaluate(() => window.CDS_SIM.tap('KeyR')); await sleep(1200); st2 = await page.evaluate(() => window.CDS_SIM.state()); if (st2.objIdx === 2 || !st2.squad[0].alive) break; }
 ok('C4 recovered', st2.objIdx === 2 && st2.hasC4, 'obj=' + st2.objIdx);
 // bridge plant
 await page.evaluate(b => window.CDS_SIM.warpAll(b[0], b[2]), st2.bridge);
 for (let i = 0; i < 60; i++) { const ts = await page.evaluate(() => window.CDS_SIM.testShot()); if (!ts || ts.dist > 30) break; await sleep(120); }
-for (let i = 0; i < 70; i++) { await page.evaluate(() => window.CDS_SIM.key('KeyF')); await sleep(1500); st2 = await page.evaluate(() => window.CDS_SIM.state()); if (st2.objIdx === 3 || !st2.squad[0].alive) break; }
+for (let i = 0; i < 70; i++) { await page.evaluate(() => window.CDS_SIM.tap('KeyR')); await sleep(1500); st2 = await page.evaluate(() => window.CDS_SIM.state()); if (st2.objIdx === 3 || !st2.squad[0].alive) break; }
 ok('bridge destroyed -> extraction objective', st2.objIdx === 3, 'obj=' + st2.objIdx);
 // combat: one aimed shot must cost the target exactly the table damage (14)
 await page.evaluate(() => window.CDS_SIM.warp(-260, -600));

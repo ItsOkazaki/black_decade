@@ -83,7 +83,7 @@ const pr = (await page.evaluate(() => window.CDS_SIM.state())).prisoner.pos;
 let st2 = null, foleyLineHeard = false;
 for (let i = 0; i < 24; i++) {
   await page.evaluate(p => window.CDS_SIM.warp(p[0] + 2, p[2] + 2), pr);
-  await page.evaluate(() => window.CDS_SIM.key('KeyF'));
+  await page.evaluate(() => window.CDS_SIM.tap('KeyR'));
   await sleep(800);
   st2 = await page.evaluate(() => window.CDS_SIM.state());
   if (st2.objIdx === 1) {
