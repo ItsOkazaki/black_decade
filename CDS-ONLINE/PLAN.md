@@ -114,6 +114,21 @@ sources. Missions 2–15 assemble from their converted geometry/placements
    decoded menu/cutscene WAVs only, flagged, never synthesized substitutes.
 10. **Save/config** — `default.key` bindings honoured as the default control map.
 
+## 3b. Deploy (2026-10-20) — the black screen
+
+Hitting DEPLOY used to swap to an empty black stage while the sim fetched every
+ENV instance as its own file. 1,497 of those names (`MIS1_ZONE2001` …) are
+sub-meshes already inside the parent zone GLB, so the browser sat on hundreds
+of 404s with nothing drawn. The loading screen now stays up — on the game's
+own `DEFLOAD_US` art, with a progress bar — until the first frame exists, and
+`data/model-index.json` refuses any GLB the archives do not contain.
+Weapons were also invisible: Weaps.txt model names don't match the uppercase
+GLB filenames, and the attach point (`Bip01 GunR Connector`, Weaps column 6)
+was omitted from the character export. Both are fixed (case-correct index +
+`data/tables/grips.json` offsets from the EVO connectors). Interiors were
+see-through because one-sided floors face down; world materials are now
+double-sided. Standing idle uses `UPRIGHT_STANCE_WITH_RIFLE`.
+
 ## 4. Research tracks (the genuinely sealed material)
 
 - **R1 — Mission script logic.** CHARACTERIZED (2026-10-20): there is no

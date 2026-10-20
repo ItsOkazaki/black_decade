@@ -130,6 +130,21 @@ def models():
     fe = [p for p in sorted(glob.glob(f'{ex}/frontend/*.EVO')) if p not in heroes and p not in iraq]
     out = convert(fe, os.path.join(GAME, 'assets', 'models', 'frontend'), workers=4)
     print(f'   frontend EVOs (vehicles/menu props): {len(out)}')
+    model_index()
+
+def model_index():
+    """Case-correct list of every shipped GLB. The sim refuses URLs that are
+    not in it, so ENV zone-children (meshes inside the parent zone GLB) never
+    become hundreds of 404s on deploy."""
+    urls = []
+    for root, dirs, files in os.walk(os.path.join(GAME, 'assets')):
+        for f in files:
+            if f.lower().endswith('.glb'):
+                urls.append(os.path.relpath(os.path.join(root, f), GAME).replace(chr(92), '/'))
+    urls.sort()
+    os.makedirs(os.path.join(GAME, 'data'), exist_ok=True)
+    json.dump(urls, open(os.path.join(GAME, 'data', 'model-index.json'), 'w'))
+    print(f'   model index: {len(urls)} glbs')
 
 # ---------------------------------------------------------------- UI art
 def img_banks():

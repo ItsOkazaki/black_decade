@@ -120,27 +120,28 @@
 </div>
 
 <div id="scr-loading" class="screen">
-  <div class="paper">
+  <img alt="" src="assets/ui/bitmaps/DEFLOAD_US.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.45)">
+  <div class="paper" style="background:rgba(8,10,4,.72);padding:22px 28px">
     <h2 id="ldMission"></h2>
     <h1 id="ldHead"></h1>
     <div id="loadBarWrap"><div id="loadBar"></div></div>
-    <div id="loadStatus"></div>
+    <div id="loadStatus">DEPLOYING</div>
+    <div class="btnrow" id="ldMenuRow" style="display:none"><div class="btn" id="ldMenu"></div></div>
   </div>
 </div>
 
 <div id="scr-deployed" class="screen olive">
   <div class="panel"><div id="deployNote">
     <div class="ptitle" id="depTitle"></div>
-    <p style="line-height:1.7;margin:14px 0">The frontend is complete and original. The in-mission
-    simulation is built next, under the plan — Phase 3 (movement &amp; the original state machines),
-    then Phase 4 (combat &amp; AI on Mission 1). Nothing here is placeholder art:
-    every screen, string and sound on this path is the game's own.</p>
+    <p style="line-height:1.7;margin:14px 0">The deployment could not be completed.
+    Return to the main menu and try again.</p>
     <div class="btnrow"><div class="btn" id="depMenu"></div></div>
   </div></div>
 </div>
 
 <div id="scr-game" class="screen">
   <div id="gameStage" style="position:absolute;inset:0"></div>
+  <div id="hudSkip" style="position:absolute;right:16px;top:12px;z-index:4;display:none;font-size:11px;letter-spacing:.18em;color:#cfd2b8;text-shadow:0 1px 3px #000">ESC / CLICK — SKIP</div>
   <div id="hudSub" style="position:absolute;left:50%;bottom:9%;transform:translateX(-50%);z-index:4;display:none;font-size:22px;letter-spacing:.14em;color:#fff;text-shadow:0 2px 6px #000;text-align:center;white-space:nowrap"></div>
   <div id="hudSquad" style="position:absolute;left:14px;bottom:12px;display:flex;gap:8px;z-index:3"></div>
   <div id="hudGun" style="position:absolute;right:16px;bottom:12px;text-align:right;z-index:3;color:#dfe8c8;text-shadow:0 1px 2px #000">

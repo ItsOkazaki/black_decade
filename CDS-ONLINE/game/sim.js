@@ -55,8 +55,30 @@ let muzzleTex = null;
 
 /* ---------------- data ---------------- */
 async function jget(u) { const r = await fetch(u); if (!r.ok) throw new Error(u); return r.json(); }
+let MODEL_INDEX = null;
+function modelIndex() {
+  // one shared promise — concurrent loadGLB calls must not observe an empty map
+  if (!MODEL_INDEX) MODEL_INDEX = (async () => {
+    const map = new Map();
+    try {
+      const list = await jget('data/model-index.json');
+      for (const u of list) map.set(u.toLowerCase(), u);
+    } catch (e) { /* fall through to direct fetches */ }
+    return map;
+  })();
+  return MODEL_INDEX;
+}
 async function loadGLB(url) {
-  if (!glbCache[url]) glbCache[url] = loader.loadAsync(url).catch(() => null);
+  if (Object.prototype.hasOwnProperty.call(glbCache, url)) return glbCache[url];
+  const idx = await modelIndex();
+  let real = url;
+  if (idx.size) {
+    const hit = idx.get(url.toLowerCase());
+    if (!hit) { glbCache[url] = null; return null; }   // zone children live inside the parent GLB
+    real = hit;
+  }
+  if (!Object.prototype.hasOwnProperty.call(glbCache, real)) glbCache[real] = loader.loadAsync(real).catch(() => null);
+  glbCache[url] = await glbCache[real];
   return glbCache[url];
 }
 function wpn(id) { return WEAPONS[id] || { id, damage: 14, mag: 30, reload: 1.5, interval: 0.1, range: 800, fireOnMove: true, bank: 'M16A2', icon: '' }; }
@@ -154,6 +176,7 @@ function keyLabel(act) {
 }
 function S(k, fb) { return GEN[k] || fb; }
 let invOpen = false, invSel = 0;
+let STEPFN = null;
 function cycleHero(dir) {
   if (!squad.length) return;
   let n = activeIdx;
@@ -209,6 +232,7 @@ async function startCutscene(shots) {
   if (cutscene !== token) return false;
   $('hudSub').textContent = '';
   $('hudSub').style.display = 'block';
+  $('hudSkip').style.display = 'block';
   if (MISSION_ID === 'mission1') {
     AUDIO_LOG.push('assets/music/CS_MENU_S01.wav');
     try { CS_AUDIO = new Audio('assets/music/CS_MENU_S01.wav'); CS_AUDIO.volume = 0.5; CS_AUDIO.play().catch(() => {}); } catch (e) { }
@@ -222,7 +246,10 @@ function endCutscene() {
   cutscene = null;
   if (CS_AUDIO) { try { CS_AUDIO.pause(); } catch (e) { } CS_AUDIO = null; }
   $('hudSub').style.display = 'none';
-  if (objectives[0]) toast(objectives[0].label + ' — ' + objectives[0].text, 4000);
+  $('hudSkip').style.display = 'none';
+  missionMusic(true);
+  snapCamera();
+  if (objectives[0]) toast(objectives[0].label, objectives[0].text);
 }
 function shotTarget(shot) {
   if (shot.lookPoint) return shot.lookPoint;
@@ -379,7 +406,8 @@ const STATE_CLIPS = [
   [/RUNNING|JOGGING/, [/UPRIGHT_RELAXED_RUN_WITH_RIFLE/i, /RUN_WITH/i]],
   [/WALKING/, [/UPRIGHT.*WALK_WITH_RIFLE/i, /WALK/i]],
   [/TURNING/, [/TURN/i, /IDLE/i]],
-  [/STANDING_STILL|BLENDING_TO_STANDING|BLENDING_TO_KNEELING|BLENDING_TO_CRAWLING/, [/STANCE_WITH_RIFLE_IDLE|IDLE_LOOK_AROUND/i, /IDLE/i]]
+  [/STANDING_STILL/, [/^UPRIGHT_STANCE_WITH_RIFLE$/i, /UPRIGHT_STANCE_WITH_RIFLE_IDLE01/i, /UPRIGHT_STANCE_WITH_RIFLE/i]],
+  [/BLENDING_TO_STANDING|BLENDING_TO_KNEELING|BLENDING_TO_CRAWLING/, [/UPRIGHT_STANCE_WITH_RIFLE/i, /STANCE_WITH_RIFLE/i]]
 ];
 function clipForState(clips, state, aimingNow) {
   if (aimingNow && /STANDING_STILL|KNEELING/.test(state)) {
@@ -471,6 +499,7 @@ async function makeVehicle(model, vm, pos, yaw, team, group) {
   if (!g) g = await loadGLB(`assets/models/frontend/${model}.glb`);
   if (!g) return null;
   const m = g.scene.clone(true);
+  hideHelpers(m);
   m.position.set(pos[0], pos[1], pos[2]); m.rotation.y = yaw || 0;
   group.add(m); terrain.push(m); m.traverse(o => { if (o.isMesh) terrainMeshes.push(o); });
   const box = new THREE.Box3().setFromObject(m);
@@ -496,7 +525,28 @@ async function buildWorld() {
      Anything multi-mesh, skinned, animated, a door model, or the bridge
      keeps the clone path below. */
   const urlOf = inst => inst.dir ? `assets/models/${inst.dir}/${inst.model}.glb` : `${MODEL_DIR}/${inst.model}.glb`;
-  await Promise.all([...new Set(MISSION.instances.filter(i => i.model && i.model !== 'NOTEXTURE').map(urlOf))].map(u => loadGLB(u)));
+  const modelUrls = [...new Set(MISSION.instances.filter(i => i.model && i.model !== 'NOTEXTURE').map(urlOf))];
+  let modelsDone = 0;
+  await Promise.all(modelUrls.map(u => loadGLB(u).then(() => {
+    modelsDone++;
+    if (STEPFN && (modelsDone % 10 === 0 || modelsDone === modelUrls.length))
+      STEPFN(`LOADING MODELS ${modelsDone}/${modelUrls.length}`, 0.1 + 0.55 * modelsDone / modelUrls.length);
+  })));
+  if (STEPFN) STEPFN('BUILDING THE ZONE', 0.68);
+  /* OG sky: the game textures a sky dome with a per-mission M<n>_SKY1 bitmap.
+     Mission 1's own sky bitmap is absent from the supplied archives (GAP —
+     only its .sky descriptor name survives in Mission1.dll), so the game's
+     own M4SKY1 sky bitmap stands in until the raw archive lands. */
+  try {
+    const skyTex = new THREE.TextureLoader().load('assets/ui/bitmaps/M4SKY1.png');
+    skyTex.wrapS = skyTex.wrapT = THREE.RepeatWrapping;
+    skyTex.repeat.set(6, 2);
+    skyTex.colorSpace = THREE.SRGBColorSpace;
+    const sky = new THREE.Mesh(new THREE.SphereGeometry(1000, 24, 12),
+      new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false, depthWrite: false }));
+    sky.renderOrder = -1;
+    group.add(sky);
+  } catch (e) { /* flat background colour remains */ }
   const instGroups = new Map();
   const yawOf = inst => inst.ry != null ? inst.ry : -(inst.r[1] * Math.PI / 180);
   for (const inst of MISSION.instances) {
@@ -509,7 +559,8 @@ async function buildWorld() {
     let meshCount = 0, soleMesh = null, skinned = false;
     g.scene.traverse(o => { if (o.isMesh) { meshCount++; soleMesh = o; if (o.isSkinnedMesh) skinned = true; } });
     const canInstance = meshCount === 1 && !skinned && !(g.animations && g.animations.length)
-      && !DOORTAB[(inst.model || '').toLowerCase()] && inst.model !== 'MIS1_ZONE1_BRIDGE';
+      && !DOORTAB[(inst.model || '').toLowerCase()] && inst.model !== 'MIS1_ZONE1_BRIDGE'
+      && !HELPER_MODEL_RE.test(inst.model || '');
     if (canInstance) {
       const key = urlOf(inst);
       if (!instGroups.has(key)) instGroups.set(key, { g, mesh: soleMesh, list: [] });
@@ -517,6 +568,8 @@ async function buildWorld() {
       continue;
     }
     const m = g.scene.clone(true);
+    hideHelpers(m);
+    if (HELPER_MODEL_RE.test(inst.model || '')) m.visible = false;
     m.position.set(inst.w[0], inst.w[1], inst.w[2]);
     m.rotation.y = yawOf(inst);
     if (inst.s && (inst.s[0] !== 1 || inst.s[2] !== 1)) m.scale.set(inst.s[0], inst.s[1], inst.s[2]);
@@ -533,6 +586,7 @@ async function buildWorld() {
     if (list.length === 1) {   // no saving: clone path for singles
       const inst = list[0];
       const m = g.scene.clone(true);
+      hideHelpers(m);
       m.position.set(inst.w[0], inst.w[1], inst.w[2]);
       m.rotation.y = yawOf(inst);
       if (inst.s && (inst.s[0] !== 1 || inst.s[2] !== 1)) m.scale.set(inst.s[0], inst.s[1], inst.s[2]);
@@ -542,6 +596,12 @@ async function buildWorld() {
       continue;
     }
     mesh.updateMatrix();
+    if (mesh.geometry && mesh.geometry.hasAttribute('color')) {
+      mesh.geometry.deleteAttribute('color');
+      const ms = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      for (const m of ms) if (m) m.vertexColors = false;
+    }
+    shadeWorld(mesh);
     const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, list.length);
     const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), S = V3(), P = V3();
     list.forEach((inst, i) => {
@@ -606,12 +666,40 @@ async function buildWorld() {
   return placed;
 }
 
+/* OG EVOs embed editor/collision geometry (#BSP_* shells, connectors,
+   markers) and the ENV places outright invisible blockers. None of it may
+   render; it stays in the physics lists, invisible. */
+const HELPER_RE = /#BSP|CONNECTOR|MARKER|HELPER|COLLISION/i;
+const HELPER_MODEL_RE = /INVISIBLE|BLOCKING|BLOCKER|DYNBOX|_SHADOW/i;
+function shadeWorld(obj) {
+  const apply = m => { if (m) m.side = THREE.DoubleSide; };
+  const one = o => {
+    if (!o.isMesh) return;
+    const ms = Array.isArray(o.material) ? o.material : [o.material];
+    ms.forEach(apply);
+  };
+  if (obj.isMesh) one(obj); else obj.traverse(one);
+}
+function hideHelpers(root) {
+  shadeWorld(root);
+  root.traverse(o => {
+    // hide the mesh, never the node — guns parent to connector bones
+    if (o.isMesh && HELPER_RE.test(o.name || '')) o.visible = false;
+    else if (!o.isMesh && !o.isBone && /#BSP|COLLISION/i.test(o.name || '')) o.visible = false;
+    if (o.isMesh && o.geometry && o.geometry.hasAttribute('color')) {
+      o.geometry.deleteAttribute('color');
+      const ms = Array.isArray(o.material) ? o.material : [o.material];
+      for (const m of ms) if (m) m.vertexColors = false;   // else the shader samples black
+    }
+  });
+}
+
 /* ---------------- actors ---------------- */
 function makeActor(gltf, name, team) {
   const obj = gltf.scene ? skClone(gltf.scene) : gltf;
   obj.traverse(o => {
+    if (HELPER_RE.test(o.name || '')) o.visible = false;
     if (!o.isMesh) return;
-    if (/CONNECTOR|MARKER|HELPER/i.test(o.name)) o.visible = false;
     if (o.geometry && o.geometry.hasAttribute('color')) o.geometry.deleteAttribute('color');
     const ms = Array.isArray(o.material) ? o.material : [o.material];
     for (const m of ms) if (m) m.vertexColors = false;
@@ -643,16 +731,32 @@ function makeActor(gltf, name, team) {
 function attachGun(A, w) {
   if (A.gunObj) { A.gunObj.parent && A.gunObj.parent.remove(A.gunObj); A.gunObj = null; }
   if (!w || !w.model) return;
-  loadGLB(`assets/models/frontend/${w.model}.glb`).then(g => {
-    if (!g) return loadGLB(`assets/models/chardata/${w.model}.glb`);
-    return g;
-  }).then(g => {
+  // Weaps.txt column 6 is the attach connector ("Bip01 GunR Connector").
+  // Its rest offset is the EVO node TRS (data/tables/grips.json) — the
+  // shipped character GLBs omit connector nodes, so the offset is applied
+  // onto the connector's parent bone.
+  const want = ((w.raw && w.raw[6] && w.raw[6] !== '-1') ? w.raw[6] : 'Bip01 GunR Connector');
+  const norm = s => (s || '').toUpperCase().replace(/[^A-Z0-9]+/g, '_');
+  loadGLB(`assets/models/frontend/${w.model}.glb`).then(g => g || loadGLB(`assets/models/mission1/${w.model}.glb`)).then(g => {
     if (!g) return;
-    let bone = null;
-    A.obj.traverse(o => { if (!bone && /GUNR CONNECTOR|R HAND/.test(o.name)) bone = o; });
-    if (!bone) return;
-    const gun = g.scene.clone(true); gun.rotation.set(0, Math.PI, 0);
-    bone.add(gun); A.gunObj = gun;
+    const table = GRIPS[A.modelKey] || GRIPS.HERO01_ARMSTRONG || {};
+    const grip = table[want.toUpperCase()] || table['BIP01 GUNR CONNECTOR'];
+    // GLTFLoader turns "BIP01 R HAND" into "BIP01_R_HAND"
+    let connector = null, bone = null;
+    A.obj.traverse(o => {
+      const n = norm(o.name);
+      if (!connector && n === norm(want)) connector = o;
+      if (!bone && grip && n === norm(grip.parent)) bone = o;
+      if (!bone && n === 'BIP01_R_HAND') bone = o;
+    });
+    const host = connector || bone;
+    if (!host) return;
+    const gun = g.scene.clone(true);
+    if (!connector && grip && grip.t) {
+      gun.position.set(grip.t[0], grip.t[1], grip.t[2]);
+      gun.quaternion.set(grip.q[0], grip.q[1], grip.q[2], grip.q[3]);
+    }
+    host.add(gun); A.gunObj = gun;
   }).catch(() => {});
 }
 
@@ -672,6 +776,7 @@ async function spawnActors() {
   const heroScripts = ['HERO_BRADLEY', 'HERO_RAMIREZ', 'HERO_JONES'];
   for (let i = 0; i < 3; i++) {
     const A = makeActor(heroGLB[heroFiles[i]], heroNames[i], 'us');
+    A.modelKey = heroFiles[i];
     A.sm = new RulesMachine(moveText);
     A.sm.state = 'STATE_STANDING_STILL_ACTION_STANCE';
     const urow = UNITS[heroNames[i]];
@@ -690,6 +795,7 @@ async function spawnActors() {
   if (foleyU && MISSION_ID !== 'mission1') {
     // survivor missions: Foley's placement is the 4th squad member, not a prisoner
     const A = makeActor(heroGLB.HERO04_FOLEY, 'Foley', 'us');
+    A.modelKey = 'HERO04_FOLEY';
     A.sm = new RulesMachine(moveText);
     A.sm.state = 'STATE_STANDING_STILL_ACTION_STANCE';
     A.maxHp = A.hp = HUMANS[UNITS.Foley.hstat].numbers[0];
@@ -701,6 +807,7 @@ async function spawnActors() {
   }
   if (foleyU && MISSION_ID === 'mission1') {
     const A = makeActor(heroGLB.HERO04_FOLEY, 'Foley', 'pow');
+    A.modelKey = 'HERO04_FOLEY';
     A.sm = new RulesMachine(moveText);
     A.maxHp = A.hp = HUMANS[UNITS.Foley.hstat].numbers[0];
     A.pos.set(foleyU.pos[0], foleyU.pos[1] + 0.3, foleyU.pos[2]); A.floorY = foleyU.pos[1];
@@ -714,6 +821,7 @@ async function spawnActors() {
     if (!u.foe && (!/^IRAQ|^IR_/.test(u.model || '') || (u.script || '').startsWith('CS'))) continue;
     if (!foeGLB[u.model]) foeGLB[u.model] = await loadGLB(`assets/models/characters/${u.model}.glb`) || heroGLB.HERO01_ARMSTRONG;
     const A = makeActor(foeGLB[u.model], u.name, 'iq');
+    A.modelKey = u.model;
     A.sm = new RulesMachine(moveText);
     const urow = (u.unitName && UNITS[u.unitName]) || unitRowForModel(u.model) || UNITS.Iraqi_Conscript;
     A.maxHp = A.hp = HUMANS[urow.hstat].numbers[0];
@@ -1158,6 +1266,7 @@ let stingerEl = null;
 function missionEnd(won, why = '') {
   running = false;
   // R2: the game's own end-of-mission music (Data/Sound DS-Mission* containers)
+  missionMusic(false);
   const sting = won ? 'assets/music/DS-MissionSuccess.wav' : 'assets/music/DS-MissionFailure.wav';
   AUDIO_LOG.push(sting);
   try { if (stingerEl) stingerEl.pause(); stingerEl = new Audio(sting); stingerEl.volume = 0.55; stingerEl.play().catch(() => {}); } catch (e) { }
@@ -1197,8 +1306,19 @@ function updateHud(now) {
   }
 }
 let GWINT_IDX = {};
+let GRIPS = {};
 
 /* ---------------- player ---------------- */
+function snapCamera() {
+  const M = squad[activeIdx];
+  if (!M || !camera) return;
+  const dist = aiming ? 2.0 : 4.4;
+  const back = V3(Math.sin(camYaw) * Math.cos(camPitch), -Math.sin(camPitch), Math.cos(camYaw) * Math.cos(camPitch));
+  const head = V3(M.pos.x, M.pos.y + 1.62, M.pos.z);
+  camera.position.copy(head.clone().add(back.multiplyScalar(dist)));
+  camera.position.y = Math.max(camera.position.y, groundH(camera.position.x, camera.position.z) + 0.45);
+  camera.lookAt(head.clone().add(V3(-Math.sin(camYaw), 0.12, -Math.cos(camYaw)).multiplyScalar(14)));
+}
 function updatePlayer(dt, now) {
   const M = squad[activeIdx];
   if (!M || !M.alive) return;
@@ -1319,13 +1439,24 @@ function bindInput() {
 }
 async function restart() {
   if (stingerEl) { try { stingerEl.pause(); } catch (e) { } stingerEl = null; }
+  missionMusic(true);
   for (const A of allActors) { scene.remove(A.obj); }
   squad = []; enemies = []; allActors = []; prisoner = null;
   await spawnActors();
   setupObjectives(); buildCards(); hudDirty = true;
 }
-function stopSim() { running = false; cancelAnimationFrame(raf); if (musicEl2) { musicEl2.pause(); musicEl2 = null; } if (stingerEl) { try { stingerEl.pause(); } catch (e) { } stingerEl = null; } }
+function stopSim() { running = false; cancelAnimationFrame(raf); missionMusic(false); if (stingerEl) { try { stingerEl.pause(); } catch (e) { } stingerEl = null; } }
 let musicEl2 = null;
+function missionMusic(on) {
+  if (musicEl2) { try { musicEl2.pause(); } catch (e) { } musicEl2 = null; }
+  if (!on) return;
+  // Data/Sound DS-* containers, decoded (R2). Which track a mission's DLL
+  // selected is not recovered (R1); the desert theatre uses DesertMusic1
+  // until that choice is known. Not synthesized.
+  const track = 'assets/music/DS-DesertMusic1.wav';
+  AUDIO_LOG.push(track);
+  try { musicEl2 = new Audio(track); musicEl2.loop = true; musicEl2.volume = 0.32; musicEl2.play().catch(() => {}); } catch (e) { }
+}
 
 /* ---------------- entry ---------------- */
 export async function startSim({ loadout, onExit, onStep, missionId, missionLabel }) {
@@ -1343,6 +1474,7 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
     curLoadout[name]._kit = kitRows;
   }
   onExitCb = onExit;
+  STEPFN = onStep || null;
   if (worldGroup) { scene.remove(worldGroup); worldGroup = null; }
   for (const A of allActors) scene.remove(A.obj);
   terrain.length = 0; terrainMeshes.length = 0; hCache.clear();
@@ -1351,6 +1483,7 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   bridgePoint = null; extractRegion = null; c4Region = null; c4PropPos = null; pillarRegion = null; gateRegion = null;
   if (!renderer) {
     renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setClearColor(0xc9d4d9, 1);
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     renderer.setSize(innerWidth, innerHeight);
     $('gameStage').appendChild(renderer.domElement);
@@ -1370,6 +1503,7 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   const dj = await jget('data/tables/doors.json'); DOORTAB = {};
   for (const r of dj) { const c = r.cells; DOORTAB[(c[1] || '').toLowerCase()] = { slide: [parseFloat(c[5]) / 100 || 0, parseFloat(c[6]) / 100 || 0, parseFloat(c[7]) / 100 || 0] }; }
   vehicleRulesText = (await jget('data/tables/vehiclestaterules.json').catch(() => ({}))).text || '';
+  GRIPS = await jget('data/tables/grips.json').catch(() => ({}));
   const dk = await jget('data/tables/defaultkey.json').catch(() => ({}));
   BIND = {}; for (const a in dk) BIND[a] = dk[a].map(tok2code).filter(Boolean);
   GEN = await jget('data/loc/black_decade_Catalog_0001_GenStrs_loc.json').catch(() => ({}));
@@ -1377,11 +1511,11 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   SOUND_SUBDIR = (MISSION_ID === 'mission1' || MISSION_ID === 'training1') ? MISSION_ID : null;
   BANK_SAMPLES = SOUND_SUBDIR ? await jget(SOUND_SUBDIR === 'mission1' ? 'data/bank-samples.json' : `data/bank-samples-${SOUND_SUBDIR}.json`).catch(() => ({})) : {};
   GWINT_IDX = await jget('assets/ui/gwint/index.json').catch(() => ({}));
+  onStep && onStep('SQUAD, WEAPONS & ZONE DATA', 0.08);
   MISSION = await jget(`data/missions/${MISSION_ID}.json`);
-  onStep && onStep('BUILDING THE ZONE', 0.35);
   const placed = await buildWorld();
   PERF.worldMs = Math.round(performance.now() - perfT0);
-  onStep && onStep('DEPLOYING SQUAD', 0.7);
+  onStep && onStep('DEPLOYING SQUAD', 0.78);
   await spawnActors();
   PERF.actorsMs = Math.round(performance.now() - perfT0 - PERF.worldMs);
   setupObjectives(); buildCards(); hudDirty = true;
@@ -1391,7 +1525,8 @@ export async function startSim({ loadout, onExit, onStep, missionId, missionLabe
   }
   bindInput();
   running = true; paused = false;
-  await startCutscene(cutShots());
+  onStep && onStep('INTRO SEQUENCE', 0.95);
+  if (!(await startCutscene(cutShots()))) { missionMusic(true); snapCamera(); }
   PERF.totalMs = Math.round(performance.now() - perfT0);
   frame();
   return { placed };
@@ -1415,6 +1550,7 @@ window.CDS_SIM = {
   key: (c, d = true) => { keys[c] = d; },
   tap: (c) => { keys[c] = true; setTimeout(() => { keys[c] = false; }, 150); },
   endMission: (won) => missionEnd(!!won, 'test hook'),
+  guns: () => allActors.filter(a => a.team !== 'cs').map(a => ({ name: a.name, team: a.team, gun: !!(a.gunObj && a.gunObj.parent) })),
   fire: d => { firing = d; },
   aim: d => { aiming = d; },
   setMode: m => { if (squad[activeIdx]) squad[activeIdx].moveMode = m; },

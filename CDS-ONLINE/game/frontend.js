@@ -182,32 +182,47 @@ function openOptions() {
 function saveOpt() { localStorage.setItem('cds_opt', JSON.stringify(OPT)); }
 async function openLoading() {
   show('loading');
+  const gl = document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl');
+  if (!gl) {
+    $('loadStatus').textContent = 'THIS BROWSER HAS NO WEBGL — THE MISSION VIEW CANNOT START';
+    $('loadStatus').style.color = '#e0684e';
+    cds($('ldMenu'), 'MAIN MENU', { scale: 1.4 });
+    $('ldMenuRow').style.display = '';
+    return;
+  }
   $('ldMission').textContent = 'MISSION ' + mission.n;
   $('ldHead').textContent = mission.title.toUpperCase();
+  $('ldMenuRow').style.display = 'none';
+  $('loadStatus').style.color = '';
   const files = [
     'assets/models/characters/HERO01_ARMSTRONG.glb', 'assets/models/characters/HERO02_RAMIREZ.glb',
     'assets/models/characters/HERO03_JONES.glb', 'assets/models/characters/HERO04_FOLEY.glb',
-    'assets/models/characters/IRAQINFANTRY01_SANDY.glb', 'assets/music/frontendmusic.wav'
+    'assets/models/characters/IRAQINFANTRY01_SANDY.glb'
   ];
   let done = 0;
   await Promise.all(files.map(async f => {
     try { await fetch(f); } catch (e) { /* cache-warm only */ }
-    done++; $('loadBar').style.width = (done / files.length * 100) + '%';
+    done++; $('loadBar').style.width = (done / files.length * 25) + '%';
     $('loadStatus').textContent = 'LOADING ' + f.split('/').pop();
   }));
-  $('loadStatus').textContent = 'READY';
+  $('loadStatus').textContent = 'BUILDING THE ZONE — THIS CAN TAKE A MINUTE ON A SLOW LINK';
   music(false);
-  show('game');
   try {
     const sim = await import('./sim.js');
     await sim.startSim({ loadout, missionId: mission.id, missionLabel: 'MISSION ' + mission.n + ' — ' + mission.title,
       onExit: () => { show('main'); music(true); },
-      onStep: (label, f) => { $('loadBar').style.width = (f * 100) + '%'; $('loadStatus').textContent = label; } });
+      onStep: (label, f) => { $('loadBar').style.width = (25 + f * 75) + '%'; $('loadStatus').textContent = label; } });
+    // the sim's render loop is already running behind this screen; only swap
+    // once frames exist, so DEPLOY never lands on a black stage
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    show('game');
   } catch (e) {
     console.error('deploy failed', e);
-    cds($('depTitle'), 'DEPLOY FAILED', { scale: 2.2, color: '#e0684e' });
-    cds($('depMenu'), 'MAIN MENU', { scale: 1.4 });
-    show('deployed');
+    $('loadBar').style.width = '100%';
+    $('loadStatus').textContent = 'DEPLOY FAILED — ' + ((e && e.message) || e);
+    $('loadStatus').style.color = '#e0684e';
+    cds($('ldMenu'), 'MAIN MENU', { scale: 1.4 });
+    $('ldMenuRow').style.display = '';
   }
 }
 
@@ -246,6 +261,7 @@ async function boot() {
   $('loDeploy').addEventListener('click', () => { click(); openLoading(); });
   $('optBack').addEventListener('click', () => { click(); show('main'); });
   $('depMenu').addEventListener('click', () => { click(); show('main'); });
+  $('ldMenu').addEventListener('click', () => { click(); show('main'); music(true); });
   document.querySelectorAll('.mitem,.btn,.mrow').forEach(el => el.addEventListener('mouseenter', () => click('Interface_line39.wav', 0.18)));
 }
 boot().catch(e => console.error(e));
