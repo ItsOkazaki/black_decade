@@ -59,8 +59,8 @@ def tables():
         weapons.append({'id': r[0], 'model': r[1], 'icon': r[4], 'wclass': r[5],
                         'interval': float(r[10]), 'mag': int(float(r[15])), 'reload': float(r[16]),
                         'damage': float(r[22]), 'range': float(r[23]), 'fireOnMove': r[25] == 'YES',
-                        'aimAnim': r[50], 'reloadAnim': r[51], 'proneAim': r[53], 'proneReload': r[54],
-                        'bank': r[57], 'raw': r})
+                        'aimAnim': r[53], 'reloadAnim': r[54], 'proneAim': r[56], 'proneReload': r[57],
+                        'bank': r[63], 'raw': r})
     json.dump(weapons, open(os.path.join(outdir, 'weapons.json'), 'w'))
     m16 = next(w for w in weapons if w['id'] == 'US_WPN_M16A2')
     assert (m16['damage'], m16['mag'], m16['range']) == (14, 30, 900.0), m16

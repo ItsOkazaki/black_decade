@@ -139,6 +139,34 @@
   </div></div>
 </div>
 
+<div id="scr-game" class="screen">
+  <div id="gameStage" style="position:absolute;inset:0"></div>
+  <div id="hudSquad" style="position:absolute;left:14px;bottom:12px;display:flex;gap:8px;z-index:3"></div>
+  <div id="hudGun" style="position:absolute;right:16px;bottom:12px;text-align:right;z-index:3;color:#dfe8c8;text-shadow:0 1px 2px #000">
+    <img id="hudGunIcon" style="width:150px;height:38px;object-fit:contain;background:rgba(10,13,6,.55);border:1px solid #59653c;border-radius:3px" alt="">
+    <div id="hudGunName" style="font-size:17px;letter-spacing:.12em;color:#fff"></div>
+    <div id="hudAmmo" style="font-size:28px;font-weight:bold;color:#cfe08a"></div>
+  </div>
+  <div id="hudObj" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);max-width:76vw;text-align:center;z-index:3;
+    background:rgba(12,16,8,.8);border:1px solid #77804f;padding:9px 22px;border-radius:3px;font-size:15px;opacity:0;transition:opacity .4s"></div>
+  <div id="hudPrompt" style="position:absolute;left:50%;bottom:24%;transform:translateX(-50%);z-index:3;font-size:16px;letter-spacing:.12em;
+    color:#fff;text-shadow:0 0 8px #000;background:rgba(12,16,8,.65);padding:7px 16px;border-radius:3px;display:none"></div>
+  <div id="hudXhair" style="position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);z-index:3;display:none">
+    <div style="position:absolute;left:50%;top:0;width:2px;height:100%;transform:translateX(-50%);background:#ffe9a8;box-shadow:0 0 3px #000"></div>
+    <div style="position:absolute;top:50%;left:0;height:2px;width:100%;transform:translateY(-50%);background:#ffe9a8;box-shadow:0 0 3px #000"></div></div>
+  <div id="hudPanel" style="position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:min(560px,90vw);z-index:6;display:none;
+    background:rgba(10,13,6,.93);border:1px solid #77804f;padding:20px 26px"></div>
+  <div id="hudPause" style="position:absolute;inset:0;background:rgba(5,8,3,.85);z-index:8;display:none">
+    <div class="panel"><div class="ptitle" id="pzTitle"></div><div class="psub">CONFLICT: DESERT STORM</div>
+      <div class="mitem" id="pzResume"></div><div class="mitem" id="pzRestart"></div><div class="mitem" id="pzQuit"></div></div></div>
+  <div id="hudEnd" style="position:absolute;inset:0;background:rgba(5,8,3,.85);z-index:8;display:none">
+    <div class="panel"><div class="ptitle" id="endTitle"></div><div class="psub" id="endSub"></div>
+      <div class="mitem" id="endMenu"></div></div></div>
+</div>
+
 <a id="sandboxLink" href="../sandbox.html">SANDBOX</a>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }
+</script>
 <script type="module" src="frontend.js"></script>
 </body></html>

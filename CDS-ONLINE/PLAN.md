@@ -142,10 +142,10 @@ sources. Missions 2–15 assemble from their converted geometry/placements
 - **P2 — Frontend.** ✅ DONE (title→main→missions→briefing→loadout→loading, probe 10/10). Original screens end-to-end (no gameplay): title → menus →
   mission select → loadout → briefing → loading. Exit: screenshot set matches
   original bitmap references; all labels from `.loc`; CDSFont rendering.
-- **P3 — M1 vertical slice.** Landscape + statics + squad + movement state
+- **P3 — M1 vertical slice.** ✅ DONE (probe 17/17 jointly with P4: ENV world incl. HLOI statics/bridge, literal MovementStateRules machine — RUNNING/KNEELING/CRAWL verified; speeds PROVISIONAL (clips are in-place; exe constants = R3). Landscape + statics + squad + movement state
   machine + one rifle, faithful by the rules files. Exit: movement probes
   (speeds/stances/fire-on-move measured), screenshot pass, 0 errors.
-- **P4 — Combat & AI complete (M1).** All M1 weapons/enemies, perception,
+- **P4 — Combat & AI complete (M1).** ✅ DONE (same probe: Weaps damage exact 48→34, mag burn, waypoint/post/alert/engage AI, rescue→C4→bridge→extraction chain, mission complete; 25/40 mission1 sound banks recovered by name). All M1 weapons/enemies, perception,
   waypoint AI, objectives chain, Black Hawk extraction, gate switch.
   Exit: full-arc probe green; difficulty = OG Normal table values.
 - **P5 — All missions + vehicles + interactivity.** 15 SP + training;

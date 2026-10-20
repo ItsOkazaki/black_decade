@@ -1,0 +1,170 @@
+[
+ {
+  "out": "data/tables/weapons.json",
+  "src": "Catalog/0071. Weaps.txt",
+  "sha": "0247dc198a60",
+  "tool": "pipeline.py csv schema"
+ },
+ {
+  "out": "data/tables/humans.json",
+  "src": "Catalog/HStat.txt",
+  "sha": "57c3358e5caf",
+  "tool": "pipeline.py csv"
+ },
+ {
+  "out": "data/tables/vehicles.json",
+  "src": "Catalog/VStat.txt",
+  "sha": "a28acfc4a246",
+  "tool": "pipeline.py csv"
+ },
+ {
+  "out": "data/tables/units.json",
+  "src": "Catalog/0096. Units.txt",
+  "sha": "f464d423ddb9",
+  "tool": "pipeline.py csv"
+ },
+ {
+  "out": "assets/models/characters/HERO01_ARMSTRONG.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "d6ae08fc10ba",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/HERO02_RAMIREZ.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "007a58345bbe",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/HERO03_JONES.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "d87a03866db2",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/HERO04_FOLEY.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "e6059e08a5b7",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IRAQERG01_DESERTCAMOPETE.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "f8b9993c7638",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IRAQERG02_OFFICER.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "c2e1213c8d61",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IRAQINFANTRY01_SANDY.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "1c18fb021a79",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_AMMOPOUCH01.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "a0a202938ebc",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_BACKPACK_PLAIN.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "31e0fb51b5c0",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_BEARD01.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "e196d1362c07",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_BEARD02.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "f7f14ccc5718",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_BERET_BLACK.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "ca232627d01b",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_HELMET_GREEN.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "5c34b0ff1455",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_HIPHOLSTER.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "a29f0fed6a78",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_MOUSTACHE01_CIG.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "04d49d7b5d45",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_SHEMAGH02_REDWHITE.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "3a287453fd8f",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/models/characters/IR_SHEMAGH04_SANDY.glb",
+  "src": "frontend.dat EVO+PRB",
+  "sha": "55ac50e697f8",
+  "tool": "evo_convert.py --anims"
+ },
+ {
+  "out": "assets/ui/6448/index.json",
+  "src": "catalog.dat 6448.IMG",
+  "sha": "7a320f5a7b55",
+  "tool": "pipeline.py imgf"
+ },
+ {
+  "out": "assets/ui/8060/index.json",
+  "src": "catalog.dat 8060.IMG",
+  "sha": "8df91d84b6a9",
+  "tool": "pipeline.py imgf"
+ },
+ {
+  "out": "assets/ui/cdsfont/index.json",
+  "src": "catalog.dat CDSFONT.IMG",
+  "sha": "2d64b9ddad58",
+  "tool": "pipeline.py imgf"
+ },
+ {
+  "out": "assets/ui/effects/index.json",
+  "src": "catalog.dat EFFECTS.IMG",
+  "sha": "d2fbcba7d464",
+  "tool": "pipeline.py imgf"
+ },
+ {
+  "out": "assets/ui/gwint/index.json",
+  "src": "catalog.dat GWINT.IMG",
+  "sha": "476f1e20ca9b",
+  "tool": "pipeline.py imgf"
+ },
+ {
+  "out": "assets/music/CS_MENU_S01.wav",
+  "src": "Data/Sound/CS_MENU_S01.psf",
+  "sha": "24c4d982c399",
+  "tool": "ds_sound.py stream"
+ },
+ {
+  "out": "assets/music/frontendmusic.wav",
+  "src": "Data/Sound/frontendmusic.psf",
+  "sha": "b0b904a4b7e3",
+  "tool": "ds_sound.py stream"
+ }
+]

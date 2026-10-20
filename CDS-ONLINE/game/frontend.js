@@ -33,6 +33,8 @@ function click(name = 'Interface_line53.wav', vol = 0.5) {
   a.volume = vol; a.play().catch(() => {});
 }
 const S = (file, key, dflt = '') => (LOC[file] && LOC[file][key]) || dflt;
+const DISPLAY = { Ramirez: 'CONNORS' };
+const dispName = n => DISPLAY[n] || n.toUpperCase();
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
@@ -119,7 +121,7 @@ function openLoadout() {
     }
     const d = document.createElement('div');
     d.className = 'sold' + (i === curSoldier ? ' sel' : '');
-    cds(d, u.name.toUpperCase(), { scale: 1.3, color: '#e8e4cf' });
+    cds(d, dispName(u.name), { scale: 1.3, color: '#e8e4cf' });
     const r = document.createElement('div'); r.className = 'role'; r.textContent = u.role; d.appendChild(r);
     d.addEventListener('click', () => { click('Interface_line39.wav', 0.35); curSoldier = i; openLoadout(); });
     box.appendChild(d);
@@ -180,9 +182,17 @@ async function openLoading() {
     $('loadStatus').textContent = 'LOADING ' + f.split('/').pop();
   }));
   $('loadStatus').textContent = 'READY';
-  cds($('depTitle'), 'DEPLOYED', { scale: 2.2, color: '#9dc25e' });
-  cds($('depMenu'), 'MAIN MENU', { scale: 1.4 });
-  setTimeout(() => show('deployed'), 500);
+  if (mission.id === 'mission1') {
+    music(false);
+    show('game');
+    const sim = await import('./sim.js');
+    await sim.startSim({ loadout, onExit: () => { show('main'); music(true); },
+      onStep: (label, f) => { $('loadBar').style.width = (f * 100) + '%'; $('loadStatus').textContent = label; } });
+  } else {
+    cds($('depTitle'), 'DEPLOYED', { scale: 2.2, color: '#9dc25e' });
+    cds($('depMenu'), 'MAIN MENU', { scale: 1.4 });
+    setTimeout(() => show('deployed'), 500);
+  }
 }
 
 /* ---------------- boot ---------------- */

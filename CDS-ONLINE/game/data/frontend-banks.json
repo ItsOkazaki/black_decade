@@ -1,0 +1,13 @@
+{
+ "banks": [
+  "031D7B1B",
+  "04B86F5B",
+  "07A45DEB",
+  "07CE911B"
+ ],
+ "names": {
+  "04B86F5B": "Explosion",
+  "07A45DEB": "Impact",
+  "07CE911B": "Interface"
+ }
+}

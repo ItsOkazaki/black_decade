@@ -1,0 +1,22 @@
+{
+"MISS1_TITLE": "Rescue",
+"MISS2_TITLE": "Safe Passage",
+"MISS3_TITLE": "Special Delivery",
+"MISS4_TITLE": "Desert Watch",
+"MISS5_TITLE": "SCUD Boulevard",
+"MISS6_TITLE": "Crash & Burn",
+"MISS7_TITLE": "Patriotic Defense",
+"MISS8_TITLE": "No Retreat",
+"MISS9_TITLE": "Cavalry Charge",
+"MISS10_TITLE": "Human Shield",
+"MISS11B_TITLE": "Edge of Destruction",
+"MISS11_TITLE": "On The Brink",
+"MISS12B_TITLE": "Lights Out",
+"MISS12_TITLE": "Counter Attack",
+"MISS5B_TITLE": "SCUD Alley",
+"TRAIN1_TITLE": "BASIC TRAINING",
+"TRAIN2_TITLE": "ADVANCED WEAPONS TRAINING",
+"TRAIN3_TITLE": "SQUAD TRAINING",
+"GRUNDAUSBILDUNG": "TRAIN2_TITLE",
+"GRUPPENAUSBILDUNG": "MISS1_TITLE"
+}
