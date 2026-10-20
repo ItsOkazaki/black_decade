@@ -1154,8 +1154,13 @@ function explodeBridge() {
   toast(objectives[3].label, objectives[3].text);
   hudDirty = true;
 }
+let stingerEl = null;
 function missionEnd(won, why = '') {
   running = false;
+  // R2: the game's own end-of-mission music (Data/Sound DS-Mission* containers)
+  const sting = won ? 'assets/music/DS-MissionSuccess.wav' : 'assets/music/DS-MissionFailure.wav';
+  AUDIO_LOG.push(sting);
+  try { if (stingerEl) stingerEl.pause(); stingerEl = new Audio(sting); stingerEl.volume = 0.55; stingerEl.play().catch(() => {}); } catch (e) { }
   $('endTitle').innerHTML = '';
   $('endTitle').appendChild(cdsText(won ? 'MISSION COMPLETE' : S('FAILURE', 'MISSION FAILED'), { scale: 2.4, color: won ? '#9dc25e' : '#e0684e' }));
   $('endSub').textContent = won ? 'All objectives achieved — extraction complete' : why;
@@ -1313,12 +1318,13 @@ function bindInput() {
   if (erEl) erEl.addEventListener('click', async () => { $('hudEnd').style.display = 'none'; await restart(); running = true; frame(); });
 }
 async function restart() {
+  if (stingerEl) { try { stingerEl.pause(); } catch (e) { } stingerEl = null; }
   for (const A of allActors) { scene.remove(A.obj); }
   squad = []; enemies = []; allActors = []; prisoner = null;
   await spawnActors();
   setupObjectives(); buildCards(); hudDirty = true;
 }
-function stopSim() { running = false; cancelAnimationFrame(raf); if (musicEl2) { musicEl2.pause(); musicEl2 = null; } }
+function stopSim() { running = false; cancelAnimationFrame(raf); if (musicEl2) { musicEl2.pause(); musicEl2 = null; } if (stingerEl) { try { stingerEl.pause(); } catch (e) { } stingerEl = null; } }
 let musicEl2 = null;
 
 /* ---------------- entry ---------------- */
@@ -1408,6 +1414,7 @@ window.CDS_SIM = {
   }),
   key: (c, d = true) => { keys[c] = d; },
   tap: (c) => { keys[c] = true; setTimeout(() => { keys[c] = false; }, 150); },
+  endMission: (won) => missionEnd(!!won, 'test hook'),
   fire: d => { firing = d; },
   aim: d => { aiming = d; },
   setMode: m => { if (squad[activeIdx]) squad[activeIdx].moveMode = m; },

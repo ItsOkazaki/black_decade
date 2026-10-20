@@ -37,8 +37,8 @@ and `DesertStorm.exe` + mission DLLs.
 | Geometry (EVO), animations (PRB, 203/archive) | all `.dat` | ✅ evo_convert (ModKit) |
 | Mission scenes/placements (zones, statics, units, waypoints, triggers, cutscene cams) | converted `units.json`/`props.json` | ✅ for all 15 SP + training 2/3 |
 | Sound banks (.sch/.sbk), UI/menus | `Data/`, archives | ✅ WAV-decodable (bank-name hash) |
-| Music (8 tracks) | `Data/Sound/*.psf` | ❌ proprietary `PSF` variant — Research R2 |
-| Mission scripts | `Mission1.dll` etc. | ⚠️ strings only; VM bytecode — Research R1 |
+| Music (8 tracks) | `Data/Sound/*.psf` | ✅ R2 SOLVED: `PSF\x60` segment containers carved + decoded (`tools/musicrecover.py`); DS end-of-mission stingers wired; in-mission track choice was the script's (R1) |
+| Mission scripts | `Mission1.dll` etc. | ⚠️ native x86 DLL (`LevelSetup(api)` + engine API table — not bytecode); vocabulary extracted (`tools/dllrecon.py`); logic recovery = long disassembly project (R1) |
 | Difficulty effects, movement constants, damage falloff | `DesertStorm.exe` | ⚠️ loaders pinned, numbers sealed — Research R3 |
 | Missions 2–15 **raw** archives | — | ❌ **not on disk** (converted survivors only) |
 
@@ -116,21 +116,43 @@ sources. Missions 2–15 assemble from their converted geometry/placements
 
 ## 4. Research tracks (the genuinely sealed material)
 
-- **R1 — Mission script VM.** Scripts are bytecode inside the mission DLLs
-  (strings visible: "Bridge alarm will start soon", "IRAQI_TORTURER has raised
-  the alarm"). Attack: locate the interpreter in `DesertStorm.exe` (xrefs to
-  DLL loading + script string table), recover opcode set, write a disassembler,
-  translate M1's script first. Until then: triggers + DLL strings are the spec.
-- **R2 — PSF music.** Header `PSF`+0x60/0x80 variant ≠ standard PSF. Attack:
-  entropy/structure analysis, exe audio-code xrefs (`frontendmusic.psf`,
-  `DS-*`), similar Pivotal titles. Fallback: ask user for the tracks from
-  their full install in a common format.
+- **R1 — Mission script logic.** CHARACTERIZED (2026-10-20): there is no
+  bytecode VM. Each mission DLL exports only `LevelSetup(api)`; the exe
+  passes an engine API function table (calls up to [api+0x3ec]), the DLL
+  registers its ~200 animation-state -> .prs pairs via [api+4], stores the
+  table, and runs compiled-C script logic (65 KB .text in Mission1.dll,
+  MSVC). `tools/dllrecon.py` extracts each DLL's data vocabulary into
+  `game/data/tables/missiondll.json`: M1 references `CS_M01_S01/S02.psf`
+  cutscene streams, six `OBJ_M1_*.wav` objective voice-overs, day/night
+  skies, and chatter ("Bridge alarm will start soon", "Trigger:
+  IRAQI_TORTURER has raised the alarm!", "Final extra spawn enabled");
+  Training1 references 53 `Tm01_*.psf` instructor clips. Those audio files
+  themselves live in the full install's `Data/Sound/<language>/` — ABSENT
+  here (the .sch holds only 33-byte reference stubs), same gap class as
+  the ENVSND streams; they drop in unchanged if supplied. Full logic
+  recovery = disassembling each DLL against the exe's API table (the
+  [api+4] registration pattern is identified; function-by-function
+  semantics are a long project, not a phase). Until then, survivor
+  missions stay GAP-objective free combat, labelled as such.
+- **R2 — PSF music.** ✅ SOLVED (2026-10-20): the DS-* files are `PSF\x60`
+  containers — a 12-byte-entry directory (`8 + 12*n` header) followed by
+  ordinary `PSF\x80` stream segments (the sequencer's bars). Carving at
+  the segment magics and decoding each with the existing codec renders
+  the full tracks: DesertMusic1 127 s, DesertMusic2 184 s, MilitaryMusic1
+  352 s, UrbanMusic1 182 s, MissionSuccess 97 s, MissionFailure 98 s
+  (`tools/musicrecover.py`, wired into `tools/pipeline.py`). The success/
+  failure tracks are wired as the mission-end stingers. Which DS track a
+  given mission plays in-mission was decided by its DLL (R1) — not
+  guessed; the tracks are recovered and probe-verified (r2probe 11/11).
 - **R3 — Exe constants & tables.** Loaders already pinned statically
   (Weaps 0x411747, Inven 0x4117e4, HStat 0x41188e, `loadHumanStats`
   0x491e5d — field offsets float@0xa/word@0xe/float@0x12/byte@0x16/word@0x18/
-  byte@0x1a). Next: difficulty table (DifficultyMenu xrefs 0x413439/0x41349c),
-  movement/gravity/camera constants, HStat field semantics, tracer params.
-  Static only — the exe cannot run here (no Wine/X/GL in this sandbox).
+  byte@0x1a). Locomotion constants: NEGATIVE RESULT (2026-10-20) — the
+  PROVISIONAL speeds (walk 1.6 / run 3.6) occur nowhere in DesertStorm.exe
+  as float32 or float64, so they are computed (anim-rate scaled), not
+  stored constants; static attribution stops here and dynamic tracing is
+  impossible in this sandbox (no Wine/X/GL). Speeds/turn rate stay
+  PROVISIONAL, labelled wherever they surface.
 
 ## 5. Phases (each ends green on its rig probes or it isn't done)
 

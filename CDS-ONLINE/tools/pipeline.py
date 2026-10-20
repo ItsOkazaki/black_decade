@@ -219,12 +219,21 @@ def sounds():
         out = os.path.join(outbase, name)
         run(['python3', os.path.join(MODKIT, 'ds_sound.py'), 'wav', '/home/user/black_decade/frontend.sch', name, out])
     json.dump({'banks': hashes, 'names': names}, open(os.path.join(GAME, 'data', 'frontend-banks.json'), 'w'), indent=1)
-    # PSF music: the ModKit stream decoder reads the game's own music format
+    # PSF music: PSF\x80 streams decode with the ModKit; the six DS-* tracks
+    # are PSF\x60 segment containers -> tools/musicrecover.py (R2, solved)
     mus_out = os.path.join(GAME, 'assets', 'music'); os.makedirs(mus_out, exist_ok=True)
     import wave, contextlib
     for psf in sorted(glob.glob('/home/user/black_decade/Data/Sound/*.psf')):
         name = os.path.splitext(os.path.basename(psf))[0]
         out = os.path.join(mus_out, name + '.wav')
+        if open(psf, 'rb').read(4) == b'PSF\x60':
+            import importlib.util
+            spec = importlib.util.spec_from_file_location('musicrecover', os.path.join(ROOT, 'tools', 'musicrecover.py'))
+            mr = importlib.util.module_from_spec(spec); spec.loader.exec_module(mr)
+            n, secs = mr.recover(psf, out)
+            if os.path.exists(out): note(out, f'Data/Sound/{os.path.basename(psf)}', 'musicrecover (PSF\x60 carve)')
+            print(f'   music {name}: {n} segments, {secs:.1f}s (PSF\x60)')
+            continue
         run(['python3', os.path.join(MODKIT, 'ds_sound.py'), 'stream', psf, out])
         if os.path.exists(out):
             with contextlib.closing(wave.open(out)) as w:

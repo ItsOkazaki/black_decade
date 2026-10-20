@@ -16,9 +16,18 @@ from conflict_ds_tools.sound import elf_hash  # noqa: E402
 
 def candidates():
     cands = set()
-    exe = open('/home/user/black_decade/DesertStorm.exe', 'rb').read()
-    for c in re.findall(rb'[A-Za-z][A-Za-z0-9_]{2,34}', exe):
-        cands.add(c.decode('ascii', 'replace'))
+    # the exe AND the mission DLLs: their string tables name banks, samples
+    # (OBJ_M1_1A.wav ...) and .sbk packages the exe alone never mentions
+    for blob in ('DesertStorm.exe', 'Mission1.dll', 'Training1.dll',
+                 'MP_MISSION1.dll', 'FrontEnd.dll'):
+        p = f'/home/user/black_decade/{blob}'
+        if not os.path.exists(p): continue
+        exe = open(p, 'rb').read()
+        for c in re.findall(rb'[A-Za-z][A-Za-z0-9_]{2,34}', exe):
+            cands.add(c.decode('ascii', 'replace'))
+        for c in re.findall(rb'[A-Za-z][A-Za-z0-9_.]{3,40}', exe):
+            s = c.decode('ascii', 'replace')
+            if '.' in s: cands.add(s)
     w = json.load(open(f'{ROOT}/game/data/tables/weapons.json'))
     rows = w if isinstance(w, list) else w.get('weapons', [])
     for r in rows:
