@@ -189,7 +189,7 @@ window.addEventListener('error', function(e){
 <audio id="gamemusic" src="sounds/music/menu_cutscene.wav" loop preload="auto"></audio>
 <script src="font.js?v=1"></script>
 <script src="loadout.js?v=1"></script>
-<script type="module" src="play.js?v=70"></script>
+<script type="module" src="play.js?v=71"></script>
 
 <style>
 #itemFlash{position:fixed;top:11%;left:50%;transform:translateX(-50%);z-index:60;text-align:center;opacity:0;pointer-events:none}
@@ -200,6 +200,10 @@ window.addEventListener('error', function(e){
 #lawSight{position:fixed;inset:0;z-index:40;pointer-events:none;display:none}
 #rpgSight{position:fixed;inset:0;z-index:40;pointer-events:none;display:none}
 #binocOv{position:fixed;inset:0;z-index:40;pointer-events:none;display:none}
+#scopeOv{position:fixed;inset:0;z-index:40;pointer-events:none;display:none;background:#000}
+#scopeOv img{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100vmin;height:100vmin}
+#binocOv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.atArc{position:absolute;right:2.5%;top:-4%;width:42%;opacity:.9;pointer-events:none}
 #kia{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(30,2,2,.82),rgba(5,0,0,.96));text-align:center}
 #kiaName{font:700 34px Consolas,monospace;letter-spacing:.35em;color:#e8b0a0;text-shadow:2px 2px 6px #000}
 #kiaCause{font:13px Consolas,monospace;letter-spacing:.3em;color:#9a8f7a;margin:10px 0 26px}
@@ -225,7 +229,7 @@ window.addEventListener('error', function(e){
 <rect x="398.5" y="330" width="3" height="34"/><rect x="398.5" y="436" width="3" height="34"/>
 <rect x="330" y="398.5" width="34" height="3"/><rect x="436" y="398.5" width="34" height="3"/>
 <rect x="316" y="560" width="168" height="3"/><rect x="316" y="560" width="3" height="14"/><rect x="481" y="560" width="3" height="14"/><rect x="398.5" y="560" width="3" height="10"/>
-</g></svg></div>
+</g></svg><img class="atArc" src="textures/fx/sight_at2.png" alt=""></div>
 <div id="rpgSight"><svg width="100%" height="100%" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
 <defs><radialGradient id="rsg" cx="50%" cy="50%" r="62%">
 <stop offset="55%" stop-color="#5a6248" stop-opacity="0.16"/>
@@ -241,19 +245,9 @@ window.addEventListener('error', function(e){
 <line x1="400" y1="180" x2="400" y2="330"/><line x1="400" y1="470" x2="400" y2="620"/>
 <line x1="212" y1="400" x2="330" y2="400"/><line x1="470" y1="400" x2="588" y2="400"/>
 </g><g fill="#0c0e08"><circle cx="400" cy="400" r="4"/><circle cx="330" cy="470" r="3.5"/><circle cx="470" cy="470" r="3.5"/></g>
-</svg></div>
-<div id="binocOv"><svg width="100%" height="100%" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
-<defs><mask id="bmask"><rect width="800" height="800" fill="white"/>
-<circle cx="302" cy="400" r="196" fill="black"/><circle cx="498" cy="400" r="196" fill="black"/></mask></defs>
-<rect width="800" height="800" fill="rgba(2,3,2,0.985)" mask="url(#bmask)"/>
-<circle cx="302" cy="400" r="196" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="10"/>
-<circle cx="498" cy="400" r="196" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="10"/>
-<g stroke="rgba(10,14,10,0.8)" stroke-width="2.5">
-<line x1="302" y1="330" x2="302" y2="470"/><line x1="498" y1="330" x2="498" y2="470"/>
-<line x1="232" y1="400" x2="372" y2="400"/><line x1="428" y1="400" x2="568" y2="400"/>
-<line x1="262" y1="486" x2="342" y2="486"/><line x1="272" y1="486" x2="272" y2="474"/><line x1="302" y1="486" x2="302" y2="472"/><line x1="332" y1="486" x2="332" y2="474"/>
-</g><circle cx="400" cy="400" r="3" fill="rgba(10,14,10,0.8)"/>
-</svg></div>
+</svg><img class="atArc" src="textures/fx/sight_at2.png" alt=""></div>
+<div id="binocOv"><img src="textures/fx/sight_binoc.png" alt=""></div>
+<div id="scopeOv"><img src="textures/fx/sight_scope.png" alt=""></div>
 <div id="perf" style="position:fixed;top:8px;left:8px;z-index:80;display:none;background:rgba(0,0,0,.55);color:#bfe8bf;font:11px Consolas,monospace;padding:4px 8px;letter-spacing:.08em"></div>
 <div id="kia"><div>
 <div id="kiaName">BENALI — K.I.A.</div>

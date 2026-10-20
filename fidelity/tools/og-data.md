@@ -42,3 +42,23 @@ an image bank not yet decoded (`.img` banks are metadata-only so far).
 ## Adopted in the web build (v70)
 Enemy HP 48 x difficulty; weapon damage = Weaps.txt values; medikit
 heals 100; binocular FOV 10; BMP hp 500; rocket anti-armour 550.
+
+## Update (v71)
+- Units.txt: the four heroes map to HStat bases US_Infantryman00-03, so
+  hero health = **150** (adopted; medikit still heals 100 of it).
+  US_Delta_Force(100) is an NPC base. Units also carry an experience
+  level (all "Rookie" here; exe table: Rookie/.../Veteran/Elite near
+  0x4940d7) and a score-ish column (-50 civ, 1-5 troops, 100/200 vip).
+- Sights: the exe's IMAGE_* sight names live in Catalog/0013
+  Effects.img (284-byte header + 272-byte records: u16 page, name,
+  x/y/w/h) over EFFECTS0-4.PNG pages. BINO/SCOPE tiles are soft radial
+  aperture masks (alpha profile measured and rebaked at scale);
+  INSIDE EFFECTS: IMAGE_SCOPE_SNIPER (range strip "10 5 5 10"),
+  IMAGE_SCOPE_CIRCLE (ring), IMAGE_SCOPE_AT2 (AT range arc).
+- Mission1.dll strings prove scripted beats the web build lacks:
+  "Bridge alarm will start soon", "Trigger: IRAQI_TORTURER has raised
+  the alarm!", "Final extra spawn enabled". Reconstructing the trigger
+  conditions needs the script bytecode in the DLL — future work.
+- DifficultyMenu.cpp exists in the exe; its numeric effects are inside
+  the menu code (callbacks ~0x478440..) — still unextracted; the web
+  DIFF multipliers remain a documented approximation.

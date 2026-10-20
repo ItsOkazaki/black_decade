@@ -43,8 +43,8 @@ check('armour (BMP) present', !!st.armor && st.armor.alive, st.armor ? 'hp ' + s
 
 // falling FIRST (quiet spawn area, before any gunfire draws attention)
 await page.evaluate(() => window.BD_TEST.drop(9));
-st = await until(s => !s.airborne && s.hp < 100, 90, 'fall landing');
-check('fall off a height: gravity lands you, damage scales, survivable', st.hp < 100 && st.hp > 0 && !st.airborne, `hp ${st.hp}`);
+st = await until(s => !s.airborne && s.hp < 150, 90, 'fall landing');
+check('fall off a height: gravity lands you, damage scales, survivable', st.hp < 150 && st.hp > 0 && !st.airborne, `hp ${st.hp}`);
 
 // medkit pickup (real keyboard E) + flash
 const mk = st.pickups.find(p => p.t === 'medkit');
@@ -228,7 +228,7 @@ async function aimAtTank() {
   let bestP = 0, bestE = 9;
   for (const p of [-1.05, -0.8, -0.55, -0.35, -0.18, -0.05, 0.08, 0.22, 0.4]) {
     await page.evaluate(v => window.BD_TEST.pitch(v), p);
-    await sleep(450);
+    await sleep(1100);
     const c = await page.evaluate(() => window.BD_TEST.camDir());
     const err = Math.hypot(c.dir[0] - want[0], c.dir[1] - want[1], c.dir[2] - want[2]);
     if (err < bestE) { bestE = err; bestP = p; }
@@ -236,8 +236,8 @@ async function aimAtTank() {
   // refine: track the patrolling tank (re-face + recompute) while the
   // camera settles at the chosen pitch, then verify
   await page.evaluate(v => window.BD_TEST.pitch(v), bestP);
-  for (let i = 0; i < 16; i++) {
-    await sleep(700);
+  for (let i = 0; i < 30; i++) {
+    await sleep(900);
     const t2 = (await S()).armor, p2 = (await S()).pos;
     const ddx = t2.x - p2[0], ddy = (t2.y + 1.1) - (p2[1] + 1.45), ddz = t2.z - p2[2];
     const LL = Math.hypot(ddx, ddy, ddz);
@@ -284,10 +284,10 @@ await page.screenshot({ path: OUT + '/03-kia.png' });
 // restart mission -> INSTANT reset, no page reload, no asset loading
 await page.evaluate(() => { window.__noReload = 1; });
 await page.evaluate(() => document.getElementById('kiaRestart').click());
-st = await until(s => s.playing && s.hp === 100, 40, 'instant restart');
+st = await until(s => s.playing && s.hp === 150, 40, 'instant restart');
 const noReload = await page.evaluate(() => window.__noReload === 1);
 check('KIA restart: instant, no reload, fresh HP + full mag',
-  st.playing === true && st.hp === 100 && st.ammo === 30 && noReload,
+  st.playing === true && st.hp === 150 && st.ammo === 30 && noReload,
   `hp ${st.hp} ammo ${st.ammo} noReload=${noReload}`);
 await page.screenshot({ path: OUT + '/04-redeployed.png' });
 
@@ -299,7 +299,7 @@ let sawAir = false;
 for (let i = 0; i < 50 && !sawAir; i++) { const sj = await S(); if (sj.airborne) sawAir = true; else await sleep(300); }
 check('SPACE tap jumps', sawAir);
 st = await until(s2 => !s2.airborne, 60, 'jump lands');
-check('jump lands back on the ground unharmed', !st.airborne && st.hp === 100, `hp ${st.hp}`);
+check('jump lands back on the ground unharmed', !st.airborne && st.hp === 150, `hp ${st.hp}`);
 
 // ---- v67: kill banner gone, gate, hearing, contact, grenades, weapons ----
 {

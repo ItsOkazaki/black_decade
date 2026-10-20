@@ -148,6 +148,14 @@ st = await S(page);
 ok('pistol aim pose is the pistol stance', !!pisPose, pisPose ? pisPose.anim : st.anim);
 await page.screenshot({ path: '/tmp/snap/shots34/v69-pistol.png' });
 await page.evaluate(() => window.BD_TEST.look(false));
+// --- sniper scope: original IMAGE_SCOPE_SIGHT artwork
+await page.evaluate(() => window.BD_TEST.give('BARRETT'));
+await page.evaluate(() => window.BD_TEST.select('BARRETT'));
+await page.evaluate(() => window.BD_TEST.look(true));
+const scopeOn = await polls(async () => { const s2 = await S(page); return s2.sights.scope === 'block' ? s2 : null; }, 60000, 2000);
+ok('sniper scope raises the OG scope sight', !!scopeOn, JSON.stringify((await S(page)).sights));
+await page.screenshot({ path: '/tmp/snap/shots34/v71-scope.png' });
+await page.evaluate(() => window.BD_TEST.look(false));
 
 await page.evaluate(() => window.BD_TEST.select('M16A2'));
 await page.evaluate(() => window.BD_TEST.facePlayer(-160, -300));

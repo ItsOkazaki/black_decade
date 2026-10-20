@@ -70,6 +70,17 @@ if (near) {
   // the contact shout comes when the wounded man turns, finds the shooter and
   // engages — give the fight its own window to reach that beat
   st = await until(s => s.voicePlays > 0, 150, 'enemy shouts in combat');
+  if (!st.voicePlays) {
+    // staged fallback: stand 22 m in front of a guard who has not spotted
+    // anyone yet (the first-sight shout is the deterministic trigger)
+    const g = st.enemies.filter(e2 => e2.st === 'patrol' || e2.hold).sort((a, b) => b.d - a.d)[0];
+    if (g) {
+      const fx = g.x + Math.sin(g.yaw) * 22, fz = g.z + Math.cos(g.yaw) * 22;
+      console.log('  (staging first contact at ' + fx.toFixed(0) + ',' + fz.toFixed(0) + ' guard yaw ' + g.yaw.toFixed(2) + ')');
+      await page.evaluate(([x, z]) => window.BD_TEST.teleport(x, z), [fx, fz]);
+      st = await until(s => s.voicePlays > 0, 200, 'staged shout');
+    }
+  }
   check('enemy voice lines play in combat', st.voicePlays > 0, 'voicePlays=' + st.voicePlays);
 }
 

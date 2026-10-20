@@ -504,7 +504,7 @@ function buildEnemies() {
   });
   for (const E of enemies) E.active = player.pos.distanceTo(E.pos) < ENEMY_ACTIVATE_DIST;
 }
-let playerHP = 100, dmgT = 0;
+let playerHP = 150, dmgT = 0;
 
 function enemySetAnim(E, name, once = false) {
   if (!E.actions[name] || E.current === name) return;
@@ -940,7 +940,7 @@ function useItem(slot, now) {
   if (slot.key === 'MEDIKIT') {
     if (slot.left <= 0) { playClick(); return; }
     if (pendingHeal > 0) return;   // already dressing a wound
-    if (playerHP >= 100) { showMsg('HEALTH FULL'); return; }
+    if (playerHP >= 150) { showMsg('HEALTH FULL'); return; }
     slot.left--; throwCd = now + 1.4; pendingHeal = 1.2;
     setAnim('anim_85ABBE9A', true); player.actT = 1.3;   // dressing the wound, one hand on the kit
     showMsg('DRESSING WOUND…'); buildItemBar(); updateHUD();
@@ -974,7 +974,7 @@ function tryHeal() {
     buildItemBar(); updateHUD();
     return;
   }
-  if (playerHP < 100) { useItem(M.inv[idx], nowSec); return; }
+  if (playerHP < 150) { useItem(M.inv[idx], nowSec); return; }
   showMsg('HEALTH FULL', 'NO WOUNDED MAN IN REACH');
 }
 function giveItem(ti, si) {
@@ -1458,12 +1458,12 @@ function completeMig() {
 function restartMission() {
   // full mission reset WITHOUT reloading the page — assets stay in memory,
   // only the state is rebuilt: fresh kit, fresh ammo, everyone back on post
-  playerHP = 100; missionDone = false; objIdx = 0; kills = 0; dmgT = 0;
+  playerHP = 150; missionDone = false; objIdx = 0; kills = 0; dmgT = 0;
   pendingC4 = 0; pendingHeal = 0; player.vy = 0; player.airborne = false;
   for (const R of rockets) scene.remove(R.obj); rockets.length = 0;
   for (const Pj of projectiles) scene.remove(Pj.obj); projectiles.length = 0;
   for (const Sk of smokes) scene.remove(Sk.obj); smokes.length = 0;
-  members.forEach((M, i) => { M.inv = makeInv(i); M.held = 0; M.hp = 100; M.alive = true; });
+  members.forEach((M, i) => { M.inv = makeInv(i); M.held = 0; M.hp = 150; M.alive = true; });
   if (activeIdx !== 0) switchTo(0);
   resetEnemies(false);
   pickups.forEach(p => { p.taken = false; if (p.obj) p.obj.visible = true; });
@@ -1486,7 +1486,7 @@ function resetSquadToStart() {
   { const Z = members[3]; if (Z) Z.prisoner = true; if (IS_M1) { const c3 = document.getElementById('card3'); if (c3) c3.style.display = 'none'; } }
   members.forEach((M, i) => {
     if (M.absent) { M.alive = false; if (M.obj) M.obj.visible = false; return; }
-    M.alive = true; M.hp = 100;
+    M.alive = true; M.hp = 150;
     if (M.prisoner) { M.pos.copy(prisonPos); M.pos.y = groundYCached(prisonPos.x, prisonPos.z); if (M.obj) M.obj.position.copy(M.pos); return; }
     if (i !== activeIdx) { M.pos.set(sp[0] + i * 1.6 - 2, player.pos.y, sp[2] + 2 + i); if (M.obj) M.obj.visible = true; }
   });
@@ -1523,7 +1523,7 @@ function renderF1() {
   const st = document.getElementById('f1stats');
   if (st) st.textContent = 'HOSTILES DOWN ' + kills + ' OF ' + enemies.length + '   ·   SQUAD: ' + members.map((M, i) =>
     (M.absent ? M.name + ' — NOT ON THIS OP' : M.prisoner ? M.name + ' — CAPTIVE' : !M.alive ? M.name + ' — DOWN'
-     : M.name + ' ' + Math.ceil(i === activeIdx ? playerHP : M.hp) + '%')).join('  ·  ');
+     : M.name + ' ' + Math.round(100 * (i === activeIdx ? playerHP : M.hp) / 150) + '%')).join('  ·  ');
 }
 function toggleF1(force) {
   f1Open = force !== undefined ? force : !f1Open;
@@ -1552,7 +1552,7 @@ function renderInv() {
   if (sq) {
     sq.innerHTML = members.map((Mt, i) => {
       if (Mt.absent || Mt.prisoner) return '';   // not found yet / not on this op: not in your inventory either
-      const state = !Mt.alive ? 'DOWN' : Math.ceil(i === activeIdx ? playerHP : Mt.hp) + ' HP';
+      const state = !Mt.alive ? 'DOWN' : Math.round(100 * (i === activeIdx ? playerHP : Mt.hp) / 150) + ' HP';
       const d = i === activeIdx ? 'YOU' : (Mt.absent || Mt.prisoner ? '—' : Math.round(Mt.pos.distanceTo(player.pos)) + ' M AWAY');
       return `<div class="mate${i === activeIdx ? ' self' : ''}" data-i="${i}"><img src="textures/portraits/sq${i + 1}.png?v=2"><div><b>${BD.NAMES[i]}</b><span>${state} · ${d}</span></div></div>`;
     }).join('');
@@ -1674,7 +1674,7 @@ function updateMate(M, dt, now) {
       if (tgt < 0 && M.hp < 45) tgt = members.indexOf(M);
       if (tgt >= 0) {
         kit.left--; M._aidCd = 6;
-        if (tgt === activeIdx) playerHP = Math.min(100, playerHP + 50);
+        if (tgt === activeIdx) playerHP = Math.min(150, playerHP + 50);
         else members[tgt].hp = Math.min(100, members[tgt].hp + 50);
         updateHUD();
       }
@@ -2826,6 +2826,8 @@ function updateHUD() {
     if (rs5) { const on = !!(playing && (aiming || firing) && s && s.key === 'RPG7'); if (rs5.style.display !== (on ? 'block' : 'none')) rs5.style.display = on ? 'block' : 'none'; }
     const bo5 = document.getElementById('binocOv');
     if (bo5) { const on = !!(playing && aiming && s && s.key === 'BINOCULARS'); if (bo5.style.display !== (on ? 'block' : 'none')) bo5.style.display = on ? 'block' : 'none'; }
+    const so5 = document.getElementById('scopeOv');
+    if (so5) { const on = !!(playing && aiming && s && (s.key === 'BARRETT' || s.key === 'PSG1')); if (so5.style.display !== (on ? 'block' : 'none')) so5.style.display = on ? 'block' : 'none'; }
   }
   const st = document.getElementById('stancetext');
   if (st) st.textContent = player.stance.toUpperCase() + (aiming ? ' · AIM' : '');
@@ -3081,7 +3083,7 @@ async function load() {
     // ---- the squad ----
     members.push({ name: 'BENALI', wpn: WEAPONS[0], ammo: WEAPONS[0].mag, obj: heroObj, mixer, actions, rifle: rifleObj,
       gunConn: gunConnector, rifleL: rifleLObj, pos: player.pos.clone(), yaw: player.yaw,
-      hp: 100, alive: true, current: null, slot: null });
+      hp: 150, alive: true, current: null, slot: null });
     members[0].inv = makeInv(0); members[0].held = 0;
     attachGear(heroObj, 0);
     members[0].heldObj = rifleObj; // the loader-attached M16 — setHeldModel swaps it for the cache clone
@@ -3103,7 +3105,7 @@ async function load() {
       const widx = members.length;
       const M = { name: def.name, wpn: WEAPONS[widx], ammo: WEAPONS[widx].mag, obj: glb.scene, actions: {}, current: null,
         pos: new THREE.Vector3(player.pos.x + def.slot[0], 0, player.pos.z + def.slot[1]),
-        yaw: Math.PI, hp: 100, alive: true, burstLeft: 0, nextShot: 0, moving: false, slot: def.slot };
+        yaw: Math.PI, hp: 150, alive: true, burstLeft: 0, nextShot: 0, moving: false, slot: def.slot };
       M.obj.position.copy(M.pos);
       M.obj.traverse(o => {
         if (o.isMesh) {
@@ -3309,7 +3311,7 @@ function animate() {
       S.obj.material.opacity = Math.min(0.75, S.t * 0.4);
       if (S.t <= 0) { scene.remove(S.obj); smokes.splice(i, 1); }
     }
-    if (pendingHeal > 0) { pendingHeal -= dt; if (pendingHeal <= 0) { playerHP = Math.min(100, playerHP + 100); showMsg('WOUND DRESSED'); updateHUD(); } }
+    if (pendingHeal > 0) { pendingHeal -= dt; if (pendingHeal <= 0) { playerHP = Math.min(150, playerHP + 100); showMsg('WOUND DRESSED'); updateHUD(); } }
     if (pendingC4 > 0) { pendingC4 -= dt; if (pendingC4 <= 0) explode(bridgePos.clone(), 16, 500); }
     if (!missionDone && OBJ.length) {
       const O = OBJ[objIdx];
@@ -3544,7 +3546,7 @@ function animate() {
   if (heroObj && !cutscene) {
     const aimNow = aiming || firing;
     const _hs = curSlot();
-    const targetFov = _hs && _hs.key === 'BINOCULARS' && aiming ? 10 : aimNow ? 33 : 50;
+    const targetFov = _hs && _hs.key === 'BINOCULARS' && aiming ? 10 : (_hs && aiming && (_hs.key === 'BARRETT' || _hs.key === 'PSG1')) ? 20 : aimNow ? 33 : 50;
     // through the glasses = eyes view: camera in the hero's head, body hidden
     const binocNow = !!(_hs && _hs.key === 'BINOCULARS' && aiming);
     if (heroObj) heroObj.visible = !binocNow;
@@ -3613,7 +3615,7 @@ window.BD_TEST = {
   state: () => ({ playing, objIdx, hp: Math.round(playerHP), ammo: player.ammo,
     slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, kind: s2.kind, reserve: s2.reserve, left: s2.left } : null; })(),
     anim: current, aiming: aiming, diff: DIFF.name,
-    sights: { law: (document.getElementById('lawSight') || {}).style?.display || '', rpg: (document.getElementById('rpgSight') || {}).style?.display || '', binoc: (document.getElementById('binocOv') || {}).style?.display || '' },
+    sights: { law: (document.getElementById('lawSight') || {}).style?.display || '', rpg: (document.getElementById('rpgSight') || {}).style?.display || '', binoc: (document.getElementById('binocOv') || {}).style?.display || '', scope: (document.getElementById('scopeOv') || {}).style?.display || '' },
     fx: { mzl: _mzlPool.some(x => x.sp.visible), decals: _decalPool.filter(x => x.sp.visible).length },
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
