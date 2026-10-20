@@ -250,6 +250,18 @@ EDIT.enemy = Object.assign({ hp: 48, sight: 95, fireRange: 72, damage: 1 }, EDIT
 EDIT.player = Object.assign({ hp: 150, heal: 100, speed: 1 }, EDIT.player);
 EDIT.vehicle = Object.assign({ hp: 500, rocketDamage: 550 }, EDIT.vehicle);
 for (const k in EDIT.weapons) if (typeof BD !== 'undefined' && BD.WEAPONS && BD.WEAPONS[k]) Object.assign(BD.WEAPONS[k], EDIT.weapons[k]);
+// tracer colours (RGBA hex, the classic CDS modding palette) + add-a-weapon
+EDIT.fx = Object.assign({ tracerPlayer: 'ffe2ae', tracerEnemy: 'ffc9a0', tracerWidth: 1 }, EDIT.fx);
+EDIT.customWeapons = EDIT.customWeapons || [];
+if (typeof BD !== 'undefined' && BD.WEAPONS) for (const cw of EDIT.customWeapons) {
+  if (!cw || !cw.key || !BD.WEAPONS[cw.base]) continue;
+  const b = BD.WEAPONS[cw.base];
+  BD.WEAPONS[cw.key] = Object.assign({}, b, { label: cw.label || cw.key, name: cw.label || cw.key,
+    dmg: +cw.dmg || b.dmg, mag: +cw.mag || b.mag, reload: +cw.reload || b.reload, interval: +cw.interval || b.interval,
+    melee: false, rocket: false });
+}
+function _trc(v, d) { const n = parseInt(String(v).replace('#', ''), 16); return isFinite(n) ? n : d; }
+const TRC_P = _trc(EDIT.fx.tracerPlayer, 0xffe2ae), TRC_E = _trc(EDIT.fx.tracerEnemy, 0xffc9a0), TRC_W = Math.max(0.2, +EDIT.fx.tracerWidth || 1);
 window.BD_EDIT = EDIT;
 for (const sec of ['enemy', 'player', 'vehicle']) for (const k in EDIT[sec]) { const v = +EDIT[sec][k]; if (v > 0) EDIT[sec][k] = v; }
 for (const wk in EDIT.weapons) for (const f in EDIT.weapons[wk]) { const v = +EDIT.weapons[wk][f]; if (v > 0) EDIT.weapons[wk][f] = v; }
@@ -755,7 +767,7 @@ const OBJ = [];
 let objIdx = 0;
 
 function makeInv(i) {
-  return BD.LOADOUTS[i].map(s => {
+  const _list = BD.LOADOUTS[i].map(s => {
     const o = { kind: s.kind, key: s.key, left: s.count !== undefined ? s.count : -1 };
     if (s.kind === 'gun') {
       const def = BD.WEAPONS[s.key];
@@ -765,6 +777,12 @@ function makeInv(i) {
     }
     return o;
   }).filter(s => !(IS_M1 && s.key === 'C4'));   // M1: nobody carries C4 — it is recovered on the ground (objective 2)
+  for (const cw of (EDIT.customWeapons || [])) {
+    if (!cw || !cw.key || !BD.WEAPONS[cw.key] || _list.some(s => s.key === cw.key)) continue;
+    const def = BD.WEAPONS[cw.key];
+    _list.push({ kind: 'gun', key: cw.key, left: -1, ammo: def.mag, reserve: def.mag * 6 });
+  }
+  return _list;
 }
 function heldInfo(M) {
   const s = M.inv[M.held];
@@ -2336,7 +2354,7 @@ function doFire(now) {
     const mz = rifleObj ? flash.position.clone() : new THREE.Vector3(player.pos.x, player.pos.y + 1.42, player.pos.z);
     const end = hits.length ? hits[0].point : raycaster.ray.at(170, new THREE.Vector3());
     const big = slot.key === 'BARRETT' || slot.key === 'PSG1';
-    spawnTracer(mz, end, big ? 0xfff3cf : 0xffe0a1, big ? 2.6 : 1);
+    spawnTracer(mz, end, TRC_P, (big ? 2.6 : 1) * TRC_W);
   }
   updateHUD();
 }
@@ -2649,7 +2667,7 @@ function updateEnemy(E, dt, now) {
       playAK(dist);
       flash.position.set(E.pos.x + Math.sin(E.yaw) * 0.7, E.pos.y + headH + 0.1, E.pos.z + Math.cos(E.yaw) * 0.7);
       flash.intensity = 40; flashT = 0.05;
-      spawnTracer(flash.position.clone(), new THREE.Vector3(T.pos.x + (Math.random() - 0.5) * 1.4, T.pos.y + 1.15 + (Math.random() - 0.5) * 0.8, T.pos.z + (Math.random() - 0.5) * 1.4), 0xffc9a0, 0.8);
+      spawnTracer(flash.position.clone(), new THREE.Vector3(T.pos.x + (Math.random() - 0.5) * 1.4, T.pos.y + 1.15 + (Math.random() - 0.5) * 0.8, T.pos.z + (Math.random() - 0.5) * 1.4), TRC_E, 0.8 * TRC_W);
       let p = dist < 12 ? 0.50 : dist < 25 ? 0.36 : dist < 45 ? 0.26 : 0.17;
       if (E._moving) p *= 0.55; else if (E.planted) p *= 1.15;   // running snaps shots off; planted fires true
       if (E.posture === 'prone') p *= 1.12; else if (E.posture === 'crouch') p *= 1.06;
@@ -3633,7 +3651,7 @@ window.BD_TEST = {
     sights: { law: (document.getElementById('lawSight') || {}).style?.display || '', rpg: (document.getElementById('rpgSight') || {}).style?.display || '', binoc: (document.getElementById('binocOv') || {}).style?.display || '', scope: (document.getElementById('scopeOv') || {}).style?.display || '' },
     edit: window.BD_EDIT,
     wdef: (() => { const o = {}; for (const k in BD.WEAPONS) o[k] = { dmg: BD.WEAPONS[k].dmg, mag: BD.WEAPONS[k].mag, reload: BD.WEAPONS[k].reload, interval: BD.WEAPONS[k].interval }; return o; })(),
-    fx: { mzl: _mzlPool.some(x => x.sp.visible), decals: _decalPool.filter(x => x.sp.visible).length },
+    fx: { trcP: TRC_P, trcE: TRC_E, trcW: TRC_W, mzl: _mzlPool.some(x => x.sp.visible), decals: _decalPool.filter(x => x.sp.visible).length },
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
     enemies: enemies.filter(E => E.alive).map(E => ({ st: E.state, hp: Math.round(E.hp), x: +E.pos.x.toFixed(1), y: +E.pos.y.toFixed(1), z: +E.pos.z.toFixed(1), d: +E.pos.distanceTo(player.pos).toFixed(1), planted: !!E.planted, moving: !!E._moving, posture: E.posture || 'stand', mem: Math.round(E.memT || 0), see: !!E._canSee, hold: !!E.holdPost, yaw: +E.yaw.toFixed(2), gr: E.grenadesLeft ?? 2, ls: E.lastSeen ? [+E.lastSeen.x.toFixed(0), +E.lastSeen.z.toFixed(0)] : null })),

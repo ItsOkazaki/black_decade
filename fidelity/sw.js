@@ -1,7 +1,7 @@
 // BLACK DECADE service worker: code always fresh, heavy assets cached.
 // First visit downloads the game once; every later visit loads from this
 // cache (models, textures, sounds) and only re-checks the small code files.
-const CACHE = 'black-decade-v72';
+const CACHE = 'black-decade-v73';
 const CORE = ['index.html', 'play.html', 'loadout.js', 'font.js', 'missions.json'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

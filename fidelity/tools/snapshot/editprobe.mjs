@@ -40,6 +40,20 @@ ok('edited: squad integrity 300', st.hp === 300, 'hp=' + st.hp);
 ok('edited: rocket damage is editor 5000', st.edit.vehicle.rocketDamage === 5000, '');
 await page.close();
 
+// 3) tracers + add-a-weapon
+page = await loadPage({ fx: { tracerPlayer: 'ff6b6b', tracerEnemy: '00ff00', tracerWidth: 2 },
+  customWeapons: [{ key: 'CUSTOM1', label: 'TEST GUN', base: 'M16A2', dmg: 77, mag: 40, reload: 1.1, interval: 0.05 }] });
+st = await S(page);
+ok('edited: your tracers are light red', st.fx.trcP === 0xff6b6b, 'trcP=' + st.fx.trcP.toString(16));
+ok('edited: enemy tracers are green', st.fx.trcE === 0x00ff00, 'trcE=' + st.fx.trcE.toString(16));
+ok('edited: tracer thickness x2', st.fx.trcW === 2, 'trcW=' + st.fx.trcW);
+ok('custom weapon registered with editor stats', !!st.wdef.CUSTOM1 && st.wdef.CUSTOM1.dmg === 77 && st.wdef.CUSTOM1.mag === 40, JSON.stringify(st.wdef.CUSTOM1));
+await page.evaluate(() => window.BD_TEST.select('CUSTOM1'));
+await sleep(600);
+st = await S(page);
+ok('custom weapon is in the kit and selectable', st.slot.key === 'CUSTOM1', 'held=' + st.slot.key);
+await page.close();
+
 await browser.close();
 console.log(`editprobe: ${PASS} pass, ${FAIL} fail`);
 process.exit(FAIL ? 1 : 0);

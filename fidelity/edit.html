@@ -50,6 +50,24 @@
   <div class="card"><h2>Weapons</h2><div class="src">Source: Catalog\0071. Weaps.txt (exe-validated damage / magazine / reload / fire interval)</div>
     <table id="wpn"><tr><th>Weapon</th><th>Damage</th><th>Magazine</th><th>Reload (s)</th><th>Interval (s)</th></tr></table></div>
 
+  <div class="card"><h2>Tracers</h2><div class="src">Tracer colours as RGBA hex — the classic CDS modding palette. Enemy tracers read on their own colour, like the old mods.</div>
+    <div class="grid">
+      <div class="fld"><label>Your tracers</label><input type="color" id="fxP" value="#ffe2ae"> <select id="fxPpre"></select></div>
+      <div class="fld"><label>Enemy tracers</label><input type="color" id="fxE" value="#ffc9a0"> <select id="fxEpre"></select></div>
+      <div class="fld"><label>Tracer thickness ×</label><input type="number" id="fxW" value="1" step="0.1" min="0.2" max="4"></div>
+    </div></div>
+
+  <div class="card"><h2>Custom weapon — add-a-weapon</h2><div class="src">Like the classic CDS weapon mods: a new gun cloned from a donor's model, icon and sound, with your stats. It joins every soldier's kit (pick it with the weapon keys / wheel).</div>
+    <div class="grid">
+      <div class="fld"><label>Enabled</label><input type="checkbox" id="cwOn"></div>
+      <div class="fld"><label>Name</label><input type="text" id="cwLabel" value="CUSTOM GUN" style="width:100%;background:#0d0f0a;border:1px solid #39402a;color:#ffe9a8;border-radius:4px;padding:5px 6px"></div>
+      <div class="fld"><label>Donor (model / icon / sound)</label><select id="cwBase" style="width:100%;background:#0d0f0a;border:1px solid #39402a;color:#ffe9a8;border-radius:4px;padding:5px 6px"></select></div>
+      <div class="fld"><label>Damage</label><input type="number" id="cwDmg"></div>
+      <div class="fld"><label>Magazine</label><input type="number" id="cwMag"></div>
+      <div class="fld"><label>Reload (s)</label><input type="number" id="cwReload" step="0.1"></div>
+      <div class="fld"><label>Interval (s)</label><input type="number" id="cwInterval" step="0.01"></div>
+    </div></div>
+
   <div class="card"><h2>Enemy (Iraqi forces)</h2><div class="src">Source: Catalog\0074. HStat.txt — every Iraqi combatant: 48 HP</div>
     <div class="grid" id="enemy"></div></div>
 
@@ -138,6 +156,9 @@ function collect() {
     for (let n = 0; n < parts.length - 1; n++) o = o[parts[n]];
     const v = parseFloat(i.value); if (isFinite(v)) o[parts[parts.length - 1]] = v;
   });
+  out.fx = { tracerPlayer: $('#fxP').value.replace('#', ''), tracerEnemy: $('#fxE').value.replace('#', ''), tracerWidth: parseFloat($('#fxW').value) || 1 };
+  out.customWeapons = $('#cwOn').checked ? [{ key: 'CUSTOM1', label: $('#cwLabel').value || 'CUSTOM GUN', base: $('#cwBase').value,
+    dmg: parseFloat($('#cwDmg').value), mag: parseFloat($('#cwMag').value), reload: parseFloat($('#cwReload').value), interval: parseFloat($('#cwInterval').value) }] : [];
   return out;
 }
 function modeLine() {
@@ -157,6 +178,31 @@ $('#import').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
   f.text().then(t => { try { localStorage.setItem('bd_edit', JSON.stringify(JSON.parse(t))); location.reload(); } catch (err) { alert('That file is not valid editor JSON.'); } });
 });
+// --- tracer palette: the exact RGBA table from the classic mods ---
+const PALETTE = { 'Light Red':'#ff6b6b', White:'#ffffff', Black:'#000000', Red:'#ff0000', Green:'#00ff00', Blue:'#0000ff',
+  Yellow:'#ffff00', Cyan:'#00ffff', Magenta:'#ff00ff', Orange:'#ffa600', Purple:'#800080', Pink:'#ffbfcc',
+  Brown:'#a62929', Gray:'#808080', 'Light Gray':'#bfbfbf', 'Dark Gray':'#404040', Gold:'#ffd600', Silver:'#bfbfbf',
+  Olive:'#808000', Teal:'#008080', Navy:'#000080' };
+function fillPalette(sel, input, val) {
+  sel.innerHTML = '<option value="">preset…</option>' + Object.keys(PALETTE).map(k => `<option>${k}</option>`).join('');
+  input.value = val || '#ffe2ae';
+  sel.addEventListener('change', () => { if (PALETTE[sel.value]) input.value = PALETTE[sel.value]; });
+}
+{
+  const fx = cur.fx || {};
+  fillPalette($('#fxPpre'), $('#fxP'), '#' + String(fx.tracerPlayer || 'ffe2ae').replace('#', ''));
+  fillPalette($('#fxEpre'), $('#fxE'), '#' + String(fx.tracerEnemy || 'ffc9a0').replace('#', ''));
+  $('#fxW').value = fx.tracerWidth || 1;
+  const bases = ['M16A2', 'SAW', 'BARRETT', 'PSG1', 'SIGP228', 'AK47'];
+  $('#cwBase').innerHTML = bases.map(b => `<option>${b}</option>`).join('');
+  const cw = (cur.customWeapons || [])[0];
+  if (cw) {
+    $('#cwOn').checked = true; $('#cwLabel').value = cw.label || 'CUSTOM GUN'; $('#cwBase').value = cw.base || 'M16A2';
+    $('#cwDmg').value = cw.dmg; $('#cwMag').value = cw.mag; $('#cwReload').value = cw.reload; $('#cwInterval').value = cw.interval;
+  } else {
+    $('#cwDmg').value = 25; $('#cwMag').value = 40; $('#cwReload').value = 1.6; $('#cwInterval').value = 0.09;
+  }
+}
 modeLine();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
