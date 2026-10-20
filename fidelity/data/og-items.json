@@ -1,0 +1,353 @@
+[
+ {
+  "id": "Radio",
+  "label": "RADIO",
+  "model": "CommsHandSet",
+  "icon": "IMAGE_WEAPON_RADIO",
+  "perPack": 35,
+  "effect": 10,
+  "useTime": 10.0
+ },
+ {
+  "id": "MediKit",
+  "label": "MEDI KIT",
+  "model": "MediKit",
+  "icon": "IMAGE_WEAPON_MEDIPACK",
+  "perPack": 6,
+  "effect": 100,
+  "useTime": 0.75
+ },
+ {
+  "id": "CombatHelmet",
+  "label": "HEAD ARMOUR",
+  "model": "USHelmet_DesertStormCamo",
+  "icon": "IMAGE_WEAPON_DESERTEAGLE",
+  "perPack": 35,
+  "effect": 85,
+  "useTime": 0.0
+ },
+ {
+  "id": "FlakJacket",
+  "label": "BODY ARMOUR",
+  "model": "BackpackMedium",
+  "icon": "IMAGE_WEAPON_KNIFE",
+  "perPack": 35,
+  "effect": 40,
+  "useTime": 0.0
+ },
+ {
+  "id": "C4Detonator",
+  "label": "C4 DETONATOR",
+  "model": "Detonator01_C4",
+  "icon": "IMAGE_WEAPON_C4DETONATOR",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Ammo",
+  "label": "UNIFORM",
+  "model": "amobox",
+  "icon": "IMAGE_WEAPON_AMMOPACK",
+  "perPack": 10,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Hacking_Kit",
+  "label": "COMPUTER HACKING KIT",
+  "model": "MediKit",
+  "icon": "IMAGE_WEAPON_COMPUTERHACKING",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 5.0
+ },
+ {
+  "id": "Bomb_Defusing_Kit",
+  "label": "BOMB DEFUSING KIT",
+  "model": "WireCutters",
+  "icon": "IMAGE_WEAPON_BOMBDEFUSING",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "PRC319_CommSet",
+  "label": "RADIO",
+  "model": "CommsHandSet",
+  "icon": "IMAGE_WEAPON_RADIO",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Night_Vision_Goggles",
+  "label": "NIGHT VISION GOGGLES",
+  "model": "AN_NightVisionGoggles",
+  "icon": "IMAGE_WEAPON_NIGHTGOGGLES",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 1.0
+ },
+ {
+  "id": "Ammo_AKSU",
+  "label": "AMMO",
+  "model": "AK74_Clip",
+  "icon": "IMAGE_AKCLIP",
+  "perPack": 1,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Ammo_AK74",
+  "label": "AMMO",
+  "model": "AK74_Clip",
+  "icon": "IMAGE_AKCLIP",
+  "perPack": 1,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Binoculars",
+  "label": "BINOCULARS",
+  "model": "Binoculars",
+  "icon": "IMAGE_WEAPON_BINOCULARS",
+  "perPack": 35,
+  "effect": 10,
+  "useTime": 1.0
+ },
+ {
+  "id": "Laser_designator",
+  "label": "LASER DESIGNATOR",
+  "model": "LaserDesignator",
+  "icon": "IMAGE_WEAPON_LASERDESIGNATOR",
+  "perPack": 40,
+  "effect": 10,
+  "useTime": 0.0
+ },
+ {
+  "id": "Wire_Cutters",
+  "label": "WIRECUTTERS",
+  "model": "WireCutters",
+  "icon": "IMAGE_WIRECUTTERS",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Tracker_Bug",
+  "label": "MEDI KIT",
+  "model": "MediKit",
+  "icon": "IMAGE_WEAPON_MEDIPACK",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Light_Mortar",
+  "label": "MEDI KIT",
+  "model": "MediKit",
+  "icon": "IMAGE_WEAPON_MEDIPACK",
+  "perPack": 35,
+  "effect": 45,
+  "useTime": 0.0
+ },
+ {
+  "id": "Ammo_AK47",
+  "label": "AMMO",
+  "model": "AK74_Clip",
+  "icon": "IMAGE_AKCLIP",
+  "perPack": 1,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Ammo_HKPSG1",
+  "label": "AMMO",
+  "model": "PSG1_AmmoBox",
+  "icon": "IMAGE_WEAPON_AMMOPACK",
+  "perPack": 4,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Plutonium_case",
+  "label": "MISCELLANEOUS",
+  "model": "plutonium_case",
+  "icon": "IMAGE_PLUTONIUMCASE",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "VehicleKey",
+  "label": "KEY",
+  "model": "TruckKey",
+  "icon": "IMAGE_KEY1",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "DoorKey",
+  "label": "KEY",
+  "model": "CoolerKeys",
+  "icon": "IMAGE_KEY2",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Staff",
+  "label": "MISCELLANEOUS",
+  "model": "Staff",
+  "icon": "IMAGE_WEAPON_MEDIPACK",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Ammo_PK",
+  "label": "AMMO",
+  "model": "LMG_PK_Clip",
+  "icon": "IMAGE_PKCLIP",
+  "perPack": 1,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Flag",
+  "label": "MISCELLANEOUS",
+  "model": "Flag_Small_UK",
+  "icon": "IMAGE_WEAPON_MEDIPACK",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Cigarette",
+  "label": "MISCELLANEOUS",
+  "model": "Cigarette.pi2",
+  "icon": "IMAGE_WEAPON_MEDIPACK",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Floppy_Disk",
+  "label": "MISCELLANEOUS",
+  "model": "FloppyDisk",
+  "icon": "IMAGE_FLOPPYDISK",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Geiger_counter",
+  "label": "RADIO",
+  "model": "GeigerCounter",
+  "icon": "IMAGE_WEAPON_RADIO",
+  "perPack": 35,
+  "effect": 10,
+  "useTime": 10.0
+ },
+ {
+  "id": "Ammo_RPK74",
+  "label": "AMMO",
+  "model": "AK74_Clip",
+  "icon": "IMAGE_AKCLIP",
+  "perPack": 1,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Ammo_Frag",
+  "label": "AMMO",
+  "model": "Grenade_Frag_Group",
+  "icon": "IMAGE_GRENADE_FRAG",
+  "perPack": 3,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Ammo_Dragunov",
+  "label": "AMMO",
+  "model": "SVDDragunov_Clip",
+  "icon": "IMAGE_DRAGONOVCLIP",
+  "perPack": 1,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Armoury_keycard",
+  "label": "KEY",
+  "model": "Security_card_01",
+  "icon": "IMAGE_KEYCARD1",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "MP1_Recovery",
+  "label": "MISCELLANEOUS",
+  "model": "MP1_Recovery",
+  "icon": "IMAGE_VIDEOCAM",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "MP2_Recovery",
+  "label": "MISCELLANEOUS",
+  "model": "MP2_Recovery",
+  "icon": "IMAGE_PLUTONIUMCASE",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "MP3_Recovery",
+  "label": "MISCELLANEOUS",
+  "model": "MP3_Recovery",
+  "icon": "IMAGE_CAMCASE",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "MP4_Recovery",
+  "label": "MISCELLANEOUS",
+  "model": "MP4_Recovery",
+  "icon": "IMAGE_FLIGHTBOX",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "MP5_Recovery",
+  "label": "MISCELLANEOUS",
+  "model": "MP5_Recovery",
+  "icon": "IMAGE_VIDEOCAM",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "MP6_Recovery",
+  "label": "MISCELLANEOUS",
+  "model": "MP6_Recovery",
+  "icon": "IMAGE_FLIGHTBOX",
+  "perPack": 35,
+  "effect": 0,
+  "useTime": 0.0
+ },
+ {
+  "id": "Loudspeaker",
+  "label": "RADIO",
+  "model": "Loudspeaker",
+  "icon": "IMAGE_WEAPON_RADIO",
+  "perPack": 35,
+  "effect": 10,
+  "useTime": 10.0
+ }
+]

@@ -84,3 +84,7 @@ guard turns and hunts instead of standing in patrol; posted sentries scan
 wide arcs and notice a standing man behind them. probe20's voice check now
 polls its own window (the wounded-exit raced the contact shout once enemy
 HP changed). Run: `cd /tmp/snap && node probe36.mjs`.
+
+editprobe.mjs — Data Editor overrides (bd_edit) must drive the game
+(enemy HP, weapon damage, squad HP, vehicle damage), and with no edits
+saved the game must report the pure OG values (48 / 14 / 150 / 550).

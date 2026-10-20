@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLACK DECADE — Data Editor (reverse-engineered OG rules)</title>
+<style>
+  body { background:#0d0f0a; color:#d8dcbf; font-family:'Segoe UI', Arial, sans-serif; margin:0; padding:26px 16px 60px; }
+  .wrap { max-width:940px; margin:0 auto; }
+  h1 { color:#e8c33a; letter-spacing:.05em; font-size:24px; margin:0 0 2px; }
+  .sub { color:#9aa27a; letter-spacing:.16em; font-size:11px; text-transform:uppercase; margin-bottom:16px; }
+  .card { background:#151810; border:1px solid #39402a; border-radius:8px; padding:16px 20px; margin-bottom:16px; }
+  h2 { color:#cfe0a0; font-size:15px; letter-spacing:.08em; margin:2px 0 10px; text-transform:uppercase; }
+  .src { color:#8a946e; font-size:12px; margin:-6px 0 10px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; color:#9aa27a; font-weight:600; padding:4px 6px; border-bottom:1px solid #39402a; }
+  td { padding:3px 6px; border-bottom:1px solid #22281a; }
+  input[type=number] { width:76px; background:#0d0f0a; border:1px solid #39402a; color:#ffe9a8; border-radius:4px; padding:4px 6px; font-size:13px; }
+  input.changed { border-color:#e8c33a; background:#1c1a10; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 4px; }
+  button, a.btn { background:#3f5222; color:#fff; border:0; border-radius:6px; padding:11px 18px; font-weight:700; cursor:pointer; text-decoration:none; font-size:14px; }
+  button:hover, a.btn:hover { background:#506430; }
+  button.alt { background:#2c331f; } button.danger { background:#5a2d20; }
+  .note { font-size:13px; line-height:1.55; color:#b9c298; }
+  .flash { color:#aef0a0; font-weight:700; margin-left:10px; }
+  label.file { background:#2c331f; color:#fff; border-radius:6px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:8px 22px; }
+  .fld label { display:block; font-size:12px; color:#9aa27a; margin-bottom:3px; }
+  .fld input { width:100%; box-sizing:border-box; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DATA EDITOR</h1>
+  <div class="sub">Black Decade · reverse-engineered original-game rules · edits apply on next mission load</div>
+
+  <div class="card">
+    <div class="note">Every number below starts at the <b>original game's own extracted value</b> (sources named under each table — raw tables: <a href="data/og-weapons.json" style="color:#e8c33a">weapons</a> · <a href="data/og-humans.json" style="color:#e8c33a">humans</a> · <a href="data/og-items.json" style="color:#e8c33a">items</a> · <a href="data/og-units.json" style="color:#e8c33a">units</a>). Change anything, save, then play — the sandbox game reads your values at boot. Your edits live only in this browser; <b>Reset</b> returns to the pure original.</div>
+    <div class="row">
+      <button id="save">💾 SAVE EDITS</button>
+      <a class="btn" href="play.html">▶ PLAY</a>
+      <button class="alt" id="reset">↺ RESET TO ORIGINAL</button>
+      <button class="alt" id="export">⤓ EXPORT JSON</button>
+      <label class="file">⤒ IMPORT JSON<input type="file" id="import" accept=".json" hidden></label>
+      <span class="flash" id="flash"></span>
+    </div>
+    <div class="note" id="mode"></div>
+  </div>
+
+  <div class="card"><h2>Weapons</h2><div class="src">Source: Catalog\0071. Weaps.txt (exe-validated damage / magazine / reload / fire interval)</div>
+    <table id="wpn"><tr><th>Weapon</th><th>Damage</th><th>Magazine</th><th>Reload (s)</th><th>Interval (s)</th></tr></table></div>
+
+  <div class="card"><h2>Enemy (Iraqi forces)</h2><div class="src">Source: Catalog\0074. HStat.txt — every Iraqi combatant: 48 HP</div>
+    <div class="grid" id="enemy"></div></div>
+
+  <div class="card"><h2>Your squad</h2><div class="src">Sources: Units.txt → US_Infantryman00-03 = 150 HP · Inven.txt MediKit heals 100</div>
+    <div class="grid" id="player"></div></div>
+
+  <div class="card"><h2>Vehicles</h2><div class="src">Sources: VStat.txt BMP2 hull 500 · Weaps.txt LAW66 damage 550</div>
+    <div class="grid" id="vehicle"></div></div>
+
+  <div class="card"><h2>Difficulty multipliers</h2><div class="src">Sandbox design values (the exe's own difficulty effects are still being extracted) — ×enemy HP / accuracy / bullet damage / reaction time</div>
+    <table id="diff"><tr><th>Difficulty</th><th>HP</th><th>Accuracy</th><th>Damage</th><th>Reaction</th></tr></table></div>
+</div>
+
+<script>
+const OG = {
+  weapons: {
+    M16A2:   { dmg: 14, mag: 30,  reload: 1.5, interval: 0.086 },
+    SAW:     { dmg: 15, mag: 100, reload: 2.0, interval: 0.10 },
+    BARRETT: { dmg: 80, mag: 11,  reload: 1.5, interval: 1.15 },
+    SIGP228: { dmg: 15, mag: 13,  reload: 1.5, interval: 0.20 },
+    PSG1:    { dmg: 50, mag: 20,  reload: 1.8, interval: 0.75 },
+    LAW66:   { dmg: 300, mag: 1,  reload: 3.0, interval: 1.0 },
+    RPG7:    { dmg: 320, mag: 1,  reload: 2.6, interval: 1.2 },
+    AK47:    { dmg: 14, mag: 30,  reload: 2.2, interval: 0.11 }
+  },
+  enemy:  { hp: 48, sight: 95, fireRange: 72, damage: 1 },
+  player: { hp: 150, heal: 100, speed: 1 },
+  vehicle:{ hp: 500, rocketDamage: 550 },
+  difficulty: {
+    EASY:   { hp: 0.75, acc: 0.55, dmg: 0.55, react: 1.45 },
+    NORMAL: { hp: 1.0,  acc: 1.0,  dmg: 1.0,  react: 1.0 },
+    HARD:   { hp: 1.25, acc: 1.45, dmg: 1.5,  react: 0.65 }
+  }
+};
+const NAMES = { hp:'Base health', sight:'Sight range (m)', fireRange:'Fire range (m)', damage:'Bullet damage ×',
+  heal:'Medikit heals', speed:'Move speed ×', rocketDamage:'Rocket vs armour' };
+const LABELS = { M16A2:'M16A2', SAW:'M249 SAW', BARRETT:'Barrett M82', SIGP228:'SIG P228 (silenced)', PSG1:'HK PSG-1', LAW66:'LAW 66', RPG7:'RPG-7', AK47:'AK-47 (enemy)' };
+
+let cur = structuredClone(OG);
+try { const saved = JSON.parse(localStorage.getItem('bd_edit') || 'null'); if (saved) merge(cur, saved); } catch (e) {}
+function merge(dst, src) { for (const k in src) { if (src[k] && typeof src[k] === 'object' && !Array.isArray(src[k])) { dst[k] = dst[k] || {}; merge(dst[k], src[k]); } else dst[k] = src[k]; } }
+
+const $ = s => document.querySelector(s);
+function num(path, val, step) {
+  const i = document.createElement('input');
+  i.type = 'number'; i.value = val; i.step = step || 'any'; i.dataset.path = path;
+  i.addEventListener('input', () => { i.classList.add('changed'); });
+  return i;
+}
+{ // weapons table
+  const t = $('#wpn');
+  for (const k in OG.weapons) {
+    const tr = document.createElement('tr');
+    const td0 = document.createElement('td'); td0.textContent = LABELS[k]; tr.appendChild(td0);
+    for (const f of ['dmg','mag','reload','interval']) {
+      const td = document.createElement('td'); td.appendChild(num(`weapons.${k}.${f}`, cur.weapons[k][f])); tr.appendChild(td);
+    }
+    t.appendChild(tr);
+  }
+}
+function fieldGroup(el, sec, obj) {
+  for (const k in obj) {
+    const d = document.createElement('div'); d.className = 'fld';
+    const l = document.createElement('label'); l.textContent = (NAMES[k] || k) + (sec === 'player' && k === 'hp' ? ' (squad health)' : '');
+    d.appendChild(l); d.appendChild(num(`${sec}.${k}`, cur[sec][k])); el.appendChild(d);
+  }
+}
+fieldGroup($('#enemy'), 'enemy', OG.enemy);
+fieldGroup($('#player'), 'player', OG.player);
+fieldGroup($('#vehicle'), 'vehicle', OG.vehicle);
+{ // difficulty rows
+  const t = $('#diff');
+  for (const d in OG.difficulty) {
+    const tr = document.createElement('tr');
+    const td0 = document.createElement('td'); td0.textContent = d; tr.appendChild(td0);
+    for (const f of ['hp','acc','dmg','react']) {
+      const td = document.createElement('td'); td.appendChild(num(`difficulty.${d}.${f}`, cur.difficulty[d][f])); tr.appendChild(td);
+    }
+    t.appendChild(tr);
+  }
+}
+function collect() {
+  const out = structuredClone(OG);
+  document.querySelectorAll('input[data-path]').forEach(i => {
+    const parts = i.dataset.path.split('.'); let o = out;
+    for (let n = 0; n < parts.length - 1; n++) o = o[parts[n]];
+    const v = parseFloat(i.value); if (isFinite(v)) o[parts[parts.length - 1]] = v;
+  });
+  return out;
+}
+function modeLine() {
+  $('#mode').textContent = localStorage.getItem('bd_edit') ? '✎ Custom data ACTIVE — the game will use your edited values.' : '✓ Running on the original extracted values (no edits saved).';
+}
+$('#save').onclick = () => {
+  localStorage.setItem('bd_edit', JSON.stringify(collect()));
+  $('#flash').textContent = 'Saved ✓'; setTimeout(() => $('#flash').textContent = '', 2500); modeLine();
+};
+$('#reset').onclick = () => { localStorage.removeItem('bd_edit'); location.reload(); };
+$('#export').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(collect(), null, 1)], { type: 'application/json' }));
+  a.download = 'black-decade-data.json'; a.click();
+};
+$('#import').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => { try { localStorage.setItem('bd_edit', JSON.stringify(JSON.parse(t))); location.reload(); } catch (err) { alert('That file is not valid editor JSON.'); } });
+});
+modeLine();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>

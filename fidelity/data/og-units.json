@@ -1,0 +1,472 @@
+[
+ {
+  "name": "Bradley",
+  "uclass": "SOLDIER",
+  "model": "Hero01_Armstrong",
+  "baseStat": "US_Infantryman00",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "Bradley.sbk",
+  "role": "RIFLEMAN"
+ },
+ {
+  "name": "Ramirez",
+  "uclass": "SOLDIER",
+  "model": "Hero02_Ramirez",
+  "baseStat": "US_Infantryman01",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "Ramirez.sbk",
+  "role": "HEAVY WEAPONS"
+ },
+ {
+  "name": "Jones",
+  "uclass": "SOLDIER",
+  "model": "Hero03_Jones",
+  "baseStat": "US_Infantryman02",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "Jones.sbk",
+  "role": "COMBAT ENGINEER"
+ },
+ {
+  "name": "Foley",
+  "uclass": "SOLDIER",
+  "model": "Hero04_Foley",
+  "baseStat": "US_Infantryman03",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "Foley.sbk",
+  "role": "SNIPER"
+ },
+ {
+  "name": "Iraqi_Conscript",
+  "uclass": "SOLDIER",
+  "model": "IraqInfantry01_Sandy",
+  "baseStat": "IR_Infantryman00",
+  "score": 1,
+  "level": "Rookie",
+  "voice": "Iraqi_soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Republican",
+  "uclass": "SOLDIER",
+  "model": "IraqERG01_DesertCamoPete",
+  "baseStat": "IR_EliteRepub",
+  "score": 2,
+  "level": "Rookie",
+  "voice": "Iraqi_soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Goat_Herder",
+  "uclass": "GOAT HERDER",
+  "model": "GoatHerder",
+  "baseStat": "IR_GoatHerder",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "Goat_Herder.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "US_Technician",
+  "uclass": "CIVILIAN",
+  "model": "USTechnician",
+  "baseStat": "IR_Civilian",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "US_Civilian.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Allied_POW",
+  "uclass": "POW",
+  "model": "AlliedPOW",
+  "baseStat": "US_POW",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "US_Civilian.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_POW_Guard",
+  "uclass": "SOLDIER",
+  "model": "IraqPOWGuard",
+  "baseStat": "IR_Infantryman00",
+  "score": 2,
+  "level": "Rookie",
+  "voice": "Iraqi_soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Scientist_Head",
+  "uclass": "CIVILIAN",
+  "model": "IraqScientist",
+  "baseStat": "IR_Civilian",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "kuwait_civ04.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Scientist",
+  "uclass": "CIVILIAN",
+  "model": "IraqScientist",
+  "baseStat": "IR_Civilian",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "kuwait_civ01.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Toturer",
+  "uclass": "SOLDIER",
+  "model": "IraqTorturer",
+  "baseStat": "IR_Civilian",
+  "score": 2,
+  "level": "Rookie",
+  "voice": "Iraqi_Civilian.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Intel",
+  "uclass": "SOLDIER",
+  "model": "IraqIntOfficer",
+  "baseStat": "IR_Infantryman00",
+  "score": 3,
+  "level": "Rookie",
+  "voice": "Iraqi_Civilian.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "US_Missile_Expert",
+  "uclass": "MISSILE EXPERT",
+  "model": "USMIssileExpert",
+  "baseStat": "US_Missile_Expert",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "Franklin.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Sadam_Hussein",
+  "uclass": "SOLDIER",
+  "model": "SaddamHussein",
+  "baseStat": "IR_Saddam",
+  "score": 200,
+  "level": "Rookie",
+  "voice": "Sadam_Hussein.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Kuwaiti_Emir",
+  "uclass": "EMIR",
+  "model": "EmirKuwait",
+  "baseStat": "Emir",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "Emir.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Emirs_Bodyguard1",
+  "uclass": "SOLDIER",
+  "model": "EmirBodyguard",
+  "baseStat": "Emirs_Bodyguards",
+  "score": 0,
+  "level": "Rookie",
+  "voice": "Emirs_Bodyguard.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "US_Commander",
+  "uclass": "SOLDIER",
+  "model": "USCommander",
+  "baseStat": "US_Commander",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "US_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Repub_Officer",
+  "uclass": "SOLDIER",
+  "model": "IraqERG02_Officer",
+  "baseStat": "IR_EliteRepub_Officer",
+  "score": 2,
+  "level": "Rookie",
+  "voice": "Iraqi_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Sadam_EliteGuard",
+  "uclass": "SOLDIER",
+  "model": "SaddamBodyguard",
+  "baseStat": "Saddams_Bodyguards",
+  "score": 5,
+  "level": "Rookie",
+  "voice": "Iraqi_Bodyguard.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_Regular_Officer",
+  "uclass": "SOLDIER",
+  "model": "IraqOfficer01_Sandy",
+  "baseStat": "IR_Regular_Officer",
+  "score": 2,
+  "level": "Rookie",
+  "voice": "Iraqi_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "US_Delta_Force",
+  "uclass": "SOLDIER",
+  "model": "DeltaForceNPC",
+  "baseStat": "US_Delta_Force",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "US_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "US_Tank_Commander",
+  "uclass": "SOLDIER",
+  "model": "M1AbramsCommander",
+  "baseStat": "US_Commander",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "US_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Emirs_Bodyguard2",
+  "uclass": "SOLDIER",
+  "model": "EmirBodyguard",
+  "baseStat": "Emirs_Bodyguards",
+  "score": 0,
+  "level": "Rookie",
+  "voice": "Emirs_Bodyguard.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "US_Guard",
+  "uclass": "SOLDIER",
+  "model": "USGuard",
+  "baseStat": "US_Delta_Force",
+  "score": 0,
+  "level": "Rookie",
+  "voice": "US_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Blackhawk_Pilot",
+  "uclass": "SOLDIER",
+  "model": "Blackhawk_Pilot",
+  "baseStat": "US_Infantryman02",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "Blackhawk_Pilot.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Blackhawk_Co_Pilot",
+  "uclass": "SOLDIER",
+  "model": "Blackhawk_CoPilot",
+  "baseStat": "US_Infantryman02",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "Blackhawk_Copilot.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Blackhawk_Gunner",
+  "uclass": "SOLDIER",
+  "model": "Blackhawk_Gunner",
+  "baseStat": "US_Infantryman02",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "Blackhawk_Pilot.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Sadam_Bodyguard",
+  "uclass": "SOLDIER",
+  "model": "SaddamBodyguard",
+  "baseStat": "Saddams_Bodyguards",
+  "score": 100,
+  "level": "Rookie",
+  "voice": "Iraqi_Bodyguard.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "IR_Base_Commandant",
+  "uclass": "CIVILIAN",
+  "model": "IraqBaseCommandant",
+  "baseStat": "IR_Civilian",
+  "score": 10,
+  "level": "Rookie",
+  "voice": "Iraqi_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "CS_IRAQI_POW",
+  "uclass": "SOLDIER",
+  "model": "IraqInfantry01_Sandy",
+  "baseStat": "IR_Infantryman00",
+  "score": 1,
+  "level": "Rookie",
+  "voice": "Iraqi_soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Mission2_Civ01",
+  "uclass": "CIVILIAN",
+  "model": "EmirBodyguard",
+  "baseStat": "NU_Civilian01",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "kuwait_civ01.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Mission2_Civ02",
+  "uclass": "CIVILIAN",
+  "model": "GoatHerder",
+  "baseStat": "NU_Civilian01",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "kuwait_civ02.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Mission2_Civ03",
+  "uclass": "CIVILIAN",
+  "model": "SaddamBodyguard",
+  "baseStat": "NU_Civilian01",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "kuwait_civ03.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "US_Commander_Training2",
+  "uclass": "SOLDIER",
+  "model": "US_MasterSergeant",
+  "baseStat": "US_Commander",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "US_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "MIA_Grunt",
+  "uclass": "SOLDIER",
+  "model": "Hero04_Foley",
+  "baseStat": "US_Infantryman00",
+  "score": 200,
+  "level": "Rookie",
+  "voice": "Foley.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Mission2_Civ04",
+  "uclass": "CIVILIAN",
+  "model": "IraqIntOfficer",
+  "baseStat": "NU_Civilian01",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "kuwait_civ04.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Mission4_SignalBoosterTech",
+  "uclass": "SOLDIER",
+  "model": "IraqScientist",
+  "baseStat": "IR_Civilian",
+  "score": 2,
+  "level": "Rookie",
+  "voice": "Iraqi_Civilian.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Allied_POW_2",
+  "uclass": "CIVILIAN",
+  "model": "AlliedPOW",
+  "baseStat": "US_POW",
+  "score": -50,
+  "level": "Rookie",
+  "voice": "US_Civilian.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Outro_Commander",
+  "uclass": "SOLDIER",
+  "model": "OUTRO_Commander",
+  "baseStat": "US_Infantryman00",
+  "score": 5,
+  "level": "Guard",
+  "voice": "US_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Outro_SAS_Commander",
+  "uclass": "SOLDIER",
+  "model": "OUTRO_SAS_Commander",
+  "baseStat": "US_Infantryman00",
+  "score": 5,
+  "level": "Guard",
+  "voice": "US_Soldier.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Iraqi_M11bNuke_Scientist",
+  "uclass": "SOLDIER",
+  "model": "IraqScientist",
+  "baseStat": "IR_Civilian",
+  "score": 2,
+  "level": "Rookie",
+  "voice": "Iraqi_Civilian.sbk",
+  "role": "-1"
+ },
+ {
+  "name": "Bradley_Training",
+  "uclass": "SOLDIER",
+  "model": "Hero01_Armstrong",
+  "baseStat": "US_Infantryman00",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "TrainingBradley.sbk",
+  "role": "RIFLEMAN"
+ },
+ {
+  "name": "Ramirez_Training",
+  "uclass": "SOLDIER",
+  "model": "Hero02_Ramirez",
+  "baseStat": "US_Infantryman01",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "TrainingRamirez.sbk",
+  "role": "HEAVY WEAPONS"
+ },
+ {
+  "name": "Jones_Training",
+  "uclass": "SOLDIER",
+  "model": "Hero03_Jones",
+  "baseStat": "US_Infantryman02",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "TrainingJones.sbk",
+  "role": "COMBAT ENGINEER"
+ },
+ {
+  "name": "Foley_Training",
+  "uclass": "SOLDIER",
+  "model": "Hero04_Foley",
+  "baseStat": "US_Infantryman03",
+  "score": -10,
+  "level": "Rookie",
+  "voice": "TrainingFoley.sbk",
+  "role": "SNIPER"
+ }
+]

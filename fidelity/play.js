@@ -240,6 +240,19 @@ const SET = {
   inv: localStorage.getItem('bd_inv') === '1',
 };
 SET.lowGfx = (navigator.hardwareConcurrency || 4) <= 4;
+// ==== REWORK SANDBOX: editable reverse-engineered data ================
+// Every default below is the ORIGINAL game's own extracted value (see
+// tools/og-data.md). The Data Editor page (edit.html) saves overrides to
+// localStorage 'bd_edit'; with no saved edits this block changes nothing.
+const EDIT = (() => { try { return JSON.parse(localStorage.getItem('bd_edit') || 'null') || {}; } catch (e) { return {}; } })();
+EDIT.weapons = EDIT.weapons || {};
+EDIT.enemy = Object.assign({ hp: 48, sight: 95, fireRange: 72, damage: 1 }, EDIT.enemy);
+EDIT.player = Object.assign({ hp: 150, heal: 100, speed: 1 }, EDIT.player);
+EDIT.vehicle = Object.assign({ hp: 500, rocketDamage: 550 }, EDIT.vehicle);
+for (const k in EDIT.weapons) if (typeof BD !== 'undefined' && BD.WEAPONS && BD.WEAPONS[k]) Object.assign(BD.WEAPONS[k], EDIT.weapons[k]);
+window.BD_EDIT = EDIT;
+for (const sec of ['enemy', 'player', 'vehicle']) for (const k in EDIT[sec]) { const v = +EDIT[sec][k]; if (v > 0) EDIT[sec][k] = v; }
+for (const wk in EDIT.weapons) for (const f in EDIT.weapons[wk]) { const v = +EDIT.weapons[wk][f]; if (v > 0) EDIT.weapons[wk][f] = v; }
 // the original game's difficulty: enemy toughness, aim, damage and nerve
 const DIFFS = {
   EASY:   { name: 'EASY',   hp: 0.75, acc: 0.55, dmg: 0.55, react: 1.45 },
@@ -247,6 +260,7 @@ const DIFFS = {
   HARD:   { name: 'HARD',   hp: 1.25, acc: 1.45, dmg: 1.5,  react: 0.65 },
 };
 const DIFF = DIFFS[(() => { try { return localStorage.getItem('bd_diff'); } catch (e) { return null; } })()] || DIFFS.NORMAL;
+if (EDIT.difficulty && EDIT.difficulty[DIFF.name]) for (const k of ['hp', 'acc', 'dmg', 'react']) if (k in EDIT.difficulty[DIFF.name]) DIFF[k] = EDIT.difficulty[DIFF.name][k];
 const EXTRA_ANIMS = [];   // the recovered original animation library (models/play/animlib.glb)
 try { // software rasterizers (SwiftShader/llvmpipe) mean this machine has no GPU path — start lean
   const gl = renderer.getContext();
@@ -453,10 +467,10 @@ const AUTH = { walk: 1.19, run: 4.07, crouch: 1.01 };
 const E_ANIM = { walk: 'UPRIGHT_WALK_WITH_RIFLE', run: 'UPRIGHT_RELAXED_RUN_WITH_RIFLE',
   aim: 'UPRIGHT_AIM_RIFLE', idle: 'IDLE_LOOK_AROUND_WITH_GUN',
   deathF: 'DEATH_BY_SHOTGUN_FORWARD', deathB: 'DEATH_BY_SHOTGUN_BACKWARD' };
-const E_SIGHT = 95, E_FIRE_RANGE = 72;   // m: guards see, shoot and chase at real ranges
+const E_SIGHT = EDIT.enemy.sight, E_FIRE_RANGE = EDIT.enemy.fireRange;   // m: guards see, shoot and chase at real ranges
 
 function makeEnemyState(cfg) {
-  return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: Math.round(48 * DIFF.hp), alive: true,
+  return Object.assign({ obj: null, mixer: null, actions: {}, current: null, hp: Math.round(EDIT.enemy.hp * DIFF.hp), alive: true,
     envY: 0, holdPost: false, path: null, pathGoal: null, grenadesLeft: 2, stillT: 0, seenT: -99,
     yaw: 0, state: 'patrol', wp: 0, spotT: 0, lostT: 0, burstLeft: 0, nextShot: 0,
     headBone: null, headGear: null, label: 'HOSTILE', props: [], faceConn: null, hatConn: null, typeIdx: 0 }, cfg);
@@ -504,7 +518,7 @@ function buildEnemies() {
   });
   for (const E of enemies) E.active = player.pos.distanceTo(E.pos) < ENEMY_ACTIVATE_DIST;
 }
-let playerHP = 150, dmgT = 0;
+let playerHP = EDIT.player.hp, dmgT = 0;
 
 function enemySetAnim(E, name, once = false) {
   if (!E.actions[name] || E.current === name) return;
@@ -518,7 +532,7 @@ function enemySetAnim(E, name, once = false) {
 }
 
 function resetEnemy(E) {
-  E.hp = Math.round(48 * DIFF.hp); E.alive = true; E.state = 'patrol'; E.wp = 0; E.grenadesLeft = 2; E.stillT = 0; E.seenT = -99; E.path = null;
+  E.hp = Math.round(EDIT.enemy.hp * DIFF.hp); E.alive = true; E.state = 'patrol'; E.wp = 0; E.grenadesLeft = 2; E.stillT = 0; E.seenT = -99; E.path = null;
   E.memT = 0; E.alert = 0; E.lastSeen = null; E.coverPos = null; E.posture = 'stand'; E.searchPts = null; E.role = undefined;
   E.spotT = 0; E.lostT = 0; E.burstLeft = 0; E.invPos = null; E.invT = 0; E.pauseT = 0;
   if (!E.active && E.obj) { scene.remove(E.obj); E.obj = null; E.mixer = null; E.actions = {}; E.current = null; }
@@ -883,7 +897,7 @@ function explode(pos, r, dmg) {
     const d = E.pos.distanceTo(pos);
     if (d < r + 1) hurtEnemy(E, dmg * Math.max(0.15, 1 - d / (r + 2)));
   }
-  if (armor && armor.alive && armor.obj.position.distanceTo(pos) < 6.5) damageArmor(550);
+  if (armor && armor.alive && armor.obj.position.distanceTo(pos) < 6.5) damageArmor(EDIT.vehicle.rocketDamage);
   const pd = player.pos.distanceTo(pos);
   if (pd < r * 0.7) { playerHP -= 26 * (1 - pd / (r * 0.7)); dmgT = 0.5; if (playerHP <= 0) die('BLAST'); }
   if (objIdx === 2 && bridgePos.distanceTo(pos) < 18) completeMig();
@@ -940,7 +954,7 @@ function useItem(slot, now) {
   if (slot.key === 'MEDIKIT') {
     if (slot.left <= 0) { playClick(); return; }
     if (pendingHeal > 0) return;   // already dressing a wound
-    if (playerHP >= 150) { showMsg('HEALTH FULL'); return; }
+    if (playerHP >= EDIT.player.hp) { showMsg('HEALTH FULL'); return; }
     slot.left--; throwCd = now + 1.4; pendingHeal = 1.2;
     setAnim('anim_85ABBE9A', true); player.actT = 1.3;   // dressing the wound, one hand on the kit
     showMsg('DRESSING WOUND…'); buildItemBar(); updateHUD();
@@ -974,7 +988,7 @@ function tryHeal() {
     buildItemBar(); updateHUD();
     return;
   }
-  if (playerHP < 150) { useItem(M.inv[idx], nowSec); return; }
+  if (playerHP < EDIT.player.hp) { useItem(M.inv[idx], nowSec); return; }
   showMsg('HEALTH FULL', 'NO WOUNDED MAN IN REACH');
 }
 function giveItem(ti, si) {
@@ -1170,7 +1184,7 @@ async function buildArmor(sp) {
     o.traverse(m2 => { if (m2.isMesh) { m2.castShadow = !SET.lowGfx; m2.receiveShadow = true; const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.color && mm.userData.c0 === undefined) mm.userData.c0 = mm.color.getHex(); }); } });
     scene.add(o);
     const fwd = new THREE.Vector3(Math.sin(sp.yaw), 0, Math.cos(sp.yaw));
-    armor = { obj: o, hp: 500, alive: true, yaw: sp.yaw, wait: 2, dir: 1, fireT: 2.5, smokeT: 0,
+    armor = { obj: o, hp: EDIT.vehicle.hp, alive: true, yaw: sp.yaw, wait: 2, dir: 1, fireT: 2.5, smokeT: 0,
       a: new THREE.Vector3(sp.x, 0, sp.z).addScaledVector(fwd, -17),
       b: new THREE.Vector3(sp.x, 0, sp.z).addScaledVector(fwd, 17),
       col: { x: sp.x, z: sp.z, r: 3.1, top: gy + 3.4 }, turret: null };
@@ -1458,17 +1472,17 @@ function completeMig() {
 function restartMission() {
   // full mission reset WITHOUT reloading the page — assets stay in memory,
   // only the state is rebuilt: fresh kit, fresh ammo, everyone back on post
-  playerHP = 150; missionDone = false; objIdx = 0; kills = 0; dmgT = 0;
+  playerHP = EDIT.player.hp; missionDone = false; objIdx = 0; kills = 0; dmgT = 0;
   pendingC4 = 0; pendingHeal = 0; player.vy = 0; player.airborne = false;
   for (const R of rockets) scene.remove(R.obj); rockets.length = 0;
   for (const Pj of projectiles) scene.remove(Pj.obj); projectiles.length = 0;
   for (const Sk of smokes) scene.remove(Sk.obj); smokes.length = 0;
-  members.forEach((M, i) => { M.inv = makeInv(i); M.held = 0; M.hp = 150; M.alive = true; });
+  members.forEach((M, i) => { M.inv = makeInv(i); M.held = 0; M.hp = EDIT.player.hp; M.alive = true; });
   if (activeIdx !== 0) switchTo(0);
   resetEnemies(false);
   pickups.forEach(p => { p.taken = false; if (p.obj) p.obj.visible = true; });
   if (armor && armorSpawn) {
-    armor.alive = true; armor.hp = 500; armor.fireT = 3; armor.wait = 1; armor.dir = 1; armor.yaw = armorSpawn.yaw;
+    armor.alive = true; armor.hp = EDIT.vehicle.hp; armor.fireT = 3; armor.wait = 1; armor.dir = 1; armor.yaw = armorSpawn.yaw;
     armor.obj.position.set(armorSpawn.x, (() => { const h = groundHitY(armorSpawn.x, armorSpawn.z, (armorSpawn.y || 0) + 0.6); return h !== null ? h : groundY(armorSpawn.x, armorSpawn.z); })(), armorSpawn.z);
     armor.obj.rotation.y = armorSpawn.yaw;
     armor.obj.traverse(m2 => { if (m2.isMesh) { const ms = Array.isArray(m2.material) ? m2.material : [m2.material]; ms.forEach(mm => { if (mm.userData.c0 !== undefined) mm.color.setHex(mm.userData.c0); }); } });
@@ -1486,7 +1500,7 @@ function resetSquadToStart() {
   { const Z = members[3]; if (Z) Z.prisoner = true; if (IS_M1) { const c3 = document.getElementById('card3'); if (c3) c3.style.display = 'none'; } }
   members.forEach((M, i) => {
     if (M.absent) { M.alive = false; if (M.obj) M.obj.visible = false; return; }
-    M.alive = true; M.hp = 150;
+    M.alive = true; M.hp = EDIT.player.hp;
     if (M.prisoner) { M.pos.copy(prisonPos); M.pos.y = groundYCached(prisonPos.x, prisonPos.z); if (M.obj) M.obj.position.copy(M.pos); return; }
     if (i !== activeIdx) { M.pos.set(sp[0] + i * 1.6 - 2, player.pos.y, sp[2] + 2 + i); if (M.obj) M.obj.visible = true; }
   });
@@ -1523,7 +1537,7 @@ function renderF1() {
   const st = document.getElementById('f1stats');
   if (st) st.textContent = 'HOSTILES DOWN ' + kills + ' OF ' + enemies.length + '   ·   SQUAD: ' + members.map((M, i) =>
     (M.absent ? M.name + ' — NOT ON THIS OP' : M.prisoner ? M.name + ' — CAPTIVE' : !M.alive ? M.name + ' — DOWN'
-     : M.name + ' ' + Math.round(100 * (i === activeIdx ? playerHP : M.hp) / 150) + '%')).join('  ·  ');
+     : M.name + ' ' + Math.round(100 * (i === activeIdx ? playerHP : M.hp) / EDIT.player.hp) + '%')).join('  ·  ');
 }
 function toggleF1(force) {
   f1Open = force !== undefined ? force : !f1Open;
@@ -1552,7 +1566,7 @@ function renderInv() {
   if (sq) {
     sq.innerHTML = members.map((Mt, i) => {
       if (Mt.absent || Mt.prisoner) return '';   // not found yet / not on this op: not in your inventory either
-      const state = !Mt.alive ? 'DOWN' : Math.round(100 * (i === activeIdx ? playerHP : Mt.hp) / 150) + ' HP';
+      const state = !Mt.alive ? 'DOWN' : Math.round(100 * (i === activeIdx ? playerHP : Mt.hp) / EDIT.player.hp) + ' HP';
       const d = i === activeIdx ? 'YOU' : (Mt.absent || Mt.prisoner ? '—' : Math.round(Mt.pos.distanceTo(player.pos)) + ' M AWAY');
       return `<div class="mate${i === activeIdx ? ' self' : ''}" data-i="${i}"><img src="textures/portraits/sq${i + 1}.png?v=2"><div><b>${BD.NAMES[i]}</b><span>${state} · ${d}</span></div></div>`;
     }).join('');
@@ -1674,7 +1688,7 @@ function updateMate(M, dt, now) {
       if (tgt < 0 && M.hp < 45) tgt = members.indexOf(M);
       if (tgt >= 0) {
         kit.left--; M._aidCd = 6;
-        if (tgt === activeIdx) playerHP = Math.min(150, playerHP + 50);
+        if (tgt === activeIdx) playerHP = Math.min(EDIT.player.hp, playerHP + 50);
         else members[tgt].hp = Math.min(100, members[tgt].hp + 50);
         updateHUD();
       }
@@ -2645,14 +2659,14 @@ function updateEnemy(E, dt, now) {
       p *= DIFF.acc;
       if (Math.random() < p) {
         if (T.mate) {
-          if (!T.mate.prisoner) T.mate.hp -= (8 + Math.random() * 6) * DIFF.dmg;   // a captive is never shot
+          if (!T.mate.prisoner) T.mate.hp -= (8 + Math.random() * 6) * DIFF.dmg * EDIT.enemy.damage;   // a captive is never shot
           if (T.mate.hp <= 0) {
             T.mate.hp = 0; T.mate.alive = false;
             mateSetAnim(T.mate, 'DEATH_BY_SHOTGUN_BACKWARD', true);
             playVoice('man_down', 0.6);
           }
         } else {
-          playerHP -= (8 + Math.random() * 6) * DIFF.dmg;
+          playerHP -= (8 + Math.random() * 6) * DIFF.dmg * EDIT.enemy.damage;
           dmgT = 0.45;
           if (Math.random() < 0.08) playVoice('im_hit', 0.42);   // rare pain reaction, not a scream track
           if (playerHP <= 0) die('HOSTILE FIRE');
@@ -3083,7 +3097,7 @@ async function load() {
     // ---- the squad ----
     members.push({ name: 'BENALI', wpn: WEAPONS[0], ammo: WEAPONS[0].mag, obj: heroObj, mixer, actions, rifle: rifleObj,
       gunConn: gunConnector, rifleL: rifleLObj, pos: player.pos.clone(), yaw: player.yaw,
-      hp: 150, alive: true, current: null, slot: null });
+      hp: EDIT.player.hp, alive: true, current: null, slot: null });
     members[0].inv = makeInv(0); members[0].held = 0;
     attachGear(heroObj, 0);
     members[0].heldObj = rifleObj; // the loader-attached M16 — setHeldModel swaps it for the cache clone
@@ -3105,7 +3119,7 @@ async function load() {
       const widx = members.length;
       const M = { name: def.name, wpn: WEAPONS[widx], ammo: WEAPONS[widx].mag, obj: glb.scene, actions: {}, current: null,
         pos: new THREE.Vector3(player.pos.x + def.slot[0], 0, player.pos.z + def.slot[1]),
-        yaw: Math.PI, hp: 150, alive: true, burstLeft: 0, nextShot: 0, moving: false, slot: def.slot };
+        yaw: Math.PI, hp: EDIT.player.hp, alive: true, burstLeft: 0, nextShot: 0, moving: false, slot: def.slot };
       M.obj.position.copy(M.pos);
       M.obj.traverse(o => {
         if (o.isMesh) {
@@ -3311,7 +3325,7 @@ function animate() {
       S.obj.material.opacity = Math.min(0.75, S.t * 0.4);
       if (S.t <= 0) { scene.remove(S.obj); smokes.splice(i, 1); }
     }
-    if (pendingHeal > 0) { pendingHeal -= dt; if (pendingHeal <= 0) { playerHP = Math.min(150, playerHP + 100); showMsg('WOUND DRESSED'); updateHUD(); } }
+    if (pendingHeal > 0) { pendingHeal -= dt; if (pendingHeal <= 0) { playerHP = Math.min(EDIT.player.hp, playerHP + EDIT.player.heal); showMsg('WOUND DRESSED'); updateHUD(); } }
     if (pendingC4 > 0) { pendingC4 -= dt; if (pendingC4 <= 0) explode(bridgePos.clone(), 16, 500); }
     if (!missionDone && OBJ.length) {
       const O = OBJ[objIdx];
@@ -3365,6 +3379,7 @@ function animate() {
       speed = player.stance === 'prone' ? 0.55 : player.stance === 'crouch' ? 1.05 : walkMode ? 1.3 : sprint ? 4.3 : 3.4;
       if ((aiming || firing) && player.stance === 'stand') speed = Math.min(speed, 1.1); // tactical aim-walk
       if (player.reloading && player.stance === 'stand') speed = Math.min(speed, 1.3); // no running mid-reload
+      speed *= EDIT.player.speed;
       const stepLen = speed * dt, cb = worldBox;
       const tryStep = (ax, az) => {
         if (!ax && !az) return false;
@@ -3616,6 +3631,8 @@ window.BD_TEST = {
     slot: (() => { const s2 = curSlot(); return s2 ? { key: s2.key, kind: s2.kind, reserve: s2.reserve, left: s2.left } : null; })(),
     anim: current, aiming: aiming, diff: DIFF.name,
     sights: { law: (document.getElementById('lawSight') || {}).style?.display || '', rpg: (document.getElementById('rpgSight') || {}).style?.display || '', binoc: (document.getElementById('binocOv') || {}).style?.display || '', scope: (document.getElementById('scopeOv') || {}).style?.display || '' },
+    edit: window.BD_EDIT,
+    wdef: (() => { const o = {}; for (const k in BD.WEAPONS) o[k] = { dmg: BD.WEAPONS[k].dmg, mag: BD.WEAPONS[k].mag, reload: BD.WEAPONS[k].reload, interval: BD.WEAPONS[k].interval }; return o; })(),
     fx: { mzl: _mzlPool.some(x => x.sp.visible), decals: _decalPool.filter(x => x.sp.visible).length },
     pos: player.pos.toArray().map(v => +v.toFixed(1)), airborne: !!player.airborne, vy: +(player.vy || 0).toFixed(1), rockets: rockets.length, rocketPos: rockets.length ? rockets[0].obj.position.toArray().map(v => +v.toFixed(1)) : null,
     kia: (document.getElementById('kia') || {}).style ? document.getElementById('kia').style.display : '',
