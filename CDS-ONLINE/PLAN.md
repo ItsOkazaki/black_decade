@@ -136,10 +136,10 @@ sources. Missions 2–15 assemble from their converted geometry/placements
 
 - **P0 — Census & decoders** ✅ (this document; `census.md`, `data/loc/*`,
   manifest started). Exit: every file on disk counted & classified.
-- **P1 — Owned asset pipeline.** Rerun conversions from `src-extract/` into
+- **P1 — Owned asset pipeline.** ✅ DONE (457 GLBs with animation sets, all tables, 391 CDSFont glyphs + GWInt/Effects banks, sound banks, menu music). Rerun conversions from `src-extract/` into
   `game/assets/` with manifest. Exit: mission1 + chardata + frontend trees
   complete, hashes match sources, zero references to the old project.
-- **P2 — Frontend.** Original screens end-to-end (no gameplay): title → menus →
+- **P2 — Frontend.** ✅ DONE (title→main→missions→briefing→loadout→loading, probe 10/10). Original screens end-to-end (no gameplay): title → menus →
   mission select → loadout → briefing → loading. Exit: screenshot set matches
   original bitmap references; all labels from `.loc`; CDSFont rendering.
 - **P3 — M1 vertical slice.** Landscape + statics + squad + movement state

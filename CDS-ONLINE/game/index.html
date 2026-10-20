@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Conflict: Desert Storm</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:Verdana,sans-serif;color:#e8e4cf}
+  .screen{position:fixed;inset:0;display:none}
+  .screen.on{display:block}
+  #scr-title img.art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:pointer}
+  #pressStart{position:absolute;left:0;right:0;bottom:6%;text-align:center;animation:pl 1.6s infinite}
+  @keyframes pl{0%,100%{opacity:.3}50%{opacity:1}}
+  .olive{background:radial-gradient(120% 100% at 50% 0%,#3a4028 0%,#23281800 60%),linear-gradient(#20261a,#10150b)}
+  .bgart{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.16}
+  .panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(700px,94vw);max-height:94vh;overflow:auto;
+    background:rgba(22,28,14,.93);border:1px solid #77804f;outline:1px solid #0c1006;border-radius:4px;padding:26px 36px 28px;box-shadow:0 18px 60px rgba(0,0,0,.75)}
+  .ptitle{text-align:center;margin-bottom:2px}
+  .ptitle canvas,.mitem canvas,.btn canvas,.sold canvas{max-width:100%;height:auto}
+  .psub{text-align:center;color:#b9be96;letter-spacing:.3em;font-size:11.5px;margin-bottom:20px}
+  .mitem{display:block;width:100%;margin:8px 0;padding:10px;text-align:center;cursor:pointer;background:linear-gradient(#39412a,#2a311e);
+    border:1px solid #59653c;border-radius:3px}
+  .mitem:hover,.mitem.sel{outline:2px solid #e8e4cf;background:linear-gradient(#4b5733,#39452a)}
+  .mitem.dis{opacity:.42;cursor:default}
+  .mitem.dis:hover{outline:none;background:linear-gradient(#39412a,#2a311e)}
+  .foot{margin-top:16px;text-align:center;font-size:11px;color:#8f957a;letter-spacing:.14em}
+  .mrow{display:flex;gap:12px;align-items:center;padding:9px 12px;margin:7px 0;cursor:pointer;background:rgba(30,38,20,.85);border:1px solid #59653c;border-radius:3px}
+  .mrow:hover,.mrow.sel{outline:2px solid #ffd75e}
+  .mrow .num{color:#ffd75e;font-size:19px;width:44px;text-align:center}
+  .mrow .ttl{font-size:16.5px;letter-spacing:.1em}
+  .mrow .tag{margin-left:auto;font-size:10.5px;color:#f0b429;letter-spacing:.12em}
+  #scr-brief{background:#000;color:#fff}
+  .paper{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(780px,94vw);max-height:94vh;overflow:auto;padding:8px}
+  .paper h2{font-size:13px;letter-spacing:.3em;color:#9fb08a}
+  .paper h1{font-size:42px;letter-spacing:.16em;margin:4px 0 2px}
+  .paper .date{color:#c9c9c9;letter-spacing:.2em;margin-bottom:16px;font-size:13.5px}
+  .paper p{font-size:16px;line-height:1.55;color:#eee;margin-bottom:18px}
+  .paper h3{color:#ffd75e;letter-spacing:.26em;font-size:13.5px;margin-bottom:8px}
+  .paper li{margin:5px 0 5px 20px;font-size:15px;line-height:1.45}
+  .btnrow{display:flex;gap:12px;margin-top:20px}
+  .btn{flex:1;padding:12px;text-align:center;cursor:pointer;background:linear-gradient(#39412a,#2a311e);border:1px solid #59653c;border-radius:3px}
+  .btn:hover{outline:2px solid #e8e4cf}
+  .btn.go{background:linear-gradient(#5a6b35,#42531f)}
+  .soldiers{display:flex;gap:8px;margin-bottom:14px}
+  .sold{flex:1;text-align:center;padding:9px 4px;cursor:pointer;background:rgba(30,38,20,.85);border:1px solid #59653c;border-radius:3px}
+  .sold.sel{outline:2px solid #ffd75e}
+  .sold .role{font-size:10px;color:#b9be96;letter-spacing:.1em;margin-top:3px}
+  .slotrow{display:flex;align-items:center;gap:12px;margin:10px 0}
+  .slotrow .lab{width:110px;color:#ffd75e;font-size:12px;letter-spacing:.18em}
+  .slotrow select{flex:1;background:#0d0f0a;border:1px solid #39402a;color:#ffe9a8;border-radius:4px;padding:8px;font-size:14px}
+  .slotrow img{width:118px;height:30px;object-fit:contain;background:rgba(0,0,0,.35);border:1px solid #39402a;border-radius:3px}
+  #loadBarWrap{height:16px;border:1px solid #666;margin:18px 0 8px}
+  #loadBar{height:100%;width:0%;background:#cfe08a;transition:width .25s}
+  #loadStatus{font-size:12.5px;color:#bbb;letter-spacing:.12em;min-height:16px}
+  #sandboxLink{position:fixed;right:14px;bottom:10px;z-index:9;color:#cfd2b8;opacity:.6;font-size:11.5px;letter-spacing:.16em;
+    text-decoration:none;border:1px solid #6a7052;padding:5px 10px;border-radius:3px;background:rgba(10,12,6,.6)}
+  #deployNote{text-align:center;padding:26px 10px}
+</style></head>
+<body>
+<div id="scr-title" class="screen on">
+  <img class="art" id="titleArt" src="assets/ui/bitmaps/DEFLOAD_US.png" alt="Conflict: Desert Storm">
+  <div id="pressStart"></div>
+</div>
+
+<div id="scr-main" class="screen olive">
+  <img class="bgart" src="assets/ui/bitmaps/DEFLOAD.png" alt="">
+  <div class="panel">
+    <div class="ptitle" id="mainTitle"></div>
+    <div class="psub">PIVOTAL GAMES · SCi · GOTHAM GAMES</div>
+    <div id="mainItems"></div>
+    <div class="foot" id="mainFoot"></div>
+  </div>
+</div>
+
+<div id="scr-missions" class="screen olive">
+  <img class="bgart" src="assets/ui/bitmaps/DEFLOAD.png" alt="">
+  <div class="panel" style="width:min(760px,94vw)">
+    <div class="ptitle" id="misTitle"></div>
+    <div class="psub">KUWAIT / IRAQ — 1991</div>
+    <div id="misList"></div>
+    <div class="btnrow"><div class="btn" id="misBack"></div></div>
+  </div>
+</div>
+
+<div id="scr-brief" class="screen">
+  <div class="paper">
+    <h2 id="brMission"></h2>
+    <h1 id="brHead"></h1>
+    <div class="date" id="brDate"></div>
+    <p id="brText"></p>
+    <h3 id="brObjHead"></h3>
+    <ul id="brObjs"></ul>
+    <div class="btnrow">
+      <div class="btn" id="brBack"></div>
+      <div class="btn go" id="brNext"></div>
+    </div>
+  </div>
+</div>
+
+<div id="scr-loadout" class="screen olive">
+  <img class="bgart" src="assets/ui/bitmaps/DEFLOAD.png" alt="">
+  <div class="panel" style="width:min(820px,96vw)">
+    <div class="ptitle" id="loTitle"></div>
+    <div class="psub" id="loSub"></div>
+    <div class="soldiers" id="loSoldiers"></div>
+    <div id="loSlots"></div>
+    <div class="btnrow">
+      <div class="btn" id="loBack"></div>
+      <div class="btn go" id="loDeploy"></div>
+    </div>
+  </div>
+</div>
+
+<div id="scr-options" class="screen olive">
+  <img class="bgart" src="assets/ui/bitmaps/DEFLOAD.png" alt="">
+  <div class="panel">
+    <div class="ptitle" id="optTitle"></div>
+    <div class="psub" id="optSub"></div>
+    <div id="optItems"></div>
+    <div class="btnrow"><div class="btn" id="optBack"></div></div>
+  </div>
+</div>
+
+<div id="scr-loading" class="screen">
+  <div class="paper">
+    <h2 id="ldMission"></h2>
+    <h1 id="ldHead"></h1>
+    <div id="loadBarWrap"><div id="loadBar"></div></div>
+    <div id="loadStatus"></div>
+  </div>
+</div>
+
+<div id="scr-deployed" class="screen olive">
+  <div class="panel"><div id="deployNote">
+    <div class="ptitle" id="depTitle"></div>
+    <p style="line-height:1.7;margin:14px 0">The frontend is complete and original. The in-mission
+    simulation is built next, under the plan — Phase 3 (movement &amp; the original state machines),
+    then Phase 4 (combat &amp; AI on Mission 1). Nothing here is placeholder art:
+    every screen, string and sound on this path is the game's own.</p>
+    <div class="btnrow"><div class="btn" id="depMenu"></div></div>
+  </div></div>
+</div>
+
+<a id="sandboxLink" href="../sandbox.html">SANDBOX</a>
+<script type="module" src="frontend.js"></script>
+</body></html>

@@ -1,4 +1,4 @@
-# CONFLICT: DESERT STORM — browser assembly (from scratch)
+# CONFLICT: DESERT STORM — browser assembly (plan-first rebuild)
 
 The original game, assembled fresh from its own decoded files. This replaces
 nothing: the BLACK DECADE build under `fidelity/` is untouched and remains the
@@ -20,7 +20,7 @@ decoded English text of `Mission1/M01Strs.loc` (SLOC format: UTF-16LE strings).
 - New: only the engine code that assembles those pieces (cds.js, ~860 lines).
 
 ## Verified
-`tools/cdsprobe.mjs` — 15/15: title (no BLACK DECADE anywhere), original
+`tools/p2probe.mjs` — 15/15: title (no BLACK DECADE anywhere), original
 briefing text, deploy, 3-man squad + Foley prisoner, 27 hostiles, fire/move/
 kill, rescue → C4 → bridge → extraction → MISSION COMPLETE. Missions 2 and 5A
 also load their real unit placements with 0 page errors.
